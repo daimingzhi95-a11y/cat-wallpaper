@@ -101,6 +101,33 @@
                   <label title="墨黑"><input type="radio" name="color" value="#54545b" /><span style="--swatch:#54545b"></span></label>
                 </div>
               </fieldset>
+
+              <fieldset class="background-fieldset">
+                <legend>壁纸背景</legend>
+                <div class="background-options">
+                  <label>
+                    <input type="radio" name="background" value="plants" checked />
+                    <span class="background-option">
+                      <span class="background-icon" aria-hidden="true">♧</span>
+                      <span>猫咪喜欢的植物</span>
+                    </span>
+                  </label>
+                  <label>
+                    <input type="radio" name="background" value="bed" />
+                    <span class="background-option">
+                      <span class="background-icon" aria-hidden="true">⌒</span>
+                      <span>猫窝</span>
+                    </span>
+                  </label>
+                  <label>
+                    <input type="radio" name="background" value="tree" />
+                    <span class="background-option">
+                      <span class="background-icon" aria-hidden="true">╞</span>
+                      <span>猫爬架</span>
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
             </div>
 
             <div class="form-section">
@@ -135,6 +162,7 @@
 
           <div class="wallpaper-stage">
             <div id="wallpaper" class="wallpaper wallpaper-desktop">
+              <div id="background-scene" class="background-scene" aria-hidden="true"></div>
               <div class="paper-grain"></div>
               <div id="pose-ring" class="pose-ring" aria-hidden="true"></div>
               <div class="portrait-card">
