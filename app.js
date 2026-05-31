@@ -1,6 +1,7 @@
 const form = document.querySelector("#cat-form");
 const wallpaper = document.querySelector("#wallpaper");
 const poseRing = document.querySelector("#pose-ring");
+const backgroundScene = document.querySelector("#background-scene");
 const catName = document.querySelector("#cat-name");
 const wallpaperName = document.querySelector("#wallpaper-name");
 const photoInput = document.querySelector("#cat-photo");
@@ -15,12 +16,71 @@ const state = {
   legs: "short",
   pattern: "stripe",
   color: "#e8a85d",
+  background: "plants",
   ratio: "desktop",
   name: "Mochi",
   photoUrl: "",
 };
 
 const POSES = ["sit", "loaf", "walk", "curl", "stretch", "back", "peek"];
+const THEMES = {
+  plants: { base: "#fbfaf6", grain: "#cfdbd4" },
+  bed: { base: "#fcf7f1", grain: "#e4d3c3" },
+  tree: { base: "#f5f8f4", grain: "#cad9d1" },
+};
+
+function sceneSvg(theme, width = "100%", height = "100%") {
+  const scenes = {
+    plants: `
+      <rect width="1000" height="700" fill="#fbfaf6"/>
+      <g fill="none" stroke="#789083" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".68">
+        <path d="M104 700V490m0 54c-42-10-59-43-58-82 39 8 60 36 58 82Zm3 39c43-11 63-40 67-80-42 4-64 31-67 80Z"/>
+        <path d="M885 700V475m0 54c-43-13-62-45-62-84 43 8 63 38 62 84Zm4 45c42-12 61-42 63-83-42 6-63 35-63 83Z"/>
+        <path d="M770 0v120m-49 0h98l-17 92h-64Z"/>
+      </g>
+      <g fill="#adc3ad" opacity=".72">
+        <ellipse cx="60" cy="474" rx="29" ry="67" transform="rotate(-32 60 474)"/><ellipse cx="153" cy="505" rx="29" ry="67" transform="rotate(34 153 505)"/>
+        <ellipse cx="838" cy="457" rx="29" ry="67" transform="rotate(-34 838 457)"/><ellipse cx="935" cy="495" rx="29" ry="67" transform="rotate(33 935 495)"/>
+        <ellipse cx="741" cy="107" rx="21" ry="47" transform="rotate(-30 741 107)"/><ellipse cx="793" cy="102" rx="21" ry="47" transform="rotate(30 793 102)"/>
+      </g>
+      <g fill="#d8c5a7" opacity=".84"><path d="M35 635h142l-16 65H50Z"/><path d="M814 626h146l-15 74H829Z"/></g>`,
+    bed: `
+      <rect width="1000" height="700" fill="#fcf7f1"/>
+      <g opacity=".76">
+        <path d="M57 595c29-70 150-78 190 0l18 79H38Z" fill="#d7b898" stroke="#a67f65" stroke-width="8"/>
+        <path d="M92 591c24-36 92-38 120 0l10 40H80Z" fill="#f2ddc8"/>
+        <path d="M754 601c30-62 145-69 186 0l18 73H738Z" fill="#c9d9d2" stroke="#809b91" stroke-width="8"/>
+        <path d="M786 597c25-34 91-35 120 0l10 34H777Z" fill="#e5eee9"/>
+      </g>
+      <g fill="none" stroke="#cba98c" stroke-linecap="round" opacity=".54">
+        <path d="M0 145c83 37 142 41 225 4s147-35 230 3 153 36 236-3 145-40 309-2" stroke-width="9"/>
+        <path d="M0 169c83 37 142 41 225 4s147-35 230 3 153 36 236-3 145-40 309-2" stroke-width="4"/>
+      </g>
+      <g fill="#d8b798" opacity=".52"><circle cx="114" cy="110" r="22"/><circle cx="886" cy="114" r="22"/><circle cx="164" cy="85" r="10"/><circle cx="836" cy="87" r="10"/></g>`,
+    tree: `
+      <rect width="1000" height="700" fill="#f5f8f4"/>
+      <g fill="#c8d9d1" stroke="#789087" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".82">
+        <path d="M110 700V323m0 28h193v42H110Zm0 163h151v44H110Zm151-121v335"/>
+        <path d="M890 700V245m-191 69h191v43H699Zm39 157h152v44H738Zm0-114v343"/>
+        <path d="M155 514v-86h70v86M775 471v-82h72v82" fill="#e5eee9"/>
+      </g>
+      <g fill="none" stroke="#96ada4" stroke-width="6" opacity=".62">
+        <path d="M310 0c0 75-32 90-72 132"/><circle cx="232" cy="142" r="23"/>
+        <path d="M650 0c0 72 34 87 72 128"/><circle cx="728" cy="138" r="23"/>
+      </g>`,
+  };
+
+  return `<svg width="${width}" height="${height}" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${scenes[theme]}</svg>`;
+}
+
+function renderScene(animate = true) {
+  const theme = THEMES[state.background];
+  wallpaper.style.setProperty("--grain-color", theme.grain);
+  backgroundScene.innerHTML = sceneSvg(state.background);
+  if (animate && window.gsap) {
+    gsap.fromTo(backgroundScene, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.45, ease: "power2.out", overwrite: true });
+  }
+}
 
 function selectedValue(name) {
   return form.querySelector(`[name="${name}"]:checked`).value;
@@ -106,8 +166,13 @@ function syncState() {
   state.legs = selectedValue("legs");
   state.pattern = selectedValue("pattern");
   state.color = selectedValue("color");
+  const nextBackground = selectedValue("background");
   state.name = catName.value.trim() || "my cat";
   wallpaperName.textContent = state.name;
+  if (state.background !== nextBackground) {
+    state.background = nextBackground;
+    renderScene();
+  }
   renderPoses();
 }
 
@@ -146,6 +211,19 @@ function drawSvgOnCanvas(ctx, svg, x, y, width) {
       ctx.drawImage(image, x - width / 2, y - height / 2, width, height);
       resolve();
     };
+    image.onerror = resolve;
+    image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  });
+}
+
+function drawSceneOnCanvas(ctx, svg, width, height) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      ctx.drawImage(image, 0, 0, width, height);
+      resolve();
+    };
+    image.onerror = resolve;
     image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   });
 }
@@ -161,9 +239,11 @@ async function downloadWallpaper() {
     : [[250, 210], [1660, 210], [230, 590], [1680, 590], [300, 1010], [1610, 1010], [950, 1060]];
   const poseWidth = mobile ? 340 : 300;
 
-  ctx.fillStyle = "#fbfaf6";
+  const theme = THEMES[state.background];
+  ctx.fillStyle = theme.base;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#dfe9dc";
+  await drawSceneOnCanvas(ctx, sceneSvg(state.background, canvas.width, canvas.height), canvas.width, canvas.height);
+  ctx.fillStyle = theme.grain;
   for (let x = 10; x < canvas.width; x += 36) {
     for (let y = 10; y < canvas.height; y += 36) ctx.fillRect(x, y, 2, 2);
   }
@@ -203,6 +283,7 @@ async function downloadWallpaper() {
 
 downloadButton.addEventListener("click", downloadWallpaper);
 
+renderScene(false);
 renderPoses(false);
 
 if (window.gsap) {
