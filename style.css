@@ -41,13 +41,19 @@ fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 legend { margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .segmented-control { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.52); }
 .segmented-control label { flex: 1; }
-.segmented-control input, .swatch-row input { position: absolute; opacity: 0; pointer-events: none; }
+.segmented-control input, .swatch-row input, .background-options input { position: absolute; opacity: 0; pointer-events: none; }
 .segmented-control span { display: block; padding: 7px 8px; border-radius: 7px; color: var(--muted); font-size: 12px; text-align: center; transition: .2s; }
 .segmented-control input:checked + span { color: var(--ink); background: white; box-shadow: 0 1px 5px rgba(42,58,53,.1); font-weight: 700; }
 .color-fieldset { margin-top: 18px; }
 .swatch-row { display: flex; gap: 10px; }
 .swatch-row span { display: block; width: 28px; height: 28px; border: 3px solid white; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px var(--line); transition: transform .2s, box-shadow .2s; }
 .swatch-row input:checked + span { transform: scale(1.12); box-shadow: 0 0 0 2px var(--sage-deep); }
+.background-fieldset { margin-top: 20px; }
+.background-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.background-option { display: grid; justify-items: center; gap: 5px; min-height: 72px; padding: 9px 5px 8px; border: 1px solid var(--line); border-radius: 11px; color: var(--muted); background: rgba(255,255,255,.52); font-size: 11px; line-height: 1.25; text-align: center; transition: .2s; }
+.background-icon { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; color: var(--sage-deep); background: rgba(223,233,220,.72); font-size: 20px; font-weight: 700; line-height: 1; }
+.background-options input:checked + .background-option { border-color: rgba(96,118,110,.5); color: var(--ink); background: white; box-shadow: 0 3px 10px rgba(42,58,53,.08); font-weight: 700; }
+.background-options input:focus-visible + .background-option { outline: 3px solid rgba(96,118,110,.18); outline-offset: 2px; }
 .upload-box { display: grid; grid-template-columns: 40px 1fr; gap: 2px 12px; align-items: center; padding: 14px; border: 1px dashed rgba(96,118,110,.45); border-radius: 12px; background: rgba(223,233,220,.25); cursor: pointer; transition: .25s; }
 .upload-box:hover { background: rgba(223,233,220,.52); border-color: var(--sage-deep); }
 .upload-box input { display: none; }
@@ -62,10 +68,12 @@ legend { margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 
 .size-toggle button { padding: 7px 12px; border: 0; border-radius: 8px; color: var(--muted); background: transparent; font-size: 12px; }
 .size-toggle button.is-active { color: white; background: var(--sage-deep); }
 .wallpaper-stage { flex: 1; display: grid; place-items: center; min-height: 0; padding: 24px 0; }
-.wallpaper { --wallpaper-w: min(100%, 860px); position: relative; width: var(--wallpaper-w); overflow: hidden; border: 8px solid white; background: #fbfaf6; box-shadow: 0 24px 60px rgba(77,96,89,.14); transition: width .45s ease, aspect-ratio .45s ease; }
+.wallpaper { --wallpaper-w: min(100%, 860px); --grain-color: #cfdbd4; position: relative; width: var(--wallpaper-w); overflow: hidden; border: 8px solid white; background: #fbfaf6; box-shadow: 0 24px 60px rgba(77,96,89,.14); transition: width .45s ease, aspect-ratio .45s ease; }
 .wallpaper-desktop { aspect-ratio: 16 / 10; }
 .wallpaper-mobile { width: min(54%, 400px); aspect-ratio: 9 / 16; }
-.paper-grain { position: absolute; inset: 0; opacity: .38; background-image: radial-gradient(#cfdbd4 1px, transparent 1px); background-size: 18px 18px; }
+.background-scene { position: absolute; inset: 0; }
+.background-scene svg { display: block; width: 100%; height: 100%; }
+.paper-grain { position: absolute; inset: 0; opacity: .36; background-image: radial-gradient(var(--grain-color) 1px, transparent 1px); background-size: 18px 18px; }
 .pose-ring { position: absolute; inset: 0; }
 .pose { --size: 18%; position: absolute; width: var(--size); color: var(--cat-color); filter: drop-shadow(0 6px 2px rgba(63,70,64,.08)); will-change: transform; }
 .pose svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -111,6 +119,8 @@ legend { margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 
   h1 { font-size: 39px; }
   .intro { margin-bottom: 32px; }
   .trait-grid { grid-template-columns: 1fr; }
+  .background-options { grid-template-columns: 1fr; }
+  .background-option { grid-template-columns: 30px 1fr; justify-items: start; align-items: center; min-height: 0; padding: 7px 9px; text-align: left; }
   .preview-panel { min-height: 660px; padding: 22px 16px 18px; }
   .wallpaper-stage { min-height: 540px; padding: 18px 0; }
   .wallpaper { border-width: 6px; }
