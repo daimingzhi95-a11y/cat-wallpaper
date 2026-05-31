@@ -3,164 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="上传猫咪照片，选择毛发、尾巴、腿长和花色，生成专属猫咪姿势壁纸。"
-    />
-    <title>喵图鉴 · 猫咪壁纸生成器</title>
+    <meta name="description" content="定制猫咪外观，生成专属猫咪姿势壁纸。" />
+    <title>喵图鉴 · 猫咪壁纸工坊</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <div class="site-shell">
-      <header class="site-header">
-        <a class="brand" href="#" aria-label="喵图鉴首页">
-          <span class="brand-mark" aria-hidden="true">⌁</span>
-          <span>喵图鉴</span>
-        </a>
-        <div class="header-note">为你的小猫制作一张专属壁纸</div>
-        <button class="header-help" type="button" aria-label="使用说明">?</button>
+    <main class="game-shell">
+      <header class="game-header">
+        <a class="brand" href="#" aria-label="喵图鉴首页"><span class="brand-mark">⌁</span><span>喵图鉴</span></a>
+        <div class="header-center">
+          <span class="eyebrow">CAT AVATAR STUDIO</span>
+          <span class="header-line"></span>
+          <span>壁纸工坊</span>
+        </div>
+        <button id="download-btn" class="download-btn" type="button"><span>保存壁纸</span><span aria-hidden="true">↓</span></button>
       </header>
 
-      <main class="app-layout">
-        <section class="editor-panel" aria-labelledby="editor-title">
-          <div class="eyebrow">CAT WALLPAPER STUDIO</div>
-          <h1 id="editor-title">把你的小猫，<br /><span>变成一张可爱的壁纸。</span></h1>
-          <p class="intro">
-            选择猫咪特征，上传一张喜欢的照片。我们会为它画出一组慵懒又自在的小姿势。
-          </p>
-
-          <form id="cat-form">
-            <div class="form-section">
-              <div class="section-heading">
-                <span class="section-number">01</span>
-                <div>
-                  <h2>它叫什么名字？</h2>
-                  <p>名字会出现在壁纸下方。</p>
-                </div>
-              </div>
-              <label class="text-field">
-                <span class="sr-only">猫咪名字</span>
-                <input id="cat-name" type="text" value="Mochi" maxlength="18" placeholder="输入猫咪名字" />
-              </label>
-            </div>
-
-            <div class="form-section">
-              <div class="section-heading">
-                <span class="section-number">02</span>
-                <div>
-                  <h2>选择猫咪的小特征</h2>
-                  <p>每个细节都会同步到姿势插画。</p>
-                </div>
-              </div>
-
-              <div class="trait-grid">
-                <fieldset>
-                  <legend>毛发</legend>
-                  <div class="segmented-control">
-                    <label><input type="radio" name="fur" value="short" checked /><span>短毛</span></label>
-                    <label><input type="radio" name="fur" value="long" /><span>长毛</span></label>
-                  </div>
-                </fieldset>
-                <fieldset>
-                  <legend>尾巴</legend>
-                  <div class="segmented-control">
-                    <label><input type="radio" name="tail" value="long" checked /><span>长尾</span></label>
-                    <label><input type="radio" name="tail" value="short" /><span>短尾</span></label>
-                  </div>
-                </fieldset>
-                <fieldset>
-                  <legend>腿长</legend>
-                  <div class="segmented-control">
-                    <label><input type="radio" name="legs" value="short" checked /><span>短腿</span></label>
-                    <label><input type="radio" name="legs" value="long" /><span>长腿</span></label>
-                  </div>
-                </fieldset>
-                <fieldset>
-                  <legend>花纹</legend>
-                  <div class="segmented-control">
-                    <label><input type="radio" name="pattern" value="stripe" checked /><span>虎斑</span></label>
-                    <label><input type="radio" name="pattern" value="solid" /><span>纯色</span></label>
-                    <label><input type="radio" name="pattern" value="patch" /><span>花斑</span></label>
-                  </div>
-                </fieldset>
-              </div>
-
-              <fieldset class="color-fieldset">
-                <legend>主色</legend>
-                <div class="swatch-row">
-                  <label title="奶油橘"><input type="radio" name="color" value="#e8a85d" checked /><span style="--swatch:#e8a85d"></span></label>
-                  <label title="焦糖棕"><input type="radio" name="color" value="#af765c" /><span style="--swatch:#af765c"></span></label>
-                  <label title="灰蓝"><input type="radio" name="color" value="#8695a5" /><span style="--swatch:#8695a5"></span></label>
-                  <label title="奶白"><input type="radio" name="color" value="#e5dccb" /><span style="--swatch:#e5dccb"></span></label>
-                  <label title="墨黑"><input type="radio" name="color" value="#54545b" /><span style="--swatch:#54545b"></span></label>
-                </div>
-              </fieldset>
-
-              <fieldset class="background-fieldset">
-                <legend>壁纸背景</legend>
-                <div class="background-options">
-                  <label>
-                    <input type="radio" name="background" value="plants" checked />
-                    <span class="background-option">
-                      <span class="background-icon" aria-hidden="true">♧</span>
-                      <span>猫咪喜欢的植物</span>
-                    </span>
-                  </label>
-                  <label>
-                    <input type="radio" name="background" value="bed" />
-                    <span class="background-option">
-                      <span class="background-icon" aria-hidden="true">⌒</span>
-                      <span>猫窝</span>
-                    </span>
-                  </label>
-                  <label>
-                    <input type="radio" name="background" value="tree" />
-                    <span class="background-option">
-                      <span class="background-icon" aria-hidden="true">╞</span>
-                      <span>猫爬架</span>
-                    </span>
-                  </label>
-                </div>
-              </fieldset>
-            </div>
-
-            <div class="form-section">
-              <div class="section-heading">
-                <span class="section-number">03</span>
-                <div>
-                  <h2>上传一张照片</h2>
-                  <p>正面或半身照效果最好。</p>
-                </div>
-              </div>
-              <label class="upload-box" for="cat-photo">
-                <input id="cat-photo" type="file" accept="image/*" />
-                <span class="upload-icon" aria-hidden="true">↑</span>
-                <span class="upload-title">选择照片</span>
-                <span class="upload-hint">JPG、PNG，建议不超过 10MB</span>
-              </label>
-            </div>
-          </form>
-        </section>
-
-        <section class="preview-panel" aria-labelledby="preview-title">
-          <div class="preview-toolbar">
-            <div>
-              <div class="eyebrow">LIVE PREVIEW</div>
-              <h2 id="preview-title">壁纸预览</h2>
-            </div>
-            <div class="size-toggle" aria-label="壁纸比例">
-              <button type="button" data-ratio="desktop" class="is-active">电脑</button>
-              <button type="button" data-ratio="mobile">手机</button>
-            </div>
+      <section class="hero-stage" aria-labelledby="preview-title">
+        <div class="stage-heading">
+          <div>
+            <div class="eyebrow">LIVE WALLPAPER PREVIEW</div>
+            <h1 id="preview-title">你的专属猫咪图鉴</h1>
           </div>
+          <div class="size-toggle" aria-label="壁纸比例">
+            <button type="button" data-ratio="desktop">电脑壁纸</button>
+            <button type="button" data-ratio="mobile">手机壁纸</button>
+          </div>
+        </div>
 
-          <div class="wallpaper-stage">
+        <div class="preview-arena">
+          <div class="arena-orbit orbit-one"></div>
+          <div class="arena-orbit orbit-two"></div>
+          <div class="wallpaper-frame">
+            <div class="frame-corner corner-a"></div><div class="frame-corner corner-b"></div>
             <div id="wallpaper" class="wallpaper wallpaper-desktop">
               <div id="background-scene" class="background-scene" aria-hidden="true"></div>
               <div class="paper-grain"></div>
@@ -168,28 +46,68 @@
               <div class="portrait-card">
                 <div class="photo-frame">
                   <img id="photo-preview" alt="猫咪照片预览" />
-                  <div id="photo-placeholder" class="photo-placeholder" aria-hidden="true">
-                    <span class="placeholder-ears">⌃</span>
-                    <span class="placeholder-face">• ᴗ •</span>
-                  </div>
+                  <div id="photo-placeholder" class="photo-placeholder" aria-hidden="true"><span class="placeholder-ears">⌃</span><span class="placeholder-face">• ᴗ •</span></div>
                 </div>
                 <div id="wallpaper-name" class="wallpaper-name">Mochi</div>
                 <div class="wallpaper-caption">my tiny roommate</div>
               </div>
             </div>
           </div>
+          <p class="stage-status"><span class="status-dot"></span><span id="device-hint">已自动匹配当前设备比例</span></p>
+        </div>
+      </section>
 
-          <div class="preview-actions">
-            <p><span class="status-dot"></span> 已根据猫咪特征实时生成</p>
-            <button id="download-btn" class="download-btn" type="button">
-              <span>下载壁纸</span>
-              <span aria-hidden="true">↓</span>
-            </button>
-          </div>
-        </section>
-      </main>
-    </div>
+      <section class="customizer" aria-labelledby="customizer-title">
+        <div class="customizer-top">
+          <div><div class="eyebrow">CUSTOMIZE YOUR CAT</div><h2 id="customizer-title">定制猫咪外观</h2></div>
+          <nav class="customizer-tabs" aria-label="设置分类">
+            <button type="button" class="tab-btn is-active" data-tab="looks">01 外观</button>
+            <button type="button" class="tab-btn" data-tab="scene">02 场景</button>
+            <button type="button" class="tab-btn" data-tab="profile">03 身份</button>
+          </nav>
+        </div>
 
+        <form id="cat-form">
+          <section class="tab-panel is-active" data-panel="looks">
+            <div class="control-card trait-card">
+              <span class="card-kicker">FUR TYPE</span>
+              <fieldset><legend>毛发</legend><div class="segmented-control"><label><input type="radio" name="fur" value="short" checked /><span>短毛</span></label><label><input type="radio" name="fur" value="long" /><span>长毛</span></label></div></fieldset>
+            </div>
+            <div class="control-card trait-card">
+              <span class="card-kicker">TAIL</span>
+              <fieldset><legend>尾巴</legend><div class="segmented-control"><label><input type="radio" name="tail" value="long" checked /><span>长尾</span></label><label><input type="radio" name="tail" value="short" /><span>短尾</span></label></div></fieldset>
+            </div>
+            <div class="control-card trait-card">
+              <span class="card-kicker">LEGS</span>
+              <fieldset><legend>腿长</legend><div class="segmented-control"><label><input type="radio" name="legs" value="short" checked /><span>短腿</span></label><label><input type="radio" name="legs" value="long" /><span>长腿</span></label></div></fieldset>
+            </div>
+            <div class="control-card trait-card">
+              <span class="card-kicker">PATTERN</span>
+              <fieldset><legend>花纹</legend><div class="segmented-control"><label><input type="radio" name="pattern" value="stripe" checked /><span>虎斑</span></label><label><input type="radio" name="pattern" value="solid" /><span>纯色</span></label><label><input type="radio" name="pattern" value="patch" /><span>花斑</span></label></div></fieldset>
+            </div>
+            <div class="control-card color-card">
+              <span class="card-kicker">MAIN COLOR</span>
+              <fieldset><legend>主色</legend><div class="swatch-row">
+                <label title="奶油橘"><input type="radio" name="color" value="#e8a85d" checked /><span style="--swatch:#e8a85d"></span></label><label title="焦糖棕"><input type="radio" name="color" value="#af765c" /><span style="--swatch:#af765c"></span></label><label title="灰蓝"><input type="radio" name="color" value="#8695a5" /><span style="--swatch:#8695a5"></span></label><label title="奶白"><input type="radio" name="color" value="#e5dccb" /><span style="--swatch:#e5dccb"></span></label><label title="墨黑"><input type="radio" name="color" value="#54545b" /><span style="--swatch:#54545b"></span></label>
+              </div></fieldset>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="scene">
+            <fieldset class="scene-fieldset"><legend class="sr-only">壁纸背景</legend><div class="background-options">
+              <label><input type="radio" name="background" value="plants" checked /><span class="background-option"><span class="background-icon">♧</span><span><b>绿植房间</b><small>猫咪喜欢的植物</small></span></span></label>
+              <label><input type="radio" name="background" value="bed" /><span class="background-option"><span class="background-icon">⌒</span><span><b>温暖猫窝</b><small>柔软又安心</small></span></span></label>
+              <label><input type="radio" name="background" value="tree" /><span class="background-option"><span class="background-icon">╞</span><span><b>猫爬架乐园</b><small>适合好奇的小猫</small></span></span></label>
+            </div></fieldset>
+          </section>
+
+          <section class="tab-panel" data-panel="profile">
+            <label class="profile-field"><span><b>猫咪名字</b><small>会显示在壁纸中央</small></span><input id="cat-name" type="text" value="Mochi" maxlength="18" placeholder="输入猫咪名字" /></label>
+            <label class="upload-box" for="cat-photo"><input id="cat-photo" type="file" accept="image/*" /><span class="upload-icon">↑</span><span><b>上传照片</b><small>正面或半身照效果最好</small></span></label>
+          </section>
+        </form>
+      </section>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="./app.js"></script>
   </body>
