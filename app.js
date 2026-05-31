@@ -1,5 +1,7 @@
 const form = document.querySelector("#cat-form");
 const wallpaper = document.querySelector("#wallpaper");
+const wallpaperFrame = document.querySelector(".wallpaper-frame");
+const shell = document.querySelector(".game-shell");
 const poseRing = document.querySelector("#pose-ring");
 const backgroundScene = document.querySelector("#background-scene");
 const catName = document.querySelector("#cat-name");
@@ -12,6 +14,9 @@ const tabButtons = document.querySelectorAll("[data-tab]");
 const tabPanels = document.querySelectorAll("[data-panel]");
 const deviceHint = document.querySelector("#device-hint");
 const downloadButton = document.querySelector("#download-btn");
+const drawerToggle = document.querySelector("#drawer-toggle");
+const drawerLabel = document.querySelector("[data-drawer-label]");
+const languageButtons = document.querySelectorAll("[data-lang]");
 
 const state = {
   fur: "short",
@@ -22,8 +27,38 @@ const state = {
   background: "plants",
   ratio: "desktop",
   ratioLocked: false,
+  drawerCollapsed: false,
+  language: "ja",
   name: "Mochi",
   photoUrl: "",
+};
+
+const I18N = {
+  ja: {
+    brand: "ねこ図鑑", workshop: "壁紙工房", download: "壁紙を保存", previewTitle: "あなただけのねこ図鑑", desktop: "PC壁紙", mobile: "スマホ壁紙",
+    customize: "ねこの見た目をカスタム", looks: "01 見た目", scene: "02 シーン", profile: "03 プロフィール", fur: "毛並み", shortFur: "短毛", longFur: "長毛",
+    tail: "しっぽ", longTail: "長い", shortTail: "短い", legs: "足の長さ", shortLegs: "短い", longLegs: "長い", pattern: "模様", stripe: "しま模様", solid: "単色", patch: "ぶち",
+    mainColor: "メインカラー", plants: "植物の部屋", plantsHint: "ねこが好きなグリーン", bed: "あたたかいベッド", bedHint: "やわらかくて安心", tree: "キャットタワー",
+    treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "壁紙の中央に表示されます", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
+    uploadHint: "正面または半身写真がおすすめ", collapse: "設定を閉じる", expand: "設定を開く", autoDesktop: "画面サイズに合わせてPC壁紙を自動選択しました",
+    autoMobile: "画面サイズに合わせてスマホ壁紙を自動選択しました", manualDesktop: "PC壁紙に切り替えました", manualMobile: "スマホ壁紙に切り替えました",
+  },
+  zh: {
+    brand: "喵图鉴", workshop: "壁纸工坊", download: "保存壁纸", previewTitle: "你的专属猫咪图鉴", desktop: "电脑壁纸", mobile: "手机壁纸",
+    customize: "定制猫咪外观", looks: "01 外观", scene: "02 场景", profile: "03 身份", fur: "毛发", shortFur: "短毛", longFur: "长毛",
+    tail: "尾巴", longTail: "长尾", shortTail: "短尾", legs: "腿长", shortLegs: "短腿", longLegs: "长腿", pattern: "花纹", stripe: "虎斑", solid: "纯色", patch: "花斑",
+    mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
+    catName: "猫咪名字", catNameHint: "会显示在壁纸中央", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面或半身照效果最好",
+    collapse: "收起设置", expand: "展开设置", autoDesktop: "已根据当前屏幕自动选择电脑壁纸", autoMobile: "已根据当前屏幕自动选择手机壁纸", manualDesktop: "已手动切换为电脑壁纸", manualMobile: "已手动切换为手机壁纸",
+  },
+  en: {
+    brand: "Cat Atlas", workshop: "Wallpaper Studio", download: "Save wallpaper", previewTitle: "Your personal cat atlas", desktop: "Desktop", mobile: "Mobile",
+    customize: "Customize your cat", looks: "01 Looks", scene: "02 Scene", profile: "03 Profile", fur: "Fur", shortFur: "Short", longFur: "Long",
+    tail: "Tail", longTail: "Long", shortTail: "Short", legs: "Legs", shortLegs: "Short", longLegs: "Long", pattern: "Pattern", stripe: "Tabby", solid: "Solid", patch: "Patch",
+    mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
+    catName: "Cat name", catNameHint: "Shown in the center of your wallpaper", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front or half-body photos work best",
+    collapse: "Hide settings", expand: "Show settings", autoDesktop: "Desktop wallpaper selected for this screen", autoMobile: "Mobile wallpaper selected for this screen", manualDesktop: "Switched to desktop wallpaper", manualMobile: "Switched to mobile wallpaper",
+  },
 };
 
 const POSES = ["sit", "loaf", "walk", "curl", "stretch", "back", "peek"];
@@ -204,20 +239,60 @@ ratioButtons.forEach((button) => {
   });
 });
 
+function fitWallpaper() {
+  const maxWidth = wallpaperFrame.clientWidth * 0.94;
+  const maxHeight = Math.max(150, wallpaperFrame.clientHeight - 30);
+  const aspect = state.ratio === "desktop" ? 16 / 10 : 9 / 16;
+  const cap = state.ratio === "desktop" ? 760 : 300;
+  wallpaper.style.width = `${Math.min(maxWidth, maxHeight * aspect, cap)}px`;
+}
+
 function setRatio(ratio, automatic = true) {
   state.ratio = ratio;
   ratioButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.ratio === ratio));
   wallpaper.classList.toggle("wallpaper-desktop", ratio === "desktop");
   wallpaper.classList.toggle("wallpaper-mobile", ratio === "mobile");
-  deviceHint.textContent = automatic
-    ? `已根据当前屏幕自动选择${ratio === "desktop" ? "电脑" : "手机"}壁纸`
-    : `已手动切换为${ratio === "desktop" ? "电脑" : "手机"}壁纸`;
+  const hintKey = `${automatic ? "auto" : "manual"}${ratio === "desktop" ? "Desktop" : "Mobile"}`;
+  deviceHint.textContent = I18N[state.language][hintKey];
+  requestAnimationFrame(fitWallpaper);
   renderPoses();
 }
 
 function applyResponsiveRatio() {
   if (!state.ratioLocked) setRatio(window.innerWidth <= 700 ? "mobile" : "desktop");
 }
+
+function updateDrawerLabel() {
+  drawerLabel.textContent = I18N[state.language][state.drawerCollapsed ? "expand" : "collapse"];
+}
+
+function setLanguage(language) {
+  state.language = language;
+  document.documentElement.lang = language === "zh" ? "zh-CN" : language;
+  languageButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.lang === language));
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = I18N[language][element.dataset.i18n];
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    element.placeholder = I18N[language][element.dataset.i18nPlaceholder];
+  });
+  updateDrawerLabel();
+  setRatio(state.ratio, !state.ratioLocked);
+}
+
+languageButtons.forEach((button) => {
+  button.addEventListener("click", () => setLanguage(button.dataset.lang));
+});
+
+drawerToggle.addEventListener("click", () => {
+  state.drawerCollapsed = !state.drawerCollapsed;
+  shell.classList.toggle("drawer-collapsed", state.drawerCollapsed);
+  drawerToggle.setAttribute("aria-expanded", String(!state.drawerCollapsed));
+  updateDrawerLabel();
+  requestAnimationFrame(fitWallpaper);
+  setTimeout(fitWallpaper, 450);
+  if (window.gsap) gsap.fromTo(wallpaper, { scale: 0.98 }, { scale: 1, duration: 0.45, ease: "power2.out" });
+});
 
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -314,8 +389,12 @@ async function downloadWallpaper() {
 downloadButton.addEventListener("click", downloadWallpaper);
 
 renderScene(false);
+setLanguage("ja");
 applyResponsiveRatio();
-window.addEventListener("resize", applyResponsiveRatio);
+window.addEventListener("resize", () => {
+  applyResponsiveRatio();
+  fitWallpaper();
+});
 
 if (window.gsap) {
   const mm = gsap.matchMedia();
