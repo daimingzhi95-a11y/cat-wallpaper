@@ -8,6 +8,9 @@ const photoInput = document.querySelector("#cat-photo");
 const photoPreview = document.querySelector("#photo-preview");
 const photoPlaceholder = document.querySelector("#photo-placeholder");
 const ratioButtons = document.querySelectorAll("[data-ratio]");
+const tabButtons = document.querySelectorAll("[data-tab]");
+const tabPanels = document.querySelectorAll("[data-panel]");
+const deviceHint = document.querySelector("#device-hint");
 const downloadButton = document.querySelector("#download-btn");
 
 const state = {
@@ -18,6 +21,7 @@ const state = {
   color: "#e8a85d",
   background: "plants",
   ratio: "desktop",
+  ratioLocked: false,
   name: "Mochi",
   photoUrl: "",
 };
@@ -195,11 +199,37 @@ photoInput.addEventListener("change", () => {
 
 ratioButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    state.ratio = button.dataset.ratio;
-    ratioButtons.forEach((item) => item.classList.toggle("is-active", item === button));
-    wallpaper.classList.toggle("wallpaper-desktop", state.ratio === "desktop");
-    wallpaper.classList.toggle("wallpaper-mobile", state.ratio === "mobile");
-    renderPoses();
+    state.ratioLocked = true;
+    setRatio(button.dataset.ratio, false);
+  });
+});
+
+function setRatio(ratio, automatic = true) {
+  state.ratio = ratio;
+  ratioButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.ratio === ratio));
+  wallpaper.classList.toggle("wallpaper-desktop", ratio === "desktop");
+  wallpaper.classList.toggle("wallpaper-mobile", ratio === "mobile");
+  deviceHint.textContent = automatic
+    ? `已根据当前屏幕自动选择${ratio === "desktop" ? "电脑" : "手机"}壁纸`
+    : `已手动切换为${ratio === "desktop" ? "电脑" : "手机"}壁纸`;
+  renderPoses();
+}
+
+function applyResponsiveRatio() {
+  if (!state.ratioLocked) setRatio(window.innerWidth <= 700 ? "mobile" : "desktop");
+}
+
+tabButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    tabButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+    tabPanels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.tab));
+    if (window.gsap) {
+      gsap.fromTo(
+        `[data-panel="${button.dataset.tab}"]`,
+        { autoAlpha: 0, y: 8 },
+        { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" },
+      );
+    }
   });
 });
 
@@ -284,12 +314,13 @@ async function downloadWallpaper() {
 downloadButton.addEventListener("click", downloadWallpaper);
 
 renderScene(false);
-renderPoses(false);
+applyResponsiveRatio();
+window.addEventListener("resize", applyResponsiveRatio);
 
 if (window.gsap) {
   const mm = gsap.matchMedia();
   mm.add("(prefers-reduced-motion: no-preference)", () => {
-    gsap.from(".editor-panel > *", { autoAlpha: 0, y: 18, duration: 0.7, ease: "power2.out", stagger: 0.08 });
+    gsap.from(".game-header > *, .stage-heading > *, .customizer-top > *", { autoAlpha: 0, y: 12, duration: 0.6, ease: "power2.out", stagger: 0.05 });
     gsap.from(".wallpaper", { autoAlpha: 0, scale: 0.94, duration: 0.9, ease: "power3.out" });
     gsap.to(".pose", { y: -7, duration: 2.4, repeat: -1, yoyo: true, ease: "sine.inOut", stagger: { each: 0.15, from: "random" } });
   });
