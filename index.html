@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,29 +8,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=20260601-game-ui" />
+    <link rel="stylesheet" href="./style.css?v=20260601-drawer-i18n" />
   </head>
   <body>
     <main class="game-shell">
       <header class="game-header">
-        <a class="brand" href="#" aria-label="喵图鉴首页"><span class="brand-mark">⌁</span><span>喵图鉴</span></a>
+        <a class="brand" href="#" aria-label="喵图鉴首页"><span class="brand-mark">⌁</span><span data-i18n="brand">ねこ図鑑</span></a>
         <div class="header-center">
           <span class="eyebrow">CAT AVATAR STUDIO</span>
           <span class="header-line"></span>
-          <span>壁纸工坊</span>
+          <span data-i18n="workshop">壁紙工房</span>
         </div>
-        <button id="download-btn" class="download-btn" type="button"><span>保存壁纸</span><span aria-hidden="true">↓</span></button>
+        <div class="language-switch" aria-label="Language">
+          <button type="button" class="lang-btn is-active" data-lang="ja">日本語</button>
+          <button type="button" class="lang-btn" data-lang="zh">中文</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
+        <button id="download-btn" class="download-btn" type="button"><span data-i18n="download">壁紙を保存</span><span aria-hidden="true">↓</span></button>
       </header>
 
       <section class="hero-stage" aria-labelledby="preview-title">
         <div class="stage-heading">
           <div>
             <div class="eyebrow">LIVE WALLPAPER PREVIEW</div>
-            <h1 id="preview-title">你的专属猫咪图鉴</h1>
+            <h1 id="preview-title" data-i18n="previewTitle">あなただけのねこ図鑑</h1>
           </div>
           <div class="size-toggle" aria-label="壁纸比例">
-            <button type="button" data-ratio="desktop">电脑壁纸</button>
-            <button type="button" data-ratio="mobile">手机壁纸</button>
+            <button type="button" data-ratio="desktop" data-i18n="desktop">PC壁紙</button>
+            <button type="button" data-ratio="mobile" data-i18n="mobile">スマホ壁紙</button>
           </div>
         </div>
 
@@ -53,41 +58,44 @@
               </div>
             </div>
           </div>
-          <p class="stage-status"><span class="status-dot"></span><span id="device-hint">已自动匹配当前设备比例</span></p>
+          <p class="stage-status"><span class="status-dot"></span><span id="device-hint">画面サイズに合わせて自動選択しました</span></p>
         </div>
       </section>
 
       <section class="customizer" aria-labelledby="customizer-title">
         <div class="customizer-top">
-          <div><div class="eyebrow">CUSTOMIZE YOUR CAT</div><h2 id="customizer-title">定制猫咪外观</h2></div>
-          <nav class="customizer-tabs" aria-label="设置分类">
-            <button type="button" class="tab-btn is-active" data-tab="looks">01 外观</button>
-            <button type="button" class="tab-btn" data-tab="scene">02 场景</button>
-            <button type="button" class="tab-btn" data-tab="profile">03 身份</button>
-          </nav>
+          <div><div class="eyebrow">CUSTOMIZE YOUR CAT</div><h2 id="customizer-title" data-i18n="customize">ねこの見た目をカスタム</h2></div>
+          <div class="customizer-actions">
+            <nav class="customizer-tabs" aria-label="设置分类">
+              <button type="button" class="tab-btn is-active" data-tab="looks" data-i18n="looks">01 見た目</button>
+              <button type="button" class="tab-btn" data-tab="scene" data-i18n="scene">02 シーン</button>
+              <button type="button" class="tab-btn" data-tab="profile" data-i18n="profile">03 プロフィール</button>
+            </nav>
+            <button id="drawer-toggle" class="drawer-toggle" type="button" aria-expanded="true"><span data-drawer-label>設定を閉じる</span><span class="drawer-chevron" aria-hidden="true">⌄</span></button>
+          </div>
         </div>
 
         <form id="cat-form">
           <section class="tab-panel is-active" data-panel="looks">
             <div class="control-card trait-card">
               <span class="card-kicker">FUR TYPE</span>
-              <fieldset><legend>毛发</legend><div class="segmented-control"><label><input type="radio" name="fur" value="short" checked /><span>短毛</span></label><label><input type="radio" name="fur" value="long" /><span>长毛</span></label></div></fieldset>
+              <fieldset><legend data-i18n="fur">毛並み</legend><div class="segmented-control"><label><input type="radio" name="fur" value="short" checked /><span data-i18n="shortFur">短毛</span></label><label><input type="radio" name="fur" value="long" /><span data-i18n="longFur">長毛</span></label></div></fieldset>
             </div>
             <div class="control-card trait-card">
               <span class="card-kicker">TAIL</span>
-              <fieldset><legend>尾巴</legend><div class="segmented-control"><label><input type="radio" name="tail" value="long" checked /><span>长尾</span></label><label><input type="radio" name="tail" value="short" /><span>短尾</span></label></div></fieldset>
+              <fieldset><legend data-i18n="tail">しっぽ</legend><div class="segmented-control"><label><input type="radio" name="tail" value="long" checked /><span data-i18n="longTail">長い</span></label><label><input type="radio" name="tail" value="short" /><span data-i18n="shortTail">短い</span></label></div></fieldset>
             </div>
             <div class="control-card trait-card">
               <span class="card-kicker">LEGS</span>
-              <fieldset><legend>腿长</legend><div class="segmented-control"><label><input type="radio" name="legs" value="short" checked /><span>短腿</span></label><label><input type="radio" name="legs" value="long" /><span>长腿</span></label></div></fieldset>
+              <fieldset><legend data-i18n="legs">足の長さ</legend><div class="segmented-control"><label><input type="radio" name="legs" value="short" checked /><span data-i18n="shortLegs">短い</span></label><label><input type="radio" name="legs" value="long" /><span data-i18n="longLegs">長い</span></label></div></fieldset>
             </div>
             <div class="control-card trait-card">
               <span class="card-kicker">PATTERN</span>
-              <fieldset><legend>花纹</legend><div class="segmented-control"><label><input type="radio" name="pattern" value="stripe" checked /><span>虎斑</span></label><label><input type="radio" name="pattern" value="solid" /><span>纯色</span></label><label><input type="radio" name="pattern" value="patch" /><span>花斑</span></label></div></fieldset>
+              <fieldset><legend data-i18n="pattern">模様</legend><div class="segmented-control"><label><input type="radio" name="pattern" value="stripe" checked /><span data-i18n="stripe">しま模様</span></label><label><input type="radio" name="pattern" value="solid" /><span data-i18n="solid">単色</span></label><label><input type="radio" name="pattern" value="patch" /><span data-i18n="patch">ぶち</span></label></div></fieldset>
             </div>
             <div class="control-card color-card">
               <span class="card-kicker">MAIN COLOR</span>
-              <fieldset><legend>主色</legend><div class="swatch-row">
+              <fieldset><legend data-i18n="mainColor">メインカラー</legend><div class="swatch-row">
                 <label title="奶油橘"><input type="radio" name="color" value="#e8a85d" checked /><span style="--swatch:#e8a85d"></span></label><label title="焦糖棕"><input type="radio" name="color" value="#af765c" /><span style="--swatch:#af765c"></span></label><label title="灰蓝"><input type="radio" name="color" value="#8695a5" /><span style="--swatch:#8695a5"></span></label><label title="奶白"><input type="radio" name="color" value="#e5dccb" /><span style="--swatch:#e5dccb"></span></label><label title="墨黑"><input type="radio" name="color" value="#54545b" /><span style="--swatch:#54545b"></span></label>
               </div></fieldset>
             </div>
@@ -95,20 +103,20 @@
 
           <section class="tab-panel" data-panel="scene">
             <fieldset class="scene-fieldset"><legend class="sr-only">壁纸背景</legend><div class="background-options">
-              <label><input type="radio" name="background" value="plants" checked /><span class="background-option"><span class="background-icon">♧</span><span><b>绿植房间</b><small>猫咪喜欢的植物</small></span></span></label>
-              <label><input type="radio" name="background" value="bed" /><span class="background-option"><span class="background-icon">⌒</span><span><b>温暖猫窝</b><small>柔软又安心</small></span></span></label>
-              <label><input type="radio" name="background" value="tree" /><span class="background-option"><span class="background-icon">╞</span><span><b>猫爬架乐园</b><small>适合好奇的小猫</small></span></span></label>
+              <label><input type="radio" name="background" value="plants" checked /><span class="background-option"><span class="background-icon">♧</span><span><b data-i18n="plants">植物の部屋</b><small data-i18n="plantsHint">ねこが好きなグリーン</small></span></span></label>
+              <label><input type="radio" name="background" value="bed" /><span class="background-option"><span class="background-icon">⌒</span><span><b data-i18n="bed">あたたかいベッド</b><small data-i18n="bedHint">やわらかくて安心</small></span></span></label>
+              <label><input type="radio" name="background" value="tree" /><span class="background-option"><span class="background-icon">╞</span><span><b data-i18n="tree">キャットタワー</b><small data-i18n="treeHint">好奇心いっぱいのねこへ</small></span></span></label>
             </div></fieldset>
           </section>
 
           <section class="tab-panel" data-panel="profile">
-            <label class="profile-field"><span><b>猫咪名字</b><small>会显示在壁纸中央</small></span><input id="cat-name" type="text" value="Mochi" maxlength="18" placeholder="输入猫咪名字" /></label>
-            <label class="upload-box" for="cat-photo"><input id="cat-photo" type="file" accept="image/*" /><span class="upload-icon">↑</span><span><b>上传照片</b><small>正面或半身照效果最好</small></span></label>
+            <label class="profile-field"><span><b data-i18n="catName">ねこの名前</b><small data-i18n="catNameHint">壁紙の中央に表示されます</small></span><input id="cat-name" type="text" value="Mochi" maxlength="18" placeholder="ねこの名前を入力" data-i18n-placeholder="catNamePlaceholder" /></label>
+            <label class="upload-box" for="cat-photo"><input id="cat-photo" type="file" accept="image/*" /><span class="upload-icon">↑</span><span><b data-i18n="upload">写真をアップロード</b><small data-i18n="uploadHint">正面または半身写真がおすすめ</small></span></label>
           </section>
         </form>
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <script src="./app.js?v=20260601-game-ui"></script>
+    <script src="./app.js?v=20260601-drawer-i18n"></script>
   </body>
 </html>
