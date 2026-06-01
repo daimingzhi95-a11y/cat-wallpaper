@@ -25,7 +25,7 @@ const state = {
   pattern: "stripe",
   color: "#e8a85d",
   background: "plants",
-  ratio: "desktop",
+  ratio: "mobile",
   ratioLocked: false,
   drawerCollapsed: false,
   language: "ja",
@@ -40,8 +40,8 @@ const I18N = {
     tail: "しっぽ", longTail: "長い", shortTail: "短い", legs: "足の長さ", shortLegs: "短い", longLegs: "長い", pattern: "模様", stripe: "しま模様", solid: "単色", patch: "ぶち",
     mainColor: "メインカラー", plants: "植物の部屋", plantsHint: "ねこが好きなグリーン", bed: "あたたかいベッド", bedHint: "やわらかくて安心", tree: "キャットタワー",
     treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "壁紙の中央に表示されます", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
-    uploadHint: "正面または半身写真がおすすめ", collapse: "設定を閉じる", expand: "設定を開く", autoDesktop: "画面サイズに合わせてPC壁紙を自動選択しました",
-    autoMobile: "画面サイズに合わせてスマホ壁紙を自動選択しました", manualDesktop: "PC壁紙に切り替えました", manualMobile: "スマホ壁紙に切り替えました",
+    uploadHint: "正面または半身写真がおすすめ", collapse: "設定を閉じる", expand: "設定を開く", defaultMobile: "スマホ壁紙を優先して表示しています",
+    manualDesktop: "PC壁紙に切り替えました", manualMobile: "スマホ壁紙に切り替えました",
   },
   zh: {
     brand: "喵图鉴", workshop: "壁纸工坊", download: "保存壁纸", previewTitle: "你的专属猫咪图鉴", desktop: "电脑壁纸", mobile: "手机壁纸",
@@ -49,7 +49,7 @@ const I18N = {
     tail: "尾巴", longTail: "长尾", shortTail: "短尾", legs: "腿长", shortLegs: "短腿", longLegs: "长腿", pattern: "花纹", stripe: "虎斑", solid: "纯色", patch: "花斑",
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
     catName: "猫咪名字", catNameHint: "会显示在壁纸中央", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面或半身照效果最好",
-    collapse: "收起设置", expand: "展开设置", autoDesktop: "已根据当前屏幕自动选择电脑壁纸", autoMobile: "已根据当前屏幕自动选择手机壁纸", manualDesktop: "已手动切换为电脑壁纸", manualMobile: "已手动切换为手机壁纸",
+    collapse: "收起设置", expand: "展开设置", defaultMobile: "已优先显示手机壁纸", manualDesktop: "已手动切换为电脑壁纸", manualMobile: "已手动切换为手机壁纸",
   },
   en: {
     brand: "Cat Atlas", workshop: "Wallpaper Studio", download: "Save wallpaper", previewTitle: "Your personal cat atlas", desktop: "Desktop", mobile: "Mobile",
@@ -57,7 +57,7 @@ const I18N = {
     tail: "Tail", longTail: "Long", shortTail: "Short", legs: "Legs", shortLegs: "Short", longLegs: "Long", pattern: "Pattern", stripe: "Tabby", solid: "Solid", patch: "Patch",
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
     catName: "Cat name", catNameHint: "Shown in the center of your wallpaper", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front or half-body photos work best",
-    collapse: "Hide settings", expand: "Show settings", autoDesktop: "Desktop wallpaper selected for this screen", autoMobile: "Mobile wallpaper selected for this screen", manualDesktop: "Switched to desktop wallpaper", manualMobile: "Switched to mobile wallpaper",
+    collapse: "Hide settings", expand: "Show settings", defaultMobile: "Mobile wallpaper is shown by default", manualDesktop: "Switched to desktop wallpaper", manualMobile: "Switched to mobile wallpaper",
   },
 };
 
@@ -252,14 +252,14 @@ function setRatio(ratio, automatic = true) {
   ratioButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.ratio === ratio));
   wallpaper.classList.toggle("wallpaper-desktop", ratio === "desktop");
   wallpaper.classList.toggle("wallpaper-mobile", ratio === "mobile");
-  const hintKey = `${automatic ? "auto" : "manual"}${ratio === "desktop" ? "Desktop" : "Mobile"}`;
+  const hintKey = automatic ? "defaultMobile" : `manual${ratio === "desktop" ? "Desktop" : "Mobile"}`;
   deviceHint.textContent = I18N[state.language][hintKey];
   requestAnimationFrame(fitWallpaper);
   renderPoses();
 }
 
 function applyResponsiveRatio() {
-  if (!state.ratioLocked) setRatio(window.innerWidth <= 700 ? "mobile" : "desktop");
+  if (!state.ratioLocked) setRatio("mobile");
 }
 
 function updateDrawerLabel() {
