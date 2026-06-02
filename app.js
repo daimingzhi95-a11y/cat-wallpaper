@@ -13,6 +13,7 @@ const ratioButtons = document.querySelectorAll("[data-ratio]");
 const tabButtons = document.querySelectorAll("[data-tab]");
 const tabPanels = document.querySelectorAll("[data-panel]");
 const deviceHint = document.querySelector("#device-hint");
+const stageIndex = document.querySelector(".stage-index b");
 const downloadButton = document.querySelector("#download-btn");
 const drawerToggle = document.querySelector("#drawer-toggle");
 const drawerLabel = document.querySelector("[data-drawer-label]");
@@ -243,7 +244,7 @@ function fitWallpaper() {
   const maxWidth = wallpaperFrame.clientWidth * 0.94;
   const maxHeight = Math.max(150, wallpaperFrame.clientHeight - 30);
   const aspect = state.ratio === "desktop" ? 16 / 10 : 9 / 16;
-  const cap = state.ratio === "desktop" ? 760 : 300;
+  const cap = state.ratio === "desktop" ? 760 : 340;
   wallpaper.style.width = `${Math.min(maxWidth, maxHeight * aspect, cap)}px`;
 }
 
@@ -252,6 +253,7 @@ function setRatio(ratio, automatic = true) {
   ratioButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.ratio === ratio));
   wallpaper.classList.toggle("wallpaper-desktop", ratio === "desktop");
   wallpaper.classList.toggle("wallpaper-mobile", ratio === "mobile");
+  stageIndex.textContent = ratio.toUpperCase();
   const hintKey = automatic ? "defaultMobile" : `manual${ratio === "desktop" ? "Desktop" : "Mobile"}`;
   deviceHint.textContent = I18N[state.language][hintKey];
   requestAnimationFrame(fitWallpaper);
