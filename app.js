@@ -9,11 +9,8 @@ const wallpaperName = document.querySelector("#wallpaper-name");
 const photoInput = document.querySelector("#cat-photo");
 const photoPreview = document.querySelector("#photo-preview");
 const photoPlaceholder = document.querySelector("#photo-placeholder");
-const ratioButtons = document.querySelectorAll("[data-ratio]");
 const tabButtons = document.querySelectorAll("[data-tab]");
 const tabPanels = document.querySelectorAll("[data-panel]");
-const deviceHint = document.querySelector("#device-hint");
-const stageIndex = document.querySelector(".stage-index b");
 const downloadButton = document.querySelector("#download-btn");
 const drawerToggle = document.querySelector("#drawer-toggle");
 const drawerLabel = document.querySelector("[data-drawer-label]");
@@ -36,29 +33,28 @@ const state = {
 
 const I18N = {
   ja: {
-    brand: "ねこ図鑑", workshop: "壁紙工房", download: "壁紙を保存", previewTitle: "あなただけのねこ図鑑", desktop: "PC壁紙", mobile: "スマホ壁紙",
+    brand: "ねこ図鑑", workshop: "壁紙工房", download: "壁紙を保存", previewTitle: "あなただけのねこ図鑑",
     customize: "ねこの見た目をカスタム", looks: "01 見た目", scene: "02 シーン", profile: "03 プロフィール", fur: "毛並み", shortFur: "短毛", longFur: "長毛",
     tail: "しっぽ", longTail: "長い", shortTail: "短い", legs: "足の長さ", shortLegs: "短い", longLegs: "長い", pattern: "模様", stripe: "しま模様", solid: "単色", patch: "ぶち",
     mainColor: "メインカラー", plants: "植物の部屋", plantsHint: "ねこが好きなグリーン", bed: "あたたかいベッド", bedHint: "やわらかくて安心", tree: "キャットタワー",
     treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "壁紙の中央に表示されます", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
-    uploadHint: "正面または半身写真がおすすめ", collapse: "設定を閉じる", expand: "設定を開く", defaultMobile: "スマホ壁紙を優先して表示しています",
-    manualDesktop: "PC壁紙に切り替えました", manualMobile: "スマホ壁紙に切り替えました",
+    uploadHint: "正面または半身写真がおすすめ", collapse: "設定を閉じる", expand: "設定を開く",
   },
   zh: {
-    brand: "喵图鉴", workshop: "壁纸工坊", download: "保存壁纸", previewTitle: "你的专属猫咪图鉴", desktop: "电脑壁纸", mobile: "手机壁纸",
+    brand: "喵图鉴", workshop: "壁纸工坊", download: "保存壁纸", previewTitle: "你的专属猫咪图鉴",
     customize: "定制猫咪外观", looks: "01 外观", scene: "02 场景", profile: "03 身份", fur: "毛发", shortFur: "短毛", longFur: "长毛",
     tail: "尾巴", longTail: "长尾", shortTail: "短尾", legs: "腿长", shortLegs: "短腿", longLegs: "长腿", pattern: "花纹", stripe: "虎斑", solid: "纯色", patch: "花斑",
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
     catName: "猫咪名字", catNameHint: "会显示在壁纸中央", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面或半身照效果最好",
-    collapse: "收起设置", expand: "展开设置", defaultMobile: "已优先显示手机壁纸", manualDesktop: "已手动切换为电脑壁纸", manualMobile: "已手动切换为手机壁纸",
+    collapse: "收起设置", expand: "展开设置",
   },
   en: {
-    brand: "Cat Atlas", workshop: "Wallpaper Studio", download: "Save wallpaper", previewTitle: "Your personal cat atlas", desktop: "Desktop", mobile: "Mobile",
+    brand: "Cat Atlas", workshop: "Wallpaper Studio", download: "Save wallpaper", previewTitle: "Your personal cat atlas",
     customize: "Customize your cat", looks: "01 Looks", scene: "02 Scene", profile: "03 Profile", fur: "Fur", shortFur: "Short", longFur: "Long",
     tail: "Tail", longTail: "Long", shortTail: "Short", legs: "Legs", shortLegs: "Short", longLegs: "Long", pattern: "Pattern", stripe: "Tabby", solid: "Solid", patch: "Patch",
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
     catName: "Cat name", catNameHint: "Shown in the center of your wallpaper", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front or half-body photos work best",
-    collapse: "Hide settings", expand: "Show settings", defaultMobile: "Mobile wallpaper is shown by default", manualDesktop: "Switched to desktop wallpaper", manualMobile: "Switched to mobile wallpaper",
+    collapse: "Hide settings", expand: "Show settings",
   },
 };
 
@@ -241,35 +237,23 @@ photoInput.addEventListener("change", () => {
   if (window.gsap) gsap.fromTo(".photo-frame", { scale: 0.82 }, { scale: 1, duration: 0.65, ease: "elastic.out(1, 0.55)" });
 });
 
-ratioButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    state.ratioLocked = true;
-    setRatio(button.dataset.ratio, false);
-  });
-});
-
 function fitWallpaper() {
   const maxWidth = wallpaperFrame.clientWidth * 0.94;
   const maxHeight = Math.max(150, wallpaperFrame.clientHeight - 30);
-  const aspect = state.ratio === "desktop" ? 16 / 10 : 9 / 16;
-  const cap = state.ratio === "desktop" ? 760 : 340;
+  const aspect = 9 / 16;
+  const cap = 340;
   wallpaper.style.width = `${Math.min(maxWidth, maxHeight * aspect, cap)}px`;
 }
 
-function setRatio(ratio, automatic = true) {
-  state.ratio = ratio;
-  ratioButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.ratio === ratio));
-  wallpaper.classList.toggle("wallpaper-desktop", ratio === "desktop");
-  wallpaper.classList.toggle("wallpaper-mobile", ratio === "mobile");
-  stageIndex.textContent = ratio.toUpperCase();
-  const hintKey = automatic ? "defaultMobile" : `manual${ratio === "desktop" ? "Desktop" : "Mobile"}`;
-  deviceHint.textContent = I18N[state.language][hintKey];
+function applyMobileWallpaper() {
+  state.ratio = "mobile";
+  wallpaper.classList.add("wallpaper-mobile");
   requestAnimationFrame(fitWallpaper);
   renderPoses();
 }
 
 function applyResponsiveRatio() {
-  if (!state.ratioLocked) setRatio("mobile");
+  applyMobileWallpaper();
 }
 
 function updateDrawerLabel() {
@@ -287,7 +271,7 @@ function setLanguage(language) {
     element.placeholder = I18N[language][element.dataset.i18nPlaceholder];
   });
   updateDrawerLabel();
-  setRatio(state.ratio, !state.ratioLocked);
+  applyMobileWallpaper();
 }
 
 languageButtons.forEach((button) => {
