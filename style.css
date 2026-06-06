@@ -568,8 +568,14 @@ legend {
 }
 
 @media (max-width: 700px) {
+  html,
+  body {
+    height: 100svh;
+  }
+
   .game-shell {
-    grid-template-rows: 56px minmax(53vh, 1fr) auto;
+    height: 100svh;
+    grid-template-rows: 52px minmax(290px, 43svh) minmax(0, 1fr);
   }
   .game-header {
     grid-template-columns: auto 1fr auto;
@@ -609,39 +615,51 @@ legend {
     font-size: 17px;
   }
   .hero-stage {
-    padding: 8px 10px 3px;
+    padding: 5px 10px 0;
   }
   h1 {
     max-width: 260px;
-    font-size: 18px;
+    font-size: 16px;
   }
   .preview-arena::before {
-    inset: 6% 4%;
+    inset: 7% 5% 5%;
     border-width: 3px;
     box-shadow: 4px 4px 0 var(--ink);
   }
   .wallpaper-frame {
-    padding-bottom: 14px;
+    padding-bottom: 10px;
   }
   .wallpaper {
     border-width: 4px;
     box-shadow: 5px 5px 0 #fff, 8px 8px 0 var(--ink);
   }
   .wallpaper-mobile {
-    width: min(38vh, 276px);
+    width: min(31svh, 238px);
   }
   .pose {
-    --size: 32%;
+    --size: 22%;
+  }
+  .photo-frame {
+    width: clamp(118px, 43vw, 184px);
+    border-width: 5px;
+    outline-width: 4px;
+  }
+  .portrait-card {
+    filter: drop-shadow(5px 5px 0 #fff) drop-shadow(9px 9px 0 var(--ink));
   }
   .customizer {
-    max-height: calc(47vh - 56px);
-    padding: 12px 10px 15px;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 10px calc(118px + env(safe-area-inset-bottom, 0px));
     border-top-width: 4px;
     box-shadow: 0 -5px 0 var(--ink);
   }
   .customizer-top {
-    margin: -12px -10px 12px;
-    padding: 12px 10px 10px;
+    margin: -10px -10px 12px;
+    padding: 10px 10px 10px;
   }
   .customizer-top > div:first-child {
     display: none;
@@ -668,7 +686,7 @@ legend {
   .tab-panel.is-active {
     grid-template-columns: 1fr;
     gap: 9px;
-    min-height: 140px;
+    min-height: 0;
   }
   .control-card,
   .profile-field,
