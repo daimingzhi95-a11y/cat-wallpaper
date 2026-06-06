@@ -146,43 +146,51 @@ function patternMarkup(type, dark) {
 function poseSvg(pose, index) {
   const color = state.color;
   const dark = darken(color);
-  const tailLength = state.tail === "long" ? 34 : 15;
-  const legLength = state.legs === "long" ? 21 : 13;
-  const fluff = state.fur === "long" ? 7 : 2;
-  const stripes = patternMarkup(state.pattern, dark);
   const outline = "#38443f";
-  const common = `stroke="${outline}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"`;
+  const cream = "#f6ead7";
+  const tailLong = state.tail === "long";
+  const longLegs = state.legs === "long";
+  const longFur = state.fur === "long";
+  const px = (x, y, w, h, fill = color) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
+  const block = (x, y, w, h, fill = color) => `${px(x - 4, y - 4, w + 8, h + 8, outline)}${px(x, y, w, h, fill)}`;
+  const face = (x, y) => `
+    ${px(x + 12, y + 18, 5, 5, outline)}${px(x + 29, y + 18, 5, 5, outline)}
+    ${px(x + 22, y + 27, 6, 4, "#e87373")}
+    ${px(x + 18, y + 34, 7, 3, outline)}${px(x + 29, y + 34, 7, 3, outline)}`;
+  const ears = (x, y) => `${block(x + 4, y, 10, 10)}${block(x + 32, y, 10, 10)}`;
+  const stripes = (x, y) => {
+    if (state.pattern === "solid") return "";
+    if (state.pattern === "patch") return `${px(x + 7, y + 10, 13, 8, dark)}${px(x + 33, y + 28, 10, 8, dark)}`;
+    return `${px(x + 10, y + 8, 5, 14, dark)}${px(x + 21, y + 6, 5, 16, dark)}${px(x + 32, y + 10, 5, 13, dark)}`;
+  };
+  const fluff = (x, y) => longFur ? `${px(x - 6, y + 12, 6, 6, cream)}${px(x + 44, y + 15, 6, 6, cream)}${px(x + 8, y + 44, 6, 6, cream)}` : "";
+  const legs = (x, y) => longLegs ? `${block(x + 6, y + 43, 8, 20)}${block(x + 31, y + 43, 8, 20)}` : `${block(x + 8, y + 48, 8, 13)}${block(x + 29, y + 48, 8, 13)}`;
+  const tail = (x, y, dir = 1) => {
+    if (dir < 0) {
+      return tailLong
+        ? `${block(x - 11, y + 31, 11, 11)}${block(x - 19, y + 20, 11, 11)}${block(x - 17, y + 9, 10, 10)}`
+        : `${block(x - 12, y + 34, 12, 12)}`;
+    }
+    return tailLong
+      ? `${block(x + 42, y + 31, 11, 11)}${block(x + 50, y + 20, 11, 11)}${block(x + 48, y + 9, 10, 10)}`
+      : `${block(x + 41, y + 34, 12, 12)}`;
+  };
+  const head = (x, y, showFace = true) => `${ears(x, y)}${block(x, y + 10, 48, 40)}${stripes(x, y)}${showFace ? face(x, y + 10) : px(x + 20, y + 23, 10, 8, dark)}`;
+  const body = (x, y, w = 50, h = 38) => `${block(x, y, w, h)}${px(x + 8, y + 6, Math.max(12, w - 19), Math.max(9, h - 18), cream)}`;
 
   const bodies = {
-    sit: `<path d="M52 51C38 63 37 93 42 113h69c5-22 1-46-16-59" fill="${color}" ${common}/>
-      <path d="M48 110v${legLength}M65 111v${legLength}" ${common}/>
-      <path d="M108 106c${tailLength} 4 ${tailLength + 5}-28 ${tailLength - 2}-38" fill="none" ${common}/>`,
-    loaf: `<path d="M38 82c9-25 51-36 80-17 15 10 17 31 1 41H45c-19-2-22-14-7-24Z" fill="${color}" ${common}/>
-      <path d="M103 68c${tailLength} 3 ${tailLength + 9} 27 9 37" fill="none" ${common}/>`,
-    walk: `<path d="M34 72c15-21 70-26 92 0 7 9 2 24-11 26H49c-17 0-24-15-15-26Z" fill="${color}" ${common}/>
-      <path d="M49 94v${legLength}M71 94v${legLength}M105 94v${legLength}" ${common}/>
-      <path d="M121 72c${tailLength} 0 ${tailLength + 9}-26 ${tailLength + 2}-37" fill="none" ${common}/>`,
-    curl: `<path d="M41 78c11-29 70-37 91-2 17 29-18 44-54 35-31-7-47-17-37-33Z" fill="${color}" ${common}/>
-      <path d="M125 83c-${tailLength} 24-57 15-65 5" fill="none" ${common}/>`,
-    stretch: `<path d="M30 84c16-28 74-29 98-7 10 10 3 24-12 25H43c-17 0-22-7-13-18Z" fill="${color}" ${common}/>
-      <path d="M43 98l-${legLength} ${legLength - 5}M114 98l${legLength + 5} ${legLength - 7}" ${common}/>
-      <path d="M122 75c${tailLength + 5}-11 ${tailLength + 12}-28 ${tailLength + 7}-41" fill="none" ${common}/>`,
-    back: `<path d="M38 70c14-25 66-26 86 0 9 12 3 30-12 34H51c-17-3-22-21-13-34Z" fill="${color}" ${common}/>
-      <path d="M56 101v${legLength}M93 101v${legLength}" ${common}/>
-      <path d="M113 70c${tailLength + 7}-4 ${tailLength + 10}-27 ${tailLength + 4}-39" fill="none" ${common}/>`,
-    peek: `<path d="M40 91c10-26 57-29 79-6 13 14 4 29-12 31H50c-17-3-20-13-10-25Z" fill="${color}" ${common}/>
-      <path d="M111 89c${tailLength} 2 ${tailLength + 8}-17 ${tailLength + 5}-30" fill="none" ${common}/>`,
+    sit: `${body(26, 43, 45, 35)}${legs(28, 37)}${head(25, 18)}${tail(26, 43)}`,
+    loaf: `${body(20, 53, 60, 26)}${head(27, 27)}${tail(28, 49)}`,
+    walk: `${body(17, 48, 63, 28)}${head(20, 25)}${legs(20, 35)}${tail(34, 44)}`,
+    curl: `${body(22, 49, 58, 31)}${head(24, 27)}${block(17, 64, 16, 12)}${tail(24, 43, -1)}`,
+    stretch: `${body(14, 51, 68, 25)}${head(20, 29)}${block(12, 72, 18, 10)}${block(67, 72, 18, 10)}${tail(36, 43)}`,
+    back: `${body(24, 43, 49, 38)}${legs(27, 36)}${head(25, 18, false)}${tail(27, 42)}`,
+    peek: `${body(22, 55, 56, 26)}${head(25, 33)}${block(20, 75, 18, 8)}${tail(30, 49)}`,
   };
 
-  const faceX = pose === "back" ? 0 : pose === "stretch" ? -7 : pose === "peek" ? -5 : 0;
-  const face = pose === "back" ? "" : `
-    <path d="M46 ${56 - fluff}l9-10 8 11M85 ${56 - fluff}l10-10 6 14" fill="${color}" ${common}/>
-    <ellipse cx="${73 + faceX}" cy="${65 - fluff / 2}" rx="${29 + fluff}" ry="${24 + fluff / 2}" fill="${color}" ${common}/>
-    <circle cx="${64 + faceX}" cy="64" r="3.2" fill="${outline}"/><circle cx="${83 + faceX}" cy="64" r="3.2" fill="${outline}"/>
-    <path d="M72 70l3 2 3-2M75 72v4m0 0c-5 4-9 2-11 0m11 0c5 4 9 2 11 0" fill="none" stroke="${outline}" stroke-width="2.8" stroke-linecap="round"/>`;
-
-  return `<svg viewBox="0 0 170 145" role="img" aria-label="猫咪姿势 ${index + 1}">
-    ${bodies[pose]}${stripes}${face}
+  return `<svg width="100" height="100" viewBox="0 0 100 100" role="img" aria-label="猫咪姿势 ${index + 1}" shape-rendering="crispEdges">
+    <rect width="100" height="100" fill="none"/>
+    ${bodies[pose]}
   </svg>`;
 }
 
@@ -314,7 +322,7 @@ function drawSvgOnCanvas(ctx, svg, x, y, width) {
   return new Promise((resolve) => {
     const image = new Image();
     image.onload = () => {
-      const height = width * (145 / 170);
+      const height = width;
       ctx.drawImage(image, x - width / 2, y - height / 2, width, height);
       resolve();
     };
