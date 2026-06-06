@@ -60,59 +60,121 @@ const I18N = {
 
 const POSES = ["sit", "loaf", "walk", "curl", "stretch", "back", "peek"];
 const THEMES = {
-  plants: { base: "#fbfaf6", grain: "#cfdbd4" },
-  bed: { base: "#fcf7f1", grain: "#e4d3c3" },
-  tree: { base: "#f5f8f4", grain: "#cad9d1" },
+  plants: { base: "#fffaf0", grain: "#171717" },
+  bed: { base: "#fff7ed", grain: "#171717" },
+  tree: { base: "#fbfff0", grain: "#171717" },
 };
 
-function sceneSvg(theme, width = "100%", height = "100%") {
-  const scenes = {
-    plants: `
-      <rect width="1000" height="700" fill="#fbfaf6"/>
-      <g fill="none" stroke="#789083" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".68">
-        <path d="M104 700V490m0 54c-42-10-59-43-58-82 39 8 60 36 58 82Zm3 39c43-11 63-40 67-80-42 4-64 31-67 80Z"/>
-        <path d="M885 700V475m0 54c-43-13-62-45-62-84 43 8 63 38 62 84Zm4 45c42-12 61-42 63-83-42 6-63 35-63 83Z"/>
-        <path d="M770 0v120m-49 0h98l-17 92h-64Z"/>
-      </g>
-      <g fill="#adc3ad" opacity=".72">
-        <ellipse cx="60" cy="474" rx="29" ry="67" transform="rotate(-32 60 474)"/><ellipse cx="153" cy="505" rx="29" ry="67" transform="rotate(34 153 505)"/>
-        <ellipse cx="838" cy="457" rx="29" ry="67" transform="rotate(-34 838 457)"/><ellipse cx="935" cy="495" rx="29" ry="67" transform="rotate(33 935 495)"/>
-        <ellipse cx="741" cy="107" rx="21" ry="47" transform="rotate(-30 741 107)"/><ellipse cx="793" cy="102" rx="21" ry="47" transform="rotate(30 793 102)"/>
-      </g>
-      <g fill="#d8c5a7" opacity=".84"><path d="M35 635h142l-16 65H50Z"/><path d="M814 626h146l-15 74H829Z"/></g>`,
-    bed: `
-      <rect width="1000" height="700" fill="#fcf7f1"/>
-      <g opacity=".76">
-        <path d="M57 595c29-70 150-78 190 0l18 79H38Z" fill="#d7b898" stroke="#a67f65" stroke-width="8"/>
-        <path d="M92 591c24-36 92-38 120 0l10 40H80Z" fill="#f2ddc8"/>
-        <path d="M754 601c30-62 145-69 186 0l18 73H738Z" fill="#c9d9d2" stroke="#809b91" stroke-width="8"/>
-        <path d="M786 597c25-34 91-35 120 0l10 34H777Z" fill="#e5eee9"/>
-      </g>
-      <g fill="none" stroke="#cba98c" stroke-linecap="round" opacity=".54">
-        <path d="M0 145c83 37 142 41 225 4s147-35 230 3 153 36 236-3 145-40 309-2" stroke-width="9"/>
-        <path d="M0 169c83 37 142 41 225 4s147-35 230 3 153 36 236-3 145-40 309-2" stroke-width="4"/>
-      </g>
-      <g fill="#d8b798" opacity=".52"><circle cx="114" cy="110" r="22"/><circle cx="886" cy="114" r="22"/><circle cx="164" cy="85" r="10"/><circle cx="836" cy="87" r="10"/></g>`,
-    tree: `
-      <rect width="1000" height="700" fill="#f5f8f4"/>
-      <g fill="#c8d9d1" stroke="#789087" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".82">
-        <path d="M110 700V323m0 28h193v42H110Zm0 163h151v44H110Zm151-121v335"/>
-        <path d="M890 700V245m-191 69h191v43H699Zm39 157h152v44H738Zm0-114v343"/>
-        <path d="M155 514v-86h70v86M775 471v-82h72v82" fill="#e5eee9"/>
-      </g>
-      <g fill="none" stroke="#96ada4" stroke-width="6" opacity=".62">
-        <path d="M310 0c0 75-32 90-72 132"/><circle cx="232" cy="142" r="23"/>
-        <path d="M650 0c0 72 34 87 72 128"/><circle cx="728" cy="138" r="23"/>
-      </g>`,
-  };
+const PANEL_THEMES = {
+  plants: ["#ff94af", "#ffd85a", "#7ed7ff", "#ff8b2f", "#a8e76d", "#ff9b35"],
+  bed: ["#ffa0c7", "#ffc857", "#9ee1ff", "#ff9248", "#c7ec85", "#ffb066"],
+  tree: ["#ff9fb0", "#d8ee66", "#83d9ff", "#ff9c33", "#a6dd72", "#ffc247"],
+};
 
-  return `<svg width="${width}" height="${height}" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${scenes[theme]}</svg>`;
+function comicTexture(id, color) {
+  return `
+    <pattern id="dots-${id}" width="22" height="22" patternUnits="userSpaceOnUse">
+      <rect width="22" height="22" fill="${color}"/>
+      <circle cx="5" cy="5" r="2.2" fill="#171717" opacity=".14"/>
+      <circle cx="16" cy="16" r="2.2" fill="#171717" opacity=".14"/>
+    </pattern>
+    <pattern id="check-${id}" width="38" height="38" patternUnits="userSpaceOnUse">
+      <rect width="19" height="19" fill="#171717"/>
+      <rect x="19" y="19" width="19" height="19" fill="#171717"/>
+      <rect x="19" width="19" height="19" fill="#fffdf7"/>
+      <rect y="19" width="19" height="19" fill="#fffdf7"/>
+    </pattern>`;
+}
+
+function burst(cx, cy, color) {
+  return Array.from({ length: 18 }, (_, index) => {
+    const angle = (Math.PI * 2 * index) / 18;
+    const x2 = cx + Math.cos(angle) * 210;
+    const y2 = cy + Math.sin(angle) * 210;
+    return `<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="4" opacity=".45"/>`;
+  }).join("");
+}
+
+function star(x, y, size = 36, fill = "#ffd83d") {
+  const h = size / 2;
+  return `<path d="M${x} ${y - h}l${h / 3} ${h / 1.6} ${h / 1.6} ${h / 3}-${h / 1.6} ${h / 3}-${h / 3} ${h / 1.6}-${h / 3}-${h / 1.6}-${h / 1.6}-${h / 3} ${h / 1.6}-${h / 3}Z" fill="${fill}" stroke="#171717" stroke-width="7" stroke-linejoin="round"/>`;
+}
+
+function stickerSvg() {
+  return `
+    ${star(54, 122, 36)}
+    ${star(974, 345, 28)}
+    ${star(308, 1582, 28)}
+    ${star(748, 1508, 24)}
+    <g transform="translate(44 760)">
+      <circle cx="48" cy="48" r="36" fill="#ffe14d" stroke="#171717" stroke-width="8"/>
+      <rect x="31" y="38" width="8" height="8" fill="#171717"/><rect x="62" y="38" width="8" height="8" fill="#171717"/>
+      <path d="M30 61c22 18 44 18 64 0" fill="none" stroke="#171717" stroke-width="7"/>
+    </g>
+    <g transform="translate(714 1470)">
+      <path d="M0 82c42-70 106-70 148 0" fill="none" stroke="#171717" stroke-width="28"/>
+      <path d="M0 82c42-70 106-70 148 0" fill="none" stroke="#ff5e63" stroke-width="20"/>
+      <path d="M20 82c31-46 77-46 108 0" fill="none" stroke="#ffd83d" stroke-width="20"/>
+      <path d="M42 82c20-25 44-25 66 0" fill="none" stroke="#41c7ff" stroke-width="20"/>
+      <ellipse cx="-2" cy="96" rx="42" ry="24" fill="#fffdf7" stroke="#171717" stroke-width="7"/>
+    </g>
+    <g transform="translate(900 226)">
+      <ellipse cx="27" cy="52" rx="28" ry="48" fill="#55c5f6" stroke="#171717" stroke-width="7"/>
+      <ellipse cx="66" cy="73" rx="27" ry="42" fill="#ff91b0" stroke="#171717" stroke-width="7"/>
+      <ellipse cx="5" cy="36" rx="27" ry="40" fill="#ffd85a" stroke="#171717" stroke-width="7"/>
+      <path d="M24 96l-26 70M66 113l-6 67" stroke="#171717" stroke-width="5"/>
+    </g>
+    <g transform="translate(862 612) rotate(-12)">
+      <rect x="0" y="28" width="78" height="62" fill="#ff5e8a" stroke="#171717" stroke-width="7"/>
+      <rect x="31" y="28" width="17" height="62" fill="#68d7ff" stroke="#171717" stroke-width="5"/>
+      <rect x="-6" y="20" width="90" height="22" fill="#ffd85a" stroke="#171717" stroke-width="7"/>
+      <path d="M26 20c-22-28-2-47 18-9M51 20c21-31 47-11 14 8" fill="none" stroke="#171717" stroke-width="6"/>
+    </g>
+    <g transform="translate(770 1370) rotate(-12)">
+      <path d="M0 0h154v82l-154 30Z" fill="#fffdf7" stroke="#171717" stroke-width="8"/>
+      <path d="M22 2v78M54 2v92M86 2v82M118 2v70" stroke="#ff5e8a" stroke-width="14"/>
+    </g>`;
+}
+
+function comicSceneSvg(theme, width = "100%", height = "100%") {
+  const colors = PANEL_THEMES[theme] || PANEL_THEMES.plants;
+  const panels = [
+    [74, 240, 280, 420, colors[0], "a", burst(214, 440, "#8f2848")],
+    [662, 230, 286, 428, colors[1], "b", burst(805, 428, "#9b6b00")],
+    [72, 720, 286, 376, colors[2], "c", burst(215, 900, "#005b8d")],
+    [684, 720, 284, 376, colors[3], "d", burst(824, 902, "#9c3300")],
+    [72, 1144, 286, 442, colors[4], "e", burst(215, 1350, "#36720a")],
+    [684, 1138, 284, 446, colors[5], "f", burst(824, 1350, "#9c3300")],
+  ];
+  const defs = panels.map((panel) => {
+    const [x, y, w, h, color, id] = panel;
+    return `${comicTexture(id, color)}<clipPath id="clip-${id}"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath>`;
+  }).join("");
+  const panelMarkup = panels.map(([x, y, w, h, , id, rays]) => `
+    <g>
+      <rect x="${x + 12}" y="${y + 12}" width="${w}" height="${h}" fill="#171717"/>
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#dots-${id})" stroke="#171717" stroke-width="8"/>
+      <g clip-path="url(#clip-${id})">${rays}</g>
+    </g>`).join("");
+
+  return `<svg width="${width}" height="${height}" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>${defs}</defs>
+    <rect width="1080" height="1920" fill="#fffaf0"/>
+    <g opacity=".72">
+      <circle cx="408" cy="346" r="4" fill="#171717"/><circle cx="431" cy="359" r="4" fill="#171717"/><circle cx="454" cy="372" r="4" fill="#171717"/><circle cx="477" cy="385" r="4" fill="#171717"/><circle cx="500" cy="398" r="4" fill="#171717"/>
+      <circle cx="525" cy="414" r="4" fill="#171717"/><circle cx="548" cy="428" r="4" fill="#171717"/><circle cx="571" cy="442" r="4" fill="#171717"/><circle cx="594" cy="456" r="4" fill="#171717"/>
+      <circle cx="410" cy="386" r="4" fill="#171717"/><circle cx="434" cy="399" r="4" fill="#171717"/><circle cx="458" cy="412" r="4" fill="#171717"/><circle cx="482" cy="425" r="4" fill="#171717"/><circle cx="506" cy="438" r="4" fill="#171717"/>
+    </g>
+    ${panelMarkup}
+    <rect x="438" y="1372" width="176" height="176" fill="url(#check-a)" opacity=".9"/>
+    ${stickerSvg()}
+  </svg>`;
 }
 
 function renderScene(animate = true) {
   const theme = THEMES[state.background];
   wallpaper.style.setProperty("--grain-color", theme.grain);
-  backgroundScene.innerHTML = sceneSvg(state.background);
+  backgroundScene.innerHTML = comicSceneSvg(state.background);
   if (animate && window.gsap) {
     gsap.fromTo(backgroundScene, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.45, ease: "power2.out", overwrite: true });
   }
@@ -194,6 +256,7 @@ function renderPoses(animate = true) {
   poseRing.innerHTML = POSES.map(
     (pose, index) => `<div class="pose pose-${index}" style="--cat-color:${state.color}">${poseSvg(pose, index)}</div>`,
   ).join("");
+  photoPlaceholder.innerHTML = poseSvg("sit", 0);
 
   if (animate && window.gsap) {
     gsap.fromTo(
@@ -302,17 +365,66 @@ tabButtons.forEach((button) => {
   });
 });
 
-function drawSvgOnCanvas(ctx, svg, x, y, width) {
+function drawSvgOnCanvas(ctx, svg, x, y, width, rotation = 0) {
   return new Promise((resolve) => {
     const image = new Image();
     image.onload = () => {
       const height = width;
-      ctx.drawImage(image, x - width / 2, y - height / 2, width, height);
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.drawImage(image, -width / 2, -height / 2, width, height);
+      ctx.restore();
       resolve();
     };
     image.onerror = resolve;
     image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   });
+}
+
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+}
+
+function drawPixelatedImage(ctx, image, x, y, width, height, rotation = 0) {
+  const sample = document.createElement("canvas");
+  sample.width = 120;
+  sample.height = Math.round(120 * (height / width));
+  const sampleCtx = sample.getContext("2d");
+  const imageRatio = image.width / image.height;
+  const targetRatio = width / height;
+  let sx = 0;
+  let sy = 0;
+  let sw = image.width;
+  let sh = image.height;
+  if (imageRatio > targetRatio) {
+    sw = image.height * targetRatio;
+    sx = (image.width - sw) / 2;
+  } else {
+    sh = image.width / targetRatio;
+    sy = (image.height - sh) / 2;
+  }
+  sampleCtx.drawImage(image, sx, sy, sw, sh, 0, 0, sample.width, sample.height);
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate((rotation * Math.PI) / 180);
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = "#171717";
+  ctx.fillRect(-width / 2 + 30, -height / 2 + 30, width, height);
+  ctx.fillStyle = "#fffdf7";
+  ctx.fillRect(-width / 2 - 28, -height / 2 - 28, width + 56, height + 56);
+  ctx.strokeStyle = "#171717";
+  ctx.lineWidth = 16;
+  ctx.strokeRect(-width / 2 - 28, -height / 2 - 28, width + 56, height + 56);
+  ctx.drawImage(sample, -width / 2, -height / 2, width, height);
+  ctx.restore();
+  ctx.imageSmoothingEnabled = true;
 }
 
 function drawSceneOnCanvas(ctx, svg, width, height) {
@@ -328,51 +440,40 @@ function drawSceneOnCanvas(ctx, svg, width, height) {
 }
 
 async function downloadWallpaper() {
-  const mobile = state.ratio === "mobile";
   const canvas = document.createElement("canvas");
-  canvas.width = mobile ? 1080 : 1920;
-  canvas.height = mobile ? 1920 : 1200;
+  canvas.width = 1080;
+  canvas.height = 1920;
   const ctx = canvas.getContext("2d");
-  const points = mobile
-    ? [[200, 220], [850, 420], [210, 780], [850, 1050], [220, 1470], [850, 1660]]
-    : [[250, 210], [1660, 210], [230, 590], [1680, 590], [300, 1010], [1610, 1010], [950, 1060]];
-  const poseWidth = mobile ? 340 : 300;
+  const posePoints = [
+    [210, 445, 250, -8],
+    [810, 430, 250, 8],
+    [214, 910, 250, -4],
+    [825, 910, 250, 7],
+    [214, 1360, 250, 5],
+    [825, 1360, 250, -7],
+  ];
 
   const theme = THEMES[state.background];
   ctx.fillStyle = theme.base;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  await drawSceneOnCanvas(ctx, sceneSvg(state.background, canvas.width, canvas.height), canvas.width, canvas.height);
+  await drawSceneOnCanvas(ctx, comicSceneSvg(state.background, canvas.width, canvas.height), canvas.width, canvas.height);
   ctx.fillStyle = theme.grain;
-  for (let x = 10; x < canvas.width; x += 36) {
-    for (let y = 10; y < canvas.height; y += 36) ctx.fillRect(x, y, 2, 2);
+  ctx.globalAlpha = 0.14;
+  for (let x = 10; x < canvas.width; x += 18) {
+    for (let y = 10; y < canvas.height; y += 18) ctx.fillRect(x, y, 2, 2);
   }
+  ctx.globalAlpha = 1;
 
-  await Promise.all(points.map(([x, y], index) => drawSvgOnCanvas(ctx, poseSvg(POSES[index], index), x, y, poseWidth)));
+  await Promise.all(posePoints.map(([x, y, width, rotation], index) => drawSvgOnCanvas(ctx, poseSvg(POSES[index], index), x, y, width, rotation)));
 
   const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2 - 40;
-  const photoSize = mobile ? 300 : 330;
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, photoSize / 2, 0, Math.PI * 2);
-  ctx.clip();
-  ctx.fillStyle = "#dfe9dc";
-  ctx.fillRect(centerX - photoSize / 2, centerY - photoSize / 2, photoSize, photoSize);
-  if (photoPreview.src) ctx.drawImage(photoPreview, centerX - photoSize / 2, centerY - photoSize / 2, photoSize, photoSize);
-  ctx.restore();
-  ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = 16;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, photoSize / 2, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.fillStyle = "#27322f";
-  ctx.textAlign = "center";
-  ctx.font = `700 ${mobile ? 76 : 82}px "DM Sans", sans-serif`;
-  ctx.fillText(state.name.toLowerCase(), centerX, centerY + photoSize / 2 + 110);
-  ctx.fillStyle = "#60766e";
-  ctx.font = `700 ${mobile ? 22 : 20}px "DM Sans", sans-serif`;
-  ctx.fillText("MY TINY ROOMMATE", centerX, centerY + photoSize / 2 + 156);
+  const centerY = 890;
+  const photo = photoPreview.src ? await loadImage(photoPreview.src) : null;
+  if (photo) {
+    drawPixelatedImage(ctx, photo, centerX, centerY, 500, 650, -4);
+  } else {
+    await drawSvgOnCanvas(ctx, poseSvg("sit", 0), centerX, centerY, 560, -4);
+  }
 
   const link = document.createElement("a");
   link.download = `${state.name || "my-cat"}-wallpaper.png`;
