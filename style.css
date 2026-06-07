@@ -192,6 +192,9 @@ h2 { font-size: 21px; }
 .avatar-preview {
   width: min(45vh, 390px);
   aspect-ratio: 1 / 1;
+  background:
+    linear-gradient(135deg, rgba(255, 226, 239, .9), rgba(225, 246, 255, .86) 48%, rgba(255, 249, 192, .88)),
+    #fffaf0;
 }
 .background-scene,
 .paper-grain,
@@ -205,10 +208,17 @@ h2 { font-size: 21px; }
   height: 100%;
   filter: saturate(1.18) contrast(1.04);
 }
+.avatar-preview .background-scene {
+  display: none;
+}
 .paper-grain {
   opacity: .18;
   background-image: radial-gradient(var(--grain-color) 1px, transparent 1px);
   background-size: 12px 12px;
+}
+.avatar-preview .paper-grain {
+  opacity: .11;
+  background-size: 18px 18px;
 }
 .pose {
   --size: 23%;
@@ -242,6 +252,14 @@ h2 { font-size: 21px; }
   transform: translate(-50%, -50%) rotate(-4deg);
   filter: drop-shadow(7px 7px 0 #fff) drop-shadow(13px 13px 0 var(--ink));
 }
+.avatar-preview .portrait-card {
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  filter: none;
+}
 .photo-frame {
   position: relative;
   width: clamp(150px, 58vw, 246px);
@@ -252,12 +270,12 @@ h2 { font-size: 21px; }
   background: #f4ead7;
 }
 .avatar-frame {
-  width: clamp(190px, 58vw, 310px);
+  width: min(82%, 330px);
   aspect-ratio: 1 / 1;
-  background:
-    linear-gradient(135deg, rgba(255, 226, 239, .78), rgba(225, 246, 255, .78)),
-    radial-gradient(#171717 2px, transparent 2px);
-  background-size: 100% 100%, 24px 24px;
+  border: 0;
+  outline: 0;
+  overflow: visible;
+  background: transparent;
 }
 #photo-preview {
   display: none;
@@ -280,6 +298,12 @@ h2 { font-size: 21px; }
   height: 118%;
   transform: translateY(5%);
   shape-rendering: crispEdges;
+}
+.avatar-frame .photo-placeholder svg {
+  width: 150%;
+  height: 150%;
+  transform: translateY(2%);
+  filter: drop-shadow(9px 9px 0 rgba(255, 255, 255, .92));
 }
 .placeholder-ears {
   position: absolute;
@@ -738,7 +762,7 @@ legend {
     width: min(31svh, 238px);
   }
   .avatar-preview {
-    width: min(34svh, 280px);
+    width: min(36svh, 296px);
   }
   .pose {
     --size: 22%;
@@ -749,10 +773,17 @@ legend {
     outline-width: 4px;
   }
   .avatar-frame {
-    width: clamp(176px, 58vw, 244px);
+    width: min(84%, 250px);
   }
   .portrait-card {
     filter: drop-shadow(5px 5px 0 #fff) drop-shadow(9px 9px 0 var(--ink));
+  }
+  .avatar-preview .portrait-card {
+    filter: none;
+  }
+  .avatar-frame .photo-placeholder svg {
+    width: 156%;
+    height: 156%;
   }
   .customizer {
     min-height: 0;
