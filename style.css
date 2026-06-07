@@ -36,7 +36,7 @@ button { cursor: pointer; }
 .game-shell {
   height: 100dvh;
   display: grid;
-  grid-template-rows: 62px minmax(53vh, 1fr) auto;
+  grid-template-rows: 62px minmax(45vh, 1fr) auto;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .72), rgba(255, 250, 240, .96)),
@@ -189,6 +189,10 @@ h2 { font-size: 21px; }
   width: min(36vh, 320px);
   aspect-ratio: 9 / 16;
 }
+.avatar-preview {
+  width: min(45vh, 390px);
+  aspect-ratio: 1 / 1;
+}
 .background-scene,
 .paper-grain,
 .pose-ring {
@@ -247,6 +251,14 @@ h2 { font-size: 21px; }
   outline: 5px solid var(--ink);
   background: #f4ead7;
 }
+.avatar-frame {
+  width: clamp(190px, 58vw, 310px);
+  aspect-ratio: 1 / 1;
+  background:
+    linear-gradient(135deg, rgba(255, 226, 239, .78), rgba(225, 246, 255, .78)),
+    radial-gradient(#171717 2px, transparent 2px);
+  background-size: 100% 100%, 24px 24px;
+}
 #photo-preview {
   display: none;
   width: 100%;
@@ -264,9 +276,9 @@ h2 { font-size: 21px; }
   font-size: 14px;
 }
 .photo-placeholder svg {
-  width: 112%;
-  height: 112%;
-  transform: translateY(6%);
+  width: 118%;
+  height: 118%;
+  transform: translateY(5%);
   shape-rendering: crispEdges;
 }
 .placeholder-ears {
@@ -300,7 +312,7 @@ h2 { font-size: 21px; }
 }
 
 .customizer {
-  max-height: calc(47vh - 62px);
+  max-height: calc(55vh - 62px);
   overflow: auto;
   padding: 12px clamp(12px, 3vw, 32px) 17px;
   border-top: 5px solid var(--ink);
@@ -399,6 +411,9 @@ h2 { font-size: 21px; }
 .tab-panel.is-active {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+}
+.tab-panel[data-panel="photo"].is-active {
+  grid-template-columns: minmax(230px, .9fr) 1.1fr;
 }
 fieldset {
   min-width: 0;
@@ -572,6 +587,15 @@ legend {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+.tab-panel[data-panel="photo"] .capture-grid {
+  align-content: stretch;
+}
+.tab-panel[data-panel="photo"] .upload-box {
+  min-height: 92px;
+}
+.step-card {
+  background: #fff2b7;
+}
 .flow-card,
 .order-card {
   min-width: 0;
@@ -652,7 +676,7 @@ legend {
 
   .game-shell {
     height: 100svh;
-    grid-template-rows: 52px minmax(290px, 43svh) minmax(0, 1fr);
+    grid-template-rows: 52px minmax(255px, 39svh) minmax(0, 1fr);
   }
   .game-header {
     grid-template-columns: auto 1fr auto;
@@ -713,6 +737,9 @@ legend {
   .wallpaper-mobile {
     width: min(31svh, 238px);
   }
+  .avatar-preview {
+    width: min(34svh, 280px);
+  }
   .pose {
     --size: 22%;
   }
@@ -720,6 +747,9 @@ legend {
     width: clamp(118px, 43vw, 184px);
     border-width: 5px;
     outline-width: 4px;
+  }
+  .avatar-frame {
+    width: clamp(176px, 58vw, 244px);
   }
   .portrait-card {
     filter: drop-shadow(5px 5px 0 #fff) drop-shadow(9px 9px 0 var(--ink));
@@ -764,6 +794,9 @@ legend {
     grid-template-columns: 1fr;
     gap: 9px;
     min-height: 0;
+  }
+  .tab-panel[data-panel="photo"].is-active {
+    grid-template-columns: 1fr;
   }
   .control-card,
   .profile-field,
