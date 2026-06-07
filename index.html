@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=20260607-tobe-avatar" />
+    <link rel="stylesheet" href="./style.css?v=20260607-clean-preview" />
     <style>
       .avatar-preview {
         background: linear-gradient(135deg, rgba(255, 226, 239, .9), rgba(225, 246, 255, .86) 48%, rgba(255, 249, 192, .88)), #fffaf0;
@@ -17,8 +17,10 @@
         display: none !important;
       }
       .avatar-preview .paper-grain {
-        opacity: .11;
-        background-size: 18px 18px;
+        display: none !important;
+      }
+      .avatar-preview .pose-ring {
+        display: none !important;
       }
       .avatar-preview .portrait-card {
         top: 50%;
@@ -29,7 +31,7 @@
         filter: none !important;
       }
       .avatar-preview .avatar-frame {
-        width: min(82%, 330px);
+        width: min(88%, 340px);
         aspect-ratio: 1 / 1;
         border: 0 !important;
         outline: 0 !important;
@@ -37,18 +39,18 @@
         background: transparent;
       }
       .avatar-preview .avatar-frame .photo-placeholder svg {
-        width: 150%;
-        height: 150%;
-        transform: translateY(2%);
+        width: 112%;
+        height: 112%;
+        transform: translateY(0);
         filter: drop-shadow(9px 9px 0 rgba(255, 255, 255, .92));
       }
       @media (max-width: 700px) {
         .avatar-preview .avatar-frame {
-          width: min(84%, 250px);
+          width: min(90%, 265px);
         }
         .avatar-preview .avatar-frame .photo-placeholder svg {
-          width: 156%;
-          height: 156%;
+          width: 112%;
+          height: 112%;
         }
       }
     </style>
@@ -65,13 +67,7 @@
         <button id="download-btn" class="download-btn" type="button"><span data-i18n="download">头像を保存</span><span aria-hidden="true">↓</span></button>
       </header>
 
-      <section class="hero-stage" aria-labelledby="preview-title">
-        <div class="stage-heading">
-          <div>
-            <h1 id="preview-title" data-i18n="previewTitle">あなただけのねこ図鑑</h1>
-          </div>
-        </div>
-
+      <section class="hero-stage" aria-label="Avatar preview">
         <div class="preview-arena">
           <div class="arena-orbit orbit-one"></div>
           <div class="arena-orbit orbit-two"></div>
@@ -162,6 +158,6 @@
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <script src="./app.js?v=20260607-tobe-avatar"></script>
+    <script src="./app.js?v=20260607-clean-preview"></script>
   </body>
 </html>
