@@ -7,11 +7,20 @@ const backgroundScene = document.querySelector("#background-scene");
 const catName = document.querySelector("#cat-name");
 const wallpaperName = document.querySelector("#wallpaper-name");
 const photoInput = document.querySelector("#cat-photo");
+const cameraInput = document.querySelector("#cat-camera");
 const photoPreview = document.querySelector("#photo-preview");
 const photoPlaceholder = document.querySelector("#photo-placeholder");
 const tabButtons = document.querySelectorAll("[data-tab]");
 const tabPanels = document.querySelectorAll("[data-panel]");
 const downloadButton = document.querySelector("#download-btn");
+const avatarButton = document.querySelector("#avatar-btn");
+const wallpaperButton = document.querySelector("#wallpaper-btn");
+const analysisStatus = document.querySelector("#analysis-status");
+const featureTags = document.querySelector("#feature-tags");
+const orderButton = document.querySelector("#order-btn");
+const orderForm = document.querySelector("#order-form");
+const orderSubmit = document.querySelector("#order-submit");
+const orderResult = document.querySelector("#order-result");
 const drawerToggle = document.querySelector("#drawer-toggle");
 const drawerLabel = document.querySelector("[data-drawer-label]");
 const languageButtons = document.querySelectorAll("[data-lang]");
@@ -29,6 +38,8 @@ const state = {
   language: "ja",
   name: "Mochi",
   photoUrl: "",
+  hasGlasses: false,
+  analysis: null,
 };
 
 const I18N = {
@@ -38,7 +49,11 @@ const I18N = {
     tail: "しっぽ", longTail: "長い", shortTail: "短い", legs: "足の長さ", shortLegs: "短い", longLegs: "長い", pattern: "模様", stripe: "しま模様", solid: "単色", patch: "ぶち",
     mainColor: "メインカラー", plants: "植物の部屋", plantsHint: "ねこが好きなグリーン", bed: "あたたかいベッド", bedHint: "やわらかくて安心", tree: "キャットタワー",
     treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "壁紙の中央に表示されます", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
-    uploadHint: "正面または半身写真がおすすめ", collapse: "設定を閉じる", expand: "設定を開く",
+    uploadHint: "正面または半身写真がおすすめ", camera: "カメラで撮影", cameraHint: "その場で撮って生成", analysisTitle: "生成ステータス",
+    analysisIdle: "写真を入れると、特徴を見てピクセルねこを作ります。", analyzing: "特徴を見ています...", generated: "ピクセルねこが生まれました。原图は自動で削除しました。",
+    avatarDownload: "头像を保存", wallpaperDownload: "壁紙を保存", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
+    orderButton: "3Dプリントを相談", orderSize: "サイズ", orderContact: "連絡先", orderSubmit: "下書きを作成", orderReady: "注文メモを作りました。生成猫の設定だけを使います。",
+    featureGlasses: "めがね", featureWarm: "暖色", featureCool: "寒色", featurePattern: "模様あり", collapse: "設定を閉じる", expand: "設定を開く",
   },
   zh: {
     brand: "喵图鉴", workshop: "壁纸工坊", download: "保存壁纸", previewTitle: "你的专属猫咪图鉴",
@@ -46,7 +61,11 @@ const I18N = {
     tail: "尾巴", longTail: "长尾", shortTail: "短尾", legs: "腿长", shortLegs: "短腿", longLegs: "长腿", pattern: "花纹", stripe: "虎斑", solid: "纯色", patch: "花斑",
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
     catName: "猫咪名字", catNameHint: "会显示在壁纸中央", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面或半身照效果最好",
-    collapse: "收起设置", expand: "展开设置",
+    camera: "拍照生成", cameraHint: "现场拍一张并生成", analysisTitle: "生成状态", analysisIdle: "放入照片后，会观察特征并生成像素猫。",
+    analyzing: "正在观察特征...", generated: "像素猫诞生了。原图已自动删除。", avatarDownload: "保存头像", wallpaperDownload: "保存壁纸",
+    orderTitle: "3D 打印实体化", orderHint: "喜欢的话，可以把这只猫做成小摆件。", orderButton: "咨询 3D 打印", orderSize: "尺寸", orderContact: "联系方式",
+    orderSubmit: "生成下单草稿", orderReady: "已生成下单草稿。只使用生成猫配置，不保存原图。", featureGlasses: "眼镜", featureWarm: "暖色", featureCool: "冷色",
+    featurePattern: "有花纹", collapse: "收起设置", expand: "展开设置",
   },
   en: {
     brand: "Cat Atlas", workshop: "Wallpaper Studio", download: "Save wallpaper", previewTitle: "Your personal cat atlas",
@@ -54,7 +73,11 @@ const I18N = {
     tail: "Tail", longTail: "Long", shortTail: "Short", legs: "Legs", shortLegs: "Short", longLegs: "Long", pattern: "Pattern", stripe: "Tabby", solid: "Solid", patch: "Patch",
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
     catName: "Cat name", catNameHint: "Shown in the center of your wallpaper", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front or half-body photos work best",
-    collapse: "Hide settings", expand: "Show settings",
+    camera: "Take photo", cameraHint: "Snap and generate", analysisTitle: "Generation status", analysisIdle: "Add a photo and the site will turn visual cues into a pixel cat.",
+    analyzing: "Reading visual cues...", generated: "Your pixel cat is born. The original image was deleted automatically.", avatarDownload: "Save avatar", wallpaperDownload: "Save wallpaper",
+    orderTitle: "3D print figure", orderHint: "If you like it, turn this cat into a small figure.", orderButton: "Ask about 3D print", orderSize: "Size", orderContact: "Contact",
+    orderSubmit: "Create order draft", orderReady: "Order draft created. It uses only the generated cat settings.", featureGlasses: "Glasses", featureWarm: "Warm tone", featureCool: "Cool tone",
+    featurePattern: "Patterned", collapse: "Hide settings", expand: "Show settings",
   },
 };
 
@@ -215,6 +238,11 @@ function poseSvg(pose, index) {
     ${px(x + 12, y + 18, 5, 5, outline)}${px(x + 29, y + 18, 5, 5, outline)}
     ${px(x + 22, y + 27, 6, 4, "#e87373")}
     ${px(x + 18, y + 34, 7, 3, outline)}${px(x + 29, y + 34, 7, 3, outline)}`;
+  const glasses = (x, y) => state.hasGlasses ? `
+    ${px(x + 8, y + 14, 16, 4, "#171717")}${px(x + 28, y + 14, 16, 4, "#171717")}
+    ${px(x + 8, y + 18, 4, 13, "#171717")}${px(x + 20, y + 18, 4, 13, "#171717")}
+    ${px(x + 28, y + 18, 4, 13, "#171717")}${px(x + 40, y + 18, 4, 13, "#171717")}
+    ${px(x + 24, y + 20, 4, 4, "#171717")}` : "";
   const ears = (x, y) => `${block(x + 4, y, 10, 10)}${block(x + 32, y, 10, 10)}`;
   const stripes = (x, y) => {
     if (state.pattern === "solid") return "";
@@ -233,7 +261,7 @@ function poseSvg(pose, index) {
       ? `${block(x + 42, y + 31, 11, 11)}${block(x + 50, y + 20, 11, 11)}${block(x + 48, y + 9, 10, 10)}`
       : `${block(x + 41, y + 34, 12, 12)}`;
   };
-  const head = (x, y, showFace = true) => `${ears(x, y)}${block(x, y + 10, 48, 40)}${stripes(x, y)}${showFace ? face(x, y + 10) : px(x + 20, y + 23, 10, 8, dark)}`;
+  const head = (x, y, showFace = true) => `${ears(x, y)}${block(x, y + 10, 48, 40)}${stripes(x, y)}${showFace ? `${face(x, y + 10)}${glasses(x, y + 10)}` : px(x + 20, y + 23, 10, 8, dark)}`;
   const body = (x, y, w = 50, h = 38) => `${block(x, y, w, h)}${px(x + 8, y + 6, Math.max(12, w - 19), Math.max(9, h - 18), cream)}`;
 
   const bodies = {
@@ -289,16 +317,171 @@ catName.addEventListener("input", () => {
   wallpaperName.textContent = state.name;
 });
 
-photoInput.addEventListener("change", () => {
-  const file = photoInput.files[0];
+function setRadioValue(name, value) {
+  const input = form.querySelector(`[name="${name}"][value="${value}"]`);
+  if (input) input.checked = true;
+}
+
+function nearestColor(hex) {
+  const swatches = Array.from(form.querySelectorAll('input[name="color"]')).map((input) => input.value);
+  const toRgb = (value) => {
+    const raw = value.replace("#", "");
+    return [parseInt(raw.slice(0, 2), 16), parseInt(raw.slice(2, 4), 16), parseInt(raw.slice(4, 6), 16)];
+  };
+  const target = toRgb(hex);
+  return swatches.reduce((best, swatch) => {
+    const rgb = toRgb(swatch);
+    const score = rgb.reduce((sum, part, index) => sum + (part - target[index]) ** 2, 0);
+    return score < best.score ? { color: swatch, score } : best;
+  }, { color: swatches[0], score: Infinity }).color;
+}
+
+function rgbToHex(r, g, b) {
+  return `#${[r, g, b].map((part) => Math.max(0, Math.min(255, Math.round(part))).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function tagList(features) {
+  const dict = I18N[state.language];
+  return [
+    features.hasGlasses ? dict.featureGlasses : "",
+    features.warmTone ? dict.featureWarm : dict.featureCool,
+    features.patterned ? dict.featurePattern : "",
+  ].filter(Boolean);
+}
+
+async function analyzeImage(file) {
+  analysisStatus.textContent = I18N[state.language].analyzing;
+  featureTags.innerHTML = "";
+  const url = URL.createObjectURL(file);
+  const image = await loadImage(url);
+  if (!image) {
+    URL.revokeObjectURL(url);
+    return null;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 96;
+  canvas.height = 96;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  let darkFaceBand = 0;
+  let contrast = 0;
+  let count = 0;
+
+  for (let y = 0; y < canvas.height; y += 2) {
+    for (let x = 0; x < canvas.width; x += 2) {
+      const index = (y * canvas.width + x) * 4;
+      const pr = data[index];
+      const pg = data[index + 1];
+      const pb = data[index + 2];
+      const light = (pr + pg + pb) / 3;
+      r += pr;
+      g += pg;
+      b += pb;
+      contrast += Math.abs(pr - pg) + Math.abs(pg - pb) + Math.abs(pb - pr);
+      if (y > 30 && y < 52 && x > 22 && x < 74 && light < 74) darkFaceBand++;
+      count++;
+    }
+  }
+
+  const avgR = r / count;
+  const avgG = g / count;
+  const avgB = b / count;
+  const warmTone = avgR + avgG * 0.25 > avgB + 40;
+  const hasGlasses = darkFaceBand > 35;
+  const patterned = contrast / count > 82;
+  const color = nearestColor(rgbToHex(avgR, avgG, avgB));
+  URL.revokeObjectURL(url);
+
+  return {
+    hasGlasses,
+    warmTone,
+    patterned,
+    color,
+    previewDataUrl: canvas.toDataURL("image/png"),
+    pattern: patterned ? (hasGlasses ? "stripe" : "patch") : "solid",
+    tail: warmTone ? "long" : "short",
+    legs: hasGlasses ? "long" : "short",
+  };
+}
+
+async function handlePhotoFile(file) {
   if (!file) return;
   if (state.photoUrl) URL.revokeObjectURL(state.photoUrl);
   state.photoUrl = URL.createObjectURL(file);
   photoPreview.src = state.photoUrl;
   photoPreview.style.display = "block";
   photoPlaceholder.style.display = "none";
+  const features = await analyzeImage(file);
+  if (features) {
+    state.analysis = features;
+    state.hasGlasses = features.hasGlasses;
+    photoPreview.src = features.previewDataUrl;
+    setRadioValue("color", features.color);
+    setRadioValue("pattern", features.pattern);
+    setRadioValue("tail", features.tail);
+    setRadioValue("legs", features.legs);
+    syncState();
+    featureTags.innerHTML = tagList(features).map((tag) => `<span>${tag}</span>`).join("");
+    analysisStatus.textContent = I18N[state.language].generated;
+  }
+  URL.revokeObjectURL(state.photoUrl);
+  state.photoUrl = "";
+  photoInput.value = "";
+  if (cameraInput) cameraInput.value = "";
   if (window.gsap) gsap.fromTo(".photo-frame", { scale: 0.82 }, { scale: 1, duration: 0.65, ease: "elastic.out(1, 0.55)" });
+}
+
+photoInput.addEventListener("change", () => {
+  handlePhotoFile(photoInput.files[0]);
 });
+
+if (cameraInput) {
+  cameraInput.addEventListener("change", () => {
+    handlePhotoFile(cameraInput.files[0]);
+  });
+}
+
+function orderDraft() {
+  return {
+    name: state.name,
+    size: document.querySelector("#order-size")?.value || "5cm",
+    contact: document.querySelector("#order-contact")?.value || "",
+    note: document.querySelector("#order-note")?.value || "",
+    catConfig: {
+      color: state.color,
+      fur: state.fur,
+      tail: state.tail,
+      legs: state.legs,
+      pattern: state.pattern,
+      accessories: state.hasGlasses ? ["glasses"] : [],
+    },
+  };
+}
+
+function downloadJsonDraft() {
+  const blob = new Blob([JSON.stringify(orderDraft(), null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.download = `${state.name || "pixel-cat"}-3d-order-draft.json`;
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  URL.revokeObjectURL(link.href);
+  orderResult.textContent = I18N[state.language].orderReady;
+}
+
+if (orderButton) {
+  orderButton.addEventListener("click", () => {
+    orderForm.hidden = !orderForm.hidden;
+  });
+}
+
+if (orderSubmit) {
+  orderSubmit.addEventListener("click", downloadJsonDraft);
+}
 
 function fitWallpaper() {
   const maxWidth = wallpaperFrame.clientWidth * 0.94;
@@ -481,7 +664,35 @@ async function downloadWallpaper() {
   link.click();
 }
 
+async function downloadAvatar() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext("2d");
+  const theme = THEMES[state.background];
+  ctx.fillStyle = theme.base;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  await drawSceneOnCanvas(ctx, comicSceneSvg(state.background, canvas.width, canvas.height), canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(255, 253, 247, .86)";
+  ctx.fillRect(110, 110, 804, 804);
+  ctx.strokeStyle = "#171717";
+  ctx.lineWidth = 18;
+  ctx.strokeRect(110, 110, 804, 804);
+  const photo = photoPreview.src ? await loadImage(photoPreview.src) : null;
+  if (photo) {
+    drawPixelatedImage(ctx, photo, 512, 506, 540, 650, -3);
+  } else {
+    await drawSvgOnCanvas(ctx, poseSvg("sit", 0), 512, 516, 610, -3);
+  }
+  const link = document.createElement("a");
+  link.download = `${state.name || "pixel-cat"}-avatar.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
 downloadButton.addEventListener("click", downloadWallpaper);
+if (wallpaperButton) wallpaperButton.addEventListener("click", downloadWallpaper);
+if (avatarButton) avatarButton.addEventListener("click", downloadAvatar);
 
 renderScene(false);
 setLanguage("ja");
