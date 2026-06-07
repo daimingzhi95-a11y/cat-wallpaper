@@ -1,5 +1,6 @@
 :root {
   --ink: #181818;
+  --shadow: rgba(24, 24, 24, .28);
   --cream: #fffaf0;
   --paper: #fffdf7;
   --panel: #fff4d8;
@@ -72,7 +73,7 @@ button { cursor: pointer; }
   border: 4px solid var(--ink);
   color: #fff;
   background: var(--mint);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
   font-size: 20px;
 }
 
@@ -83,7 +84,7 @@ button { cursor: pointer; }
   padding: 4px;
   border: 4px solid var(--ink);
   background: var(--paper);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 .lang-btn,
 .tab-btn {
@@ -205,7 +206,7 @@ h2 { font-size: 21px; }
   position: absolute;
   width: var(--size);
   z-index: 2;
-  filter: drop-shadow(3px 3px 0 #fff) drop-shadow(5px 5px 0 var(--ink));
+  filter: drop-shadow(3px 3px 0 #fff) drop-shadow(5px 5px 0 var(--shadow));
   will-change: transform;
 }
 .pose svg {
@@ -230,7 +231,7 @@ h2 { font-size: 21px; }
   justify-items: center;
   z-index: 4;
   transform: translate(-50%, -50%) rotate(-4deg);
-  filter: drop-shadow(7px 7px 0 #fff) drop-shadow(13px 13px 0 var(--ink));
+  filter: drop-shadow(7px 7px 0 #fff) drop-shadow(13px 13px 0 var(--shadow));
 }
 .avatar-preview .portrait-card {
   top: 50%;
@@ -250,7 +251,7 @@ h2 { font-size: 21px; }
   background: #f4ead7;
 }
 .avatar-frame {
-  width: min(88%, 340px);
+  width: min(90%, 340px);
   aspect-ratio: 1 / 1;
   border: 0;
   outline: 0;
@@ -274,14 +275,14 @@ h2 { font-size: 21px; }
   font-size: 14px;
 }
 .photo-placeholder svg {
-  width: 118%;
-  height: 118%;
-  transform: translateY(5%);
+  width: 100%;
+  height: 100%;
+  transform: translateY(0);
   shape-rendering: crispEdges;
 }
 .avatar-frame .photo-placeholder svg {
-  width: 112%;
-  height: 112%;
+  width: 100%;
+  height: 100%;
   transform: translateY(0);
   filter: drop-shadow(9px 9px 0 rgba(255, 255, 255, .92));
 }
@@ -319,14 +320,14 @@ h2 { font-size: 21px; }
   max-height: calc(55vh - 62px);
   overflow: auto;
   padding: 12px clamp(12px, 3vw, 32px) 17px;
-  border-top: 5px solid var(--ink);
+  border-top: 0;
   background: var(--paper);
-  box-shadow: 0 -6px 0 var(--ink);
+  box-shadow: none;
   z-index: 4;
 }
 .customizer::before {
   content: "";
-  display: block;
+  display: none;
   width: 48px;
   height: 5px;
   margin: 0 auto 11px;
@@ -355,7 +356,7 @@ h2 { font-size: 21px; }
   padding: 4px;
   border: 4px solid var(--ink);
   background: var(--paper);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 .tab-btn {
   min-height: 44px;
@@ -389,7 +390,7 @@ fieldset {
   padding: 12px;
   border: 4px solid var(--ink);
   background: var(--panel);
-  box-shadow: 5px 5px 0 var(--ink);
+  box-shadow: 5px 5px 0 var(--shadow);
 }
 .control-card:nth-child(1) { background: var(--pink); }
 .control-card:nth-child(2) { background: var(--blue); }
@@ -445,7 +446,7 @@ legend {
   height: 32px;
   border: 4px solid var(--ink);
   background: var(--swatch);
-  box-shadow: 3px 3px 0 var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
 }
 .swatch-row input:checked + span {
   outline: 4px solid var(--yellow);
@@ -471,7 +472,7 @@ legend {
   border: 4px solid var(--ink);
   color: #fff;
   background: #ff5e63;
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
   font-size: 25px;
 }
 .background-option b,
@@ -522,7 +523,7 @@ legend {
   outline: none;
   color: var(--ink);
   background: var(--paper);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 .upload-box {
   cursor: pointer;
@@ -538,7 +539,7 @@ legend {
   border: 4px solid var(--ink);
   color: #fff;
   background: var(--mint);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
   font-size: 18px;
 }
 .capture-grid,
@@ -562,7 +563,7 @@ legend {
   padding: 12px;
   border: 4px solid var(--ink);
   background: #fff2b7;
-  box-shadow: 5px 5px 0 var(--ink);
+  box-shadow: 5px 5px 0 var(--shadow);
 }
 .flow-card p,
 .order-card p,
@@ -585,7 +586,7 @@ legend {
   padding: 4px 8px;
   border: 3px solid var(--ink);
   background: var(--paper);
-  box-shadow: 2px 2px 0 var(--ink);
+  box-shadow: 2px 2px 0 var(--shadow);
   font-size: 11px;
   font-weight: 900;
 }
@@ -595,7 +596,7 @@ legend {
   border: 4px solid var(--ink);
   color: var(--ink);
   background: var(--paper);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
   font-weight: 900;
 }
 .order-btn {
@@ -624,7 +625,7 @@ legend {
   padding: 8px;
   color: var(--ink);
   background: var(--paper);
-  box-shadow: 3px 3px 0 var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
   font: inherit;
 }
 
@@ -651,12 +652,12 @@ legend {
     width: 30px;
     height: 30px;
     font-size: 18px;
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: 3px 3px 0 var(--shadow);
   }
   .language-switch {
     padding: 3px;
     border-width: 3px;
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: 3px 3px 0 var(--shadow);
   }
   .lang-btn {
     min-width: 30px;
@@ -695,17 +696,17 @@ legend {
     outline-width: 4px;
   }
   .avatar-frame {
-    width: min(90%, 265px);
+    width: min(92%, 265px);
   }
   .portrait-card {
-    filter: drop-shadow(5px 5px 0 #fff) drop-shadow(9px 9px 0 var(--ink));
+    filter: drop-shadow(5px 5px 0 #fff) drop-shadow(9px 9px 0 var(--shadow));
   }
   .avatar-preview .portrait-card {
     filter: none;
   }
   .avatar-frame .photo-placeholder svg {
-    width: 112%;
-    height: 112%;
+    width: 100%;
+    height: 100%;
   }
   .customizer {
     min-height: 0;
@@ -714,8 +715,8 @@ legend {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     padding: 10px 10px calc(118px + env(safe-area-inset-bottom, 0px));
-    border-top-width: 4px;
-    box-shadow: 0 -5px 0 var(--ink);
+    border-top-width: 0;
+    box-shadow: none;
   }
   .customizer-top {
     margin: -10px -10px 12px;
@@ -729,7 +730,7 @@ legend {
   }
   .customizer-tabs {
     border-width: 3px;
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: 3px 3px 0 var(--shadow);
   }
   .tab-btn {
     min-height: 44px;
@@ -750,7 +751,7 @@ legend {
   .upload-box,
   .background-option {
     border-width: 3px;
-    box-shadow: 4px 4px 0 var(--ink);
+    box-shadow: 4px 4px 0 var(--shadow);
   }
   .control-card {
     padding: 12px;
@@ -797,12 +798,12 @@ legend {
   .flow-card,
   .order-card {
     border-width: 3px;
-    box-shadow: 4px 4px 0 var(--ink);
+    box-shadow: 4px 4px 0 var(--shadow);
   }
   .secondary-btn,
   .order-btn {
     border-width: 3px;
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: 3px 3px 0 var(--shadow);
   }
   .profile-field,
   .upload-box {
