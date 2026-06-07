@@ -366,12 +366,27 @@ async function analyzeImage(file) {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-  let r = 0;
-  let g = 0;
-  let b = 0;
+  let totalR = 0;
+  let totalG = 0;
+  let totalB = 0;
+  let coatR = 0;
+  let coatG = 0;
+  let coatB = 0;
+  let coatCount = 0;
+  let skinFaceBand = 0;
   let darkFaceBand = 0;
   let contrast = 0;
   let count = 0;
+  const isSkinTone = (pr, pg, pb) => {
+    const max = Math.max(pr, pg, pb);
+    const min = Math.min(pr, pg, pb);
+    return pr > 95 && pg > 55 && pb > 35 && max - min > 18 && pr > pg * 0.98 && pg > pb * 1.08;
+  };
+  const isUsefulCoatColor = (pr, pg, pb) => {
+    const light = (pr + pg + pb) / 3;
+    const chroma = Math.max(pr, pg, pb) - Math.min(pr, pg, pb);
+    return !isSkinTone(pr, pg, pb) && light > 34 && light < 236 && chroma > 12;
+  };
 
   for (let y = 0; y < canvas.height; y += 2) {
     for (let x = 0; x < canvas.width; x += 2) {
@@ -380,20 +395,29 @@ async function analyzeImage(file) {
       const pg = data[index + 1];
       const pb = data[index + 2];
       const light = (pr + pg + pb) / 3;
-      r += pr;
-      g += pg;
-      b += pb;
+      const inFaceBand = y > 30 && y < 52 && x > 22 && x < 74;
+      totalR += pr;
+      totalG += pg;
+      totalB += pb;
+      if (isUsefulCoatColor(pr, pg, pb)) {
+        coatR += pr;
+        coatG += pg;
+        coatB += pb;
+        coatCount++;
+      }
       contrast += Math.abs(pr - pg) + Math.abs(pg - pb) + Math.abs(pb - pr);
-      if (y > 30 && y < 52 && x > 22 && x < 74 && light < 74) darkFaceBand++;
+      if (inFaceBand && isSkinTone(pr, pg, pb)) skinFaceBand++;
+      if (inFaceBand && light < 74) darkFaceBand++;
       count++;
     }
   }
 
-  const avgR = r / count;
-  const avgG = g / count;
-  const avgB = b / count;
+  const sourceCount = coatCount || count;
+  const avgR = (coatCount ? coatR : totalR) / sourceCount;
+  const avgG = (coatCount ? coatG : totalG) / sourceCount;
+  const avgB = (coatCount ? coatB : totalB) / sourceCount;
   const warmTone = avgR + avgG * 0.25 > avgB + 40;
-  const hasGlasses = darkFaceBand > 35;
+  const hasGlasses = skinFaceBand > 10 && darkFaceBand / skinFaceBand > 0.42;
   const patterned = contrast / count > 82;
   const color = nearestColor(rgbToHex(avgR, avgG, avgB));
   URL.revokeObjectURL(url);
