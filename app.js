@@ -37,7 +37,6 @@ const state = {
   language: "ja",
   name: "Mochi",
   photoUrl: "",
-  hasGlasses: false,
   analysis: null,
 };
 
@@ -49,10 +48,10 @@ const I18N = {
     mainColor: "メインカラー", plants: "植物の部屋", plantsHint: "ねこが好きなグリーン", bed: "あたたかいベッド", bedHint: "やわらかくて安心", tree: "キャットタワー",
     treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "头像ファイル名に使います", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
     uploadHint: "正面写真がおすすめ", camera: "カメラで撮影", cameraHint: "撮った写真から生成", analysisTitle: "まず写真から特徴を読む",
-    analysisIdle: "写真は保存せず、色・模様・めがねなどの要素だけを使って初版のピクセルねこを作ります。", analyzing: "特徴を見ています...", generated: "初版のピクセルねこが生まれました。原图は自動で削除しました。",
+    analysisIdle: "写真は保存せず、色・模様などの要素だけを使って初版のピクセルねこを作ります。", analyzing: "特徴を見ています...", generated: "初版のピクセルねこが生まれました。原图は自動で削除しました。",
     avatarDownload: "头像を保存", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
     orderButton: "3Dプリントを相談", orderSize: "サイズ", orderContact: "連絡先", orderSubmit: "下書きを作成", orderReady: "注文メモを作りました。生成猫の設定だけを使います。",
-    featureGlasses: "めがね", featureWarm: "暖色", featureCool: "寒色", featurePattern: "模様あり", collapse: "設定を閉じる", expand: "設定を開く",
+    featureWarm: "暖色", featureCool: "寒色", featurePattern: "模様あり", collapse: "設定を閉じる", expand: "設定を開く",
   },
   zh: {
     brand: "ピクタウン", workshop: "头像工坊", download: "保存头像", previewTitle: "正面像素猫头像",
@@ -60,10 +59,10 @@ const I18N = {
     tail: "尾巴", longTail: "长尾", shortTail: "短尾", legs: "腿长", shortLegs: "短腿", longLegs: "长腿", pattern: "花纹", stripe: "虎斑", solid: "纯色", patch: "花斑",
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
     catName: "猫咪名字", catNameHint: "用于头像文件名", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面照片效果最好",
-    camera: "拍照生成", cameraHint: "从现场照片提取要素", analysisTitle: "先从照片提取要素", analysisIdle: "照片不会被做成像素画，只提取颜色、花纹、眼镜等要素生成第一版小猫。",
+    camera: "拍照生成", cameraHint: "从现场照片提取要素", analysisTitle: "先从照片提取要素", analysisIdle: "照片不会被做成像素画，只提取颜色、花纹等要素生成第一版小猫。",
     analyzing: "正在观察特征...", generated: "第一版像素猫生成好了。原图已自动删除。", avatarDownload: "保存头像",
     orderTitle: "3D 打印实体化", orderHint: "喜欢的话，可以把这只猫做成小摆件。", orderButton: "咨询 3D 打印", orderSize: "尺寸", orderContact: "联系方式",
-    orderSubmit: "生成下单草稿", orderReady: "已生成下单草稿。只使用生成猫配置，不保存原图。", featureGlasses: "眼镜", featureWarm: "暖色", featureCool: "冷色",
+    orderSubmit: "生成下单草稿", orderReady: "已生成下单草稿。只使用生成猫配置，不保存原图。", featureWarm: "暖色", featureCool: "冷色",
     featurePattern: "有花纹", collapse: "收起设置", expand: "展开设置",
   },
   en: {
@@ -72,10 +71,10 @@ const I18N = {
     tail: "Tail", longTail: "Long", shortTail: "Short", legs: "Legs", shortLegs: "Short", longLegs: "Long", pattern: "Pattern", stripe: "Tabby", solid: "Solid", patch: "Patch",
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
     catName: "Cat name", catNameHint: "Used for the avatar file name", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front photos work best",
-    camera: "Take photo", cameraHint: "Extract cues from the photo", analysisTitle: "Extract photo cues first", analysisIdle: "The photo is not pixelated directly. It only supplies color, pattern, glasses, and other cues for the first cat.",
+    camera: "Take photo", cameraHint: "Extract cues from the photo", analysisTitle: "Extract photo cues first", analysisIdle: "The photo is not pixelated directly. It only supplies color, pattern, and other cues for the first cat.",
     analyzing: "Reading visual cues...", generated: "First pixel cat generated. The original image was deleted automatically.", avatarDownload: "Save avatar",
     orderTitle: "3D print figure", orderHint: "If you like it, turn this cat into a small figure.", orderButton: "Ask about 3D print", orderSize: "Size", orderContact: "Contact",
-    orderSubmit: "Create order draft", orderReady: "Order draft created. It uses only the generated cat settings.", featureGlasses: "Glasses", featureWarm: "Warm tone", featureCool: "Cool tone",
+    orderSubmit: "Create order draft", orderReady: "Order draft created. It uses only the generated cat settings.", featureWarm: "Warm tone", featureCool: "Cool tone",
     featurePattern: "Patterned", collapse: "Hide settings", expand: "Show settings",
   },
 };
@@ -237,11 +236,6 @@ function poseSvg(pose, index) {
     ${px(x + 12, y + 18, 5, 5, outline)}${px(x + 29, y + 18, 5, 5, outline)}
     ${px(x + 22, y + 27, 6, 4, "#e87373")}
     ${px(x + 18, y + 34, 7, 3, outline)}${px(x + 29, y + 34, 7, 3, outline)}`;
-  const glasses = (x, y) => state.hasGlasses ? `
-    ${px(x + 8, y + 14, 16, 4, "#171717")}${px(x + 28, y + 14, 16, 4, "#171717")}
-    ${px(x + 8, y + 18, 4, 13, "#171717")}${px(x + 20, y + 18, 4, 13, "#171717")}
-    ${px(x + 28, y + 18, 4, 13, "#171717")}${px(x + 40, y + 18, 4, 13, "#171717")}
-    ${px(x + 24, y + 20, 4, 4, "#171717")}` : "";
   const ears = (x, y) => `${block(x + 4, y, 10, 10)}${block(x + 32, y, 10, 10)}`;
   const stripes = (x, y) => {
     if (state.pattern === "solid") return "";
@@ -260,7 +254,7 @@ function poseSvg(pose, index) {
       ? `${block(x + 42, y + 31, 11, 11)}${block(x + 50, y + 20, 11, 11)}${block(x + 48, y + 9, 10, 10)}`
       : `${block(x + 41, y + 34, 12, 12)}`;
   };
-  const head = (x, y, showFace = true) => `${ears(x, y)}${block(x, y + 10, 48, 40)}${stripes(x, y)}${showFace ? `${face(x, y + 10)}${glasses(x, y + 10)}` : px(x + 20, y + 23, 10, 8, dark)}`;
+  const head = (x, y, showFace = true) => `${ears(x, y)}${block(x, y + 10, 48, 40)}${stripes(x, y)}${showFace ? face(x, y + 10) : px(x + 20, y + 23, 10, 8, dark)}`;
   const body = (x, y, w = 50, h = 38) => `${block(x, y, w, h)}${px(x + 8, y + 6, Math.max(12, w - 19), Math.max(9, h - 18), cream)}`;
 
   const bodies = {
@@ -344,7 +338,6 @@ function rgbToHex(r, g, b) {
 function tagList(features) {
   const dict = I18N[state.language];
   return [
-    features.hasGlasses ? dict.featureGlasses : "",
     features.warmTone ? dict.featureWarm : dict.featureCool,
     features.patterned ? dict.featurePattern : "",
   ].filter(Boolean);
@@ -373,8 +366,6 @@ async function analyzeImage(file) {
   let coatG = 0;
   let coatB = 0;
   let coatCount = 0;
-  let skinFaceBand = 0;
-  let darkFaceBand = 0;
   let contrast = 0;
   let count = 0;
   const isSkinTone = (pr, pg, pb) => {
@@ -394,8 +385,6 @@ async function analyzeImage(file) {
       const pr = data[index];
       const pg = data[index + 1];
       const pb = data[index + 2];
-      const light = (pr + pg + pb) / 3;
-      const inFaceBand = y > 30 && y < 52 && x > 22 && x < 74;
       totalR += pr;
       totalG += pg;
       totalB += pb;
@@ -406,8 +395,6 @@ async function analyzeImage(file) {
         coatCount++;
       }
       contrast += Math.abs(pr - pg) + Math.abs(pg - pb) + Math.abs(pb - pr);
-      if (inFaceBand && isSkinTone(pr, pg, pb)) skinFaceBand++;
-      if (inFaceBand && light < 74) darkFaceBand++;
       count++;
     }
   }
@@ -417,20 +404,17 @@ async function analyzeImage(file) {
   const avgG = (coatCount ? coatG : totalG) / sourceCount;
   const avgB = (coatCount ? coatB : totalB) / sourceCount;
   const warmTone = avgR + avgG * 0.25 > avgB + 40;
-  const hasGlasses = skinFaceBand > 10 && darkFaceBand / skinFaceBand > 0.42;
   const patterned = contrast / count > 82;
   const color = nearestColor(rgbToHex(avgR, avgG, avgB));
   URL.revokeObjectURL(url);
 
   return {
-    hasGlasses,
     warmTone,
     patterned,
     color,
     previewDataUrl: canvas.toDataURL("image/png"),
-    pattern: patterned ? (hasGlasses ? "stripe" : "patch") : "solid",
+    pattern: patterned ? "patch" : "solid",
     tail: warmTone ? "long" : "short",
-    legs: hasGlasses ? "long" : "short",
   };
 }
 
@@ -440,11 +424,9 @@ async function handlePhotoFile(file) {
   const features = await analyzeImage(file);
   if (features) {
     state.analysis = features;
-    state.hasGlasses = features.hasGlasses;
     setRadioValue("color", features.color);
     setRadioValue("pattern", features.pattern);
     setRadioValue("tail", features.tail);
-    setRadioValue("legs", features.legs);
     syncState();
     featureTags.innerHTML = tagList(features).map((tag) => `<span>${tag}</span>`).join("");
     analysisStatus.textContent = I18N[state.language].generated;
@@ -477,7 +459,7 @@ function orderDraft() {
       tail: state.tail,
       legs: state.legs,
       pattern: state.pattern,
-      accessories: state.hasGlasses ? ["glasses"] : [],
+      accessories: [],
     },
   };
 }
