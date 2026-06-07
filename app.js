@@ -512,7 +512,6 @@ function setLanguage(language) {
   document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
     element.placeholder = I18N[language][element.dataset.i18nPlaceholder];
   });
-  updateDrawerLabel();
   applyMobileWallpaper();
 }
 
@@ -520,15 +519,17 @@ languageButtons.forEach((button) => {
   button.addEventListener("click", () => setLanguage(button.dataset.lang));
 });
 
-drawerToggle.addEventListener("click", () => {
-  state.drawerCollapsed = !state.drawerCollapsed;
-  shell.classList.toggle("drawer-collapsed", state.drawerCollapsed);
-  drawerToggle.setAttribute("aria-expanded", String(!state.drawerCollapsed));
-  updateDrawerLabel();
-  requestAnimationFrame(fitWallpaper);
-  setTimeout(fitWallpaper, 450);
-  if (window.gsap) gsap.fromTo(wallpaper, { scale: 0.98 }, { scale: 1, duration: 0.45, ease: "power2.out" });
-});
+if (drawerToggle) {
+  drawerToggle.addEventListener("click", () => {
+    state.drawerCollapsed = !state.drawerCollapsed;
+    shell.classList.toggle("drawer-collapsed", state.drawerCollapsed);
+    drawerToggle.setAttribute("aria-expanded", String(!state.drawerCollapsed));
+    updateDrawerLabel();
+    requestAnimationFrame(fitWallpaper);
+    setTimeout(fitWallpaper, 450);
+    if (window.gsap) gsap.fromTo(wallpaper, { scale: 0.98 }, { scale: 1, duration: 0.45, ease: "power2.out" });
+  });
+}
 
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -621,7 +622,7 @@ async function downloadAvatar() {
   link.click();
 }
 
-downloadButton.addEventListener("click", downloadAvatar);
+if (downloadButton) downloadButton.addEventListener("click", downloadAvatar);
 if (avatarButton) avatarButton.addEventListener("click", downloadAvatar);
 
 renderScene(false);
