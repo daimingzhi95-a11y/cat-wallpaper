@@ -51,7 +51,7 @@ button { cursor: pointer; }
   align-items: center;
   gap: 10px;
   padding: 0 clamp(12px, 3vw, 30px);
-  border-bottom: 4px solid var(--ink);
+  border-bottom: 0;
   background: var(--paper);
   z-index: 5;
 }
@@ -115,7 +115,7 @@ button { cursor: pointer; }
   border: 4px solid var(--ink);
   color: #fff;
   background: var(--mint);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: none;
   font-size: 12px;
 }
 
@@ -175,7 +175,7 @@ h2 { font-size: 21px; }
   overflow: hidden;
   border: 6px solid var(--ink);
   background: #fffaf0;
-  box-shadow: 8px 8px 0 var(--ink);
+  box-shadow: none;
   image-rendering: pixelated;
   transition: width .35s ease;
 }
@@ -349,7 +349,7 @@ h2 { font-size: 21px; }
   background: var(--ink);
 }
 .customizer-top {
-  position: sticky;
+  position: static;
   top: 0;
   z-index: 5;
   display: grid;
@@ -390,7 +390,7 @@ h2 { font-size: 21px; }
   padding: 0;
   border: 4px solid var(--ink);
   background: var(--yellow);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: none;
   font-size: 0;
 }
 .drawer-chevron {
@@ -729,7 +729,7 @@ legend {
     min-width: 38px;
     padding: 0;
     border-width: 3px;
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: none;
     font-size: 0;
   }
   .download-btn span:last-child {
@@ -750,7 +750,7 @@ legend {
   }
   .wallpaper {
     border-width: 4px;
-    box-shadow: 6px 6px 0 var(--ink);
+    box-shadow: none;
   }
   .wallpaper-mobile {
     width: min(31svh, 238px);
@@ -813,7 +813,7 @@ legend {
     min-width: 44px;
     min-height: 44px;
     border-width: 3px;
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: none;
   }
   .tab-panel.is-active {
     grid-template-columns: 1fr;
