@@ -43,7 +43,7 @@ const state = {
 
 const I18N = {
   ja: {
-    brand: "ねこ図鑑", workshop: "头像工房", download: "头像を保存", previewTitle: "正面ピクセルねこ头像",
+    brand: "ピクタウン", workshop: "头像工房", download: "头像を保存", previewTitle: "正面ピクセルねこ头像",
     customize: "写真から作って、細部を調整", photoStep: "01 写真", looks: "02 見た目", scene: "02 シーン", profile: "03 仕上げ", fur: "毛並み", shortFur: "短毛", longFur: "長毛",
     tail: "しっぽ", longTail: "長い", shortTail: "短い", legs: "足の長さ", shortLegs: "短い", longLegs: "長い", pattern: "模様", stripe: "しま模様", solid: "単色", patch: "ぶち",
     mainColor: "メインカラー", plants: "植物の部屋", plantsHint: "ねこが好きなグリーン", bed: "あたたかいベッド", bedHint: "やわらかくて安心", tree: "キャットタワー",
@@ -55,7 +55,7 @@ const I18N = {
     featureGlasses: "めがね", featureWarm: "暖色", featureCool: "寒色", featurePattern: "模様あり", collapse: "設定を閉じる", expand: "設定を開く",
   },
   zh: {
-    brand: "喵图鉴", workshop: "头像工坊", download: "保存头像", previewTitle: "正面像素猫头像",
+    brand: "ピクタウン", workshop: "头像工坊", download: "保存头像", previewTitle: "正面像素猫头像",
     customize: "先放照片，再调整细节", photoStep: "01 照片", looks: "02 外观", scene: "02 场景", profile: "03 完成", fur: "毛发", shortFur: "短毛", longFur: "长毛",
     tail: "尾巴", longTail: "长尾", shortTail: "短尾", legs: "腿长", shortLegs: "短腿", longLegs: "长腿", pattern: "花纹", stripe: "虎斑", solid: "纯色", patch: "花斑",
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
@@ -67,7 +67,7 @@ const I18N = {
     featurePattern: "有花纹", collapse: "收起设置", expand: "展开设置",
   },
   en: {
-    brand: "Cat Atlas", workshop: "Avatar Studio", download: "Save avatar", previewTitle: "Front pixel cat avatar",
+    brand: "ピクタウン", workshop: "Avatar Studio", download: "Save avatar", previewTitle: "Front pixel cat avatar",
     customize: "Start from a photo, then tune details", photoStep: "01 Photo", looks: "02 Looks", scene: "02 Scene", profile: "03 Finish", fur: "Fur", shortFur: "Short", longFur: "Long",
     tail: "Tail", longTail: "Long", shortTail: "Short", legs: "Legs", shortLegs: "Short", longLegs: "Long", pattern: "Pattern", stripe: "Tabby", solid: "Solid", patch: "Patch",
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
