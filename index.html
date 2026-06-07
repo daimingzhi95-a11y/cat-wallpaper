@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="定制猫咪外观，生成专属猫咪姿势壁纸。" />
-    <title>喵图鉴 · 猫咪壁纸工坊</title>
+    <meta name="description" content="写真から特徴を読み取り、正方形のピクセルねこ头像を生成します。" />
+    <title>喵图鉴 · 像素猫头像生成器</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=20260607-photo-flow" />
+    <link rel="stylesheet" href="./style.css?v=20260607-avatar-flow" />
   </head>
   <body>
     <main class="game-shell">
@@ -19,7 +19,7 @@
           <button type="button" class="lang-btn" data-lang="zh">中文</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
         </div>
-        <button id="download-btn" class="download-btn" type="button"><span data-i18n="download">壁紙を保存</span><span aria-hidden="true">↓</span></button>
+        <button id="download-btn" class="download-btn" type="button"><span data-i18n="download">头像を保存</span><span aria-hidden="true">↓</span></button>
       </header>
 
       <section class="hero-stage" aria-labelledby="preview-title">
@@ -34,12 +34,12 @@
           <div class="arena-orbit orbit-two"></div>
           <div class="wallpaper-frame">
             <div class="frame-corner corner-a"></div><div class="frame-corner corner-b"></div>
-            <div id="wallpaper" class="wallpaper wallpaper-mobile">
+            <div id="wallpaper" class="wallpaper avatar-preview">
               <div id="background-scene" class="background-scene" aria-hidden="true"></div>
               <div class="paper-grain"></div>
               <div id="pose-ring" class="pose-ring" aria-hidden="true"></div>
               <div class="portrait-card">
-                <div class="photo-frame">
+                <div class="photo-frame avatar-frame">
                   <img id="photo-preview" alt="猫咪照片预览" />
                   <div id="photo-placeholder" class="photo-placeholder" aria-hidden="true"><span class="placeholder-ears">⌃</span><span class="placeholder-face">• ᴗ •</span></div>
                 </div>
@@ -56,16 +56,28 @@
           <div><h2 id="customizer-title" data-i18n="customize">ねこの見た目をカスタム</h2></div>
           <div class="customizer-actions">
             <nav class="customizer-tabs" aria-label="设置分类">
-              <button type="button" class="tab-btn is-active" data-tab="looks" data-i18n="looks">01 見た目</button>
-              <button type="button" class="tab-btn" data-tab="scene" data-i18n="scene">02 シーン</button>
-              <button type="button" class="tab-btn" data-tab="profile" data-i18n="profile">03 プロフィール</button>
+              <button type="button" class="tab-btn is-active" data-tab="photo" data-i18n="photoStep">01 写真</button>
+              <button type="button" class="tab-btn" data-tab="looks" data-i18n="looks">02 見た目</button>
+              <button type="button" class="tab-btn" data-tab="profile" data-i18n="profile">03 仕上げ</button>
             </nav>
             <button id="drawer-toggle" class="drawer-toggle" type="button" aria-expanded="true"><span data-drawer-label>設定を閉じる</span><span class="drawer-chevron" aria-hidden="true">⌄</span></button>
           </div>
         </div>
 
         <form id="cat-form">
-          <section class="tab-panel is-active" data-panel="looks">
+          <section class="tab-panel is-active" data-panel="photo">
+            <div class="flow-card step-card">
+              <b data-i18n="analysisTitle">まず写真から特徴を読む</b>
+              <p id="analysis-status" data-i18n="analysisIdle">写真は保存せず、色・模様・めがねなどの要素だけを使って初版のピクセルねこを作ります。</p>
+              <div id="feature-tags" class="feature-tags" aria-live="polite"></div>
+            </div>
+            <div class="capture-grid">
+              <label class="upload-box" for="cat-photo"><input id="cat-photo" type="file" accept="image/*" /><span class="upload-icon">↑</span><span><b data-i18n="upload">写真をアップロード</b><small data-i18n="uploadHint">正面写真がおすすめ</small></span></label>
+              <label class="upload-box" for="cat-camera"><input id="cat-camera" type="file" accept="image/*" capture="user" /><span class="upload-icon">◎</span><span><b data-i18n="camera">カメラで撮影</b><small data-i18n="cameraHint">撮った写真から生成</small></span></label>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="looks">
             <div class="control-card trait-card">
               <fieldset><legend data-i18n="fur">毛並み</legend><div class="segmented-control"><label><input type="radio" name="fur" value="short" checked /><span data-i18n="shortFur">短毛</span></label><label><input type="radio" name="fur" value="long" /><span data-i18n="longFur">長毛</span></label></div></fieldset>
             </div>
@@ -85,28 +97,10 @@
             </div>
           </section>
 
-          <section class="tab-panel" data-panel="scene">
-            <fieldset class="scene-fieldset"><legend class="sr-only">壁纸背景</legend><div class="background-options">
-              <label><input type="radio" name="background" value="plants" checked /><span class="background-option"><span class="background-icon">♧</span><span><b data-i18n="plants">植物の部屋</b><small data-i18n="plantsHint">ねこが好きなグリーン</small></span></span></label>
-              <label><input type="radio" name="background" value="bed" /><span class="background-option"><span class="background-icon">⌒</span><span><b data-i18n="bed">あたたかいベッド</b><small data-i18n="bedHint">やわらかくて安心</small></span></span></label>
-              <label><input type="radio" name="background" value="tree" /><span class="background-option"><span class="background-icon">╞</span><span><b data-i18n="tree">キャットタワー</b><small data-i18n="treeHint">好奇心いっぱいのねこへ</small></span></span></label>
-            </div></fieldset>
-          </section>
-
           <section class="tab-panel" data-panel="profile">
-            <label class="profile-field"><span><b data-i18n="catName">ねこの名前</b><small data-i18n="catNameHint">壁紙の中央に表示されます</small></span><input id="cat-name" type="text" value="Mochi" maxlength="18" placeholder="ねこの名前を入力" data-i18n-placeholder="catNamePlaceholder" /></label>
-            <div class="capture-grid">
-              <label class="upload-box" for="cat-photo"><input id="cat-photo" type="file" accept="image/*" /><span class="upload-icon">↑</span><span><b data-i18n="upload">写真をアップロード</b><small data-i18n="uploadHint">正面または半身写真がおすすめ</small></span></label>
-              <label class="upload-box" for="cat-camera"><input id="cat-camera" type="file" accept="image/*" capture="user" /><span class="upload-icon">◎</span><span><b data-i18n="camera">カメラで撮影</b><small data-i18n="cameraHint">その場で撮って生成</small></span></label>
-            </div>
-            <div class="flow-card">
-              <b data-i18n="analysisTitle">生成ステータス</b>
-              <p id="analysis-status" data-i18n="analysisIdle">写真を入れると、特徴を見てピクセルねこを作ります。</p>
-              <div id="feature-tags" class="feature-tags" aria-live="polite"></div>
-            </div>
+            <label class="profile-field"><span><b data-i18n="catName">ねこの名前</b><small data-i18n="catNameHint">头像ファイル名に使います</small></span><input id="cat-name" type="text" value="Mochi" maxlength="18" placeholder="ねこの名前を入力" data-i18n-placeholder="catNamePlaceholder" /></label>
             <div class="download-grid">
               <button id="avatar-btn" class="secondary-btn" type="button"><span data-i18n="avatarDownload">头像を保存</span></button>
-              <button id="wallpaper-btn" class="secondary-btn" type="button"><span data-i18n="wallpaperDownload">壁紙を保存</span></button>
             </div>
             <div class="order-card">
               <b data-i18n="orderTitle">3Dプリント实体化</b>
@@ -125,6 +119,6 @@
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <script src="./app.js?v=20260607-photo-flow"></script>
+    <script src="./app.js?v=20260607-avatar-flow"></script>
   </body>
 </html>
