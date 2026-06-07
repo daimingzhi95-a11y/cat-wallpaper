@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="写真から特徴を読み取り、正方形のピクセルねこ头像を生成します。" />
-    <title>喵图鉴 · 像素猫头像生成器</title>
+    <title>ピクタウン</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=20260607-center-soft-shadow-2" />
+    <link rel="stylesheet" href="./style.css?v=20260607-pikutown-no-cat-shadow" />
     <style>
       .game-header {
         grid-template-columns: auto 1fr !important;
@@ -66,7 +66,7 @@
         width: 100%;
         height: 100%;
         transform: translateY(0);
-        filter: drop-shadow(9px 9px 0 rgba(255, 255, 255, .92));
+        filter: none !important;
       }
       @media (max-width: 700px) {
         .avatar-preview .avatar-frame {
@@ -82,7 +82,7 @@
   <body>
     <main class="game-shell">
       <header class="game-header">
-        <a class="brand" href="#" aria-label="喵图鉴首页"><span class="brand-mark">⌁</span><span data-i18n="brand">ねこ図鑑</span></a>
+        <a class="brand" href="#" aria-label="ピクタウン"><span class="brand-mark">⌁</span><span data-i18n="brand">ピクタウン</span></a>
         <div class="language-switch" aria-label="Language">
           <button type="button" class="lang-btn is-active" data-lang="ja">日本語</button>
           <button type="button" class="lang-btn" data-lang="zh">中文</button>
@@ -180,6 +180,6 @@
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <script src="./app.js?v=20260607-center-soft-shadow-2"></script>
+    <script src="./app.js?v=20260607-pikutown-no-cat-shadow"></script>
   </body>
 </html>
