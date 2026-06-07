@@ -225,7 +225,7 @@ function patternMarkup(type, dark) {
 function poseSvg(pose, index) {
   const color = state.color;
   const dark = darken(color);
-  const outline = "#2f3a35";
+  const outline = "#171717";
   const cream = "#fff1d7";
   const blush = "#f18b86";
   const eye = "#17211e";
@@ -235,17 +235,27 @@ function poseSvg(pose, index) {
   const longFur = state.fur === "long";
   const px = (x, y, w, h, fill = color, opacity = 1) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${opacity < 1 ? ` opacity="${opacity}"` : ""}/>`;
   const rects = (parts, fill = color) => parts.map(([x, y, w, h, partFill = fill, opacity = 1]) => px(x, y, w, h, partFill, opacity)).join("");
-  const shell = (parts, fill = color) => rects(parts, outline) + rects(parts.map(([x, y, w, h]) => [x + 3, y + 3, Math.max(1, w - 6), Math.max(1, h - 6)]), fill);
-  const headParts = [
-    [26, 22, 13, 18], [65, 22, 13, 18],
-    [19, 36, 63, 12], [14, 48, 72, 25], [17, 73, 67, 12],
-    [22, 85, 14, 10], [65, 85, 14, 10],
+  const outlineParts = [
+    [27, 18, 12, 17], [66, 18, 12, 17],
+    [23, 31, 58, 10], [16, 38, 72, 20], [12, 52, 82, 24], [16, 72, 76, 15],
+    [35, 72, 56, 28], [39, 94, 54, 12],
+    [74, 51, 26, 9], [87, 58, 24, 12], [83, 68, 33, 30], [77, 92, 36, 16],
+    [30, 96, 16, 24], [54, 98, 16, 24], [82, 96, 16, 23], [100, 91, 17, 23],
+    ...(tailLong
+      ? [[102, 52, 12, 14], [108, 40, 11, 15], [112, 27, 11, 16], [113, 14, 11, 15], [108, 8, 12, 12]]
+      : [[102, 62, 13, 13], [110, 57, 10, 10]]),
   ];
-  const bodyParts = [
-    [70, 55, 25, 9], [82, 61, 22, 10], [78, 70, 32, 27],
-    [74, 88, 32, 18], [38, 76, 48, 23], [36, 94, 54, 12],
+  const fillParts = [
+    [31, 25, 7, 15], [67, 25, 7, 15],
+    [25, 38, 54, 10], [19, 47, 68, 18], [17, 58, 75, 17], [21, 75, 68, 11],
+    [39, 78, 50, 20], [42, 96, 48, 8],
+    [75, 58, 23, 8], [87, 66, 22, 11], [85, 75, 28, 21], [79, 94, 31, 10],
+    [34, 102, 9, 17], [58, 103, 9, 17], [86, 102, 9, 16], [104, 97, 9, 16],
+    ...(tailLong
+      ? [[106, 55, 6, 10], [111, 43, 6, 12], [115, 30, 5, 13], [116, 17, 5, 12], [111, 12, 7, 8]]
+      : [[106, 65, 7, 9], [112, 60, 6, 7]]),
   ];
-  const earInner = `${px(31, 29, 7, 10, "#f4bd91")}${px(68, 29, 7, 10, "#f4bd91")}`;
+  const earInner = `${px(32, 28, 5, 9, "#f4bd91")}${px(68, 28, 5, 9, "#f4bd91")}`;
   const muzzle = `${px(43, 61, 22, 16, cream)}${px(38, 65, 32, 10, cream)}`;
   const face = `
     ${px(31, 52, 8, 10, eye)}${px(63, 52, 8, 10, eye)}
@@ -263,15 +273,15 @@ function poseSvg(pose, index) {
   const pattern = state.pattern === "solid" ? "" : state.pattern === "patch" ? patches : tabby;
   const furTufts = longFur ? `${px(13, 76, 6, 7, cream)}${px(80, 78, 6, 7, cream)}${px(36, 102, 6, 6, cream)}${px(90, 102, 6, 6, cream)}` : "";
   const legs = longLegs
-    ? `${shell([[32, 96, 12, 24], [55, 97, 12, 24], [82, 96, 12, 24], [99, 93, 12, 23]])}${px(35, 114, 8, 3, cream)}${px(58, 115, 8, 3, cream)}${px(85, 114, 8, 3, cream)}${px(102, 112, 8, 3, cream)}`
-    : `${shell([[31, 100, 13, 18], [55, 101, 13, 18], [82, 100, 13, 18], [99, 96, 13, 18]])}${px(34, 114, 8, 3, cream)}${px(58, 115, 8, 3, cream)}${px(85, 114, 8, 3, cream)}${px(102, 110, 8, 3, cream)}`;
+    ? `${px(34, 113, 9, 4, cream)}${px(58, 115, 9, 4, cream)}${px(86, 113, 9, 4, cream)}${px(104, 111, 9, 4, cream)}`
+    : `${px(34, 113, 8, 4, cream)}${px(58, 114, 8, 4, cream)}${px(86, 113, 8, 4, cream)}${px(104, 109, 8, 4, cream)}`;
   const tail = tailLong
-    ? `${shell([[101, 53, 11, 13], [108, 41, 10, 15], [112, 28, 10, 15], [113, 16, 10, 15], [108, 10, 11, 12]])}${px(111, 31, 7, 4, dark)}${px(108, 47, 7, 4, dark)}${px(103, 61, 7, 4, dark)}`
-    : `${shell([[101, 62, 11, 12], [109, 57, 9, 10]])}${px(107, 63, 6, 3, dark)}`;
+    ? `${px(112, 31, 7, 4, dark)}${px(109, 47, 7, 4, dark)}${px(104, 61, 7, 4, dark)}`
+    : `${px(107, 65, 6, 3, dark)}`;
   const catFront = `
-    ${tail}
-    ${shell(bodyParts)}${legs}
-    ${shell(headParts)}${earInner}${muzzle}${pattern}${furTufts}${face}`;
+    ${rects(outlineParts, outline)}
+    ${rects(fillParts, color)}
+    ${tail}${legs}${earInner}${muzzle}${pattern}${furTufts}${face}`;
 
   const bodies = {
     front: catFront,
