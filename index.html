@@ -9,6 +9,49 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./style.css?v=20260607-tobe-avatar" />
+    <style>
+      .avatar-preview {
+        background: linear-gradient(135deg, rgba(255, 226, 239, .9), rgba(225, 246, 255, .86) 48%, rgba(255, 249, 192, .88)), #fffaf0;
+      }
+      .avatar-preview .background-scene {
+        display: none !important;
+      }
+      .avatar-preview .paper-grain {
+        opacity: .11;
+        background-size: 18px 18px;
+      }
+      .avatar-preview .portrait-card {
+        top: 50%;
+        width: 100%;
+        height: 100%;
+        place-items: center;
+        transform: translate(-50%, -50%) !important;
+        filter: none !important;
+      }
+      .avatar-preview .avatar-frame {
+        width: min(82%, 330px);
+        aspect-ratio: 1 / 1;
+        border: 0 !important;
+        outline: 0 !important;
+        overflow: visible;
+        background: transparent;
+      }
+      .avatar-preview .avatar-frame .photo-placeholder svg {
+        width: 150%;
+        height: 150%;
+        transform: translateY(2%);
+        filter: drop-shadow(9px 9px 0 rgba(255, 255, 255, .92));
+      }
+      @media (max-width: 700px) {
+        .avatar-preview .avatar-frame {
+          width: min(84%, 250px);
+        }
+        .avatar-preview .avatar-frame .photo-placeholder svg {
+          width: 156%;
+          height: 156%;
+        }
+      }
+    </style>
   </head>
   <body>
     <main class="game-shell">
