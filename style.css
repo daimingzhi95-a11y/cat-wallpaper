@@ -47,7 +47,7 @@ button { cursor: pointer; }
 
 .game-header {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: 10px;
   padding: 0 clamp(12px, 3vw, 30px);
@@ -86,9 +86,7 @@ button { cursor: pointer; }
   box-shadow: 4px 4px 0 var(--ink);
 }
 .lang-btn,
-.tab-btn,
-.drawer-toggle,
-.download-btn {
+.tab-btn {
   border: 0;
   color: var(--ink);
   background: transparent;
@@ -105,20 +103,6 @@ button { cursor: pointer; }
   background: var(--mint);
   box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .2);
 }
-.download-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  height: 40px;
-  padding: 0 14px;
-  border: 4px solid var(--ink);
-  color: #fff;
-  background: var(--mint);
-  box-shadow: none;
-  font-size: 12px;
-}
-
 .hero-stage {
   min-height: 0;
   display: grid;
@@ -361,10 +345,8 @@ h2 { font-size: 21px; }
 }
 .customizer-actions {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 46px;
+  display: block;
   align-items: center;
-  gap: 9px;
 }
 .customizer-tabs {
   display: grid;
@@ -381,48 +363,6 @@ h2 { font-size: 21px; }
   font-size: 11px;
   line-height: 1.15;
 }
-.drawer-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 46px;
-  min-height: 46px;
-  padding: 0;
-  border: 4px solid var(--ink);
-  background: var(--yellow);
-  box-shadow: none;
-  font-size: 0;
-}
-.drawer-chevron {
-  display: inline-block;
-  font-size: 18px;
-  line-height: 8px;
-  transition: transform .35s ease;
-}
-.drawer-collapsed .customizer {
-  overflow: hidden;
-  padding-bottom: 12px;
-}
-.drawer-collapsed .customizer-top {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-}
-.drawer-collapsed .customizer-top > div:first-child,
-.drawer-collapsed .customizer-tabs,
-.drawer-collapsed #cat-form {
-  display: none;
-}
-.drawer-collapsed .customizer-actions {
-  display: flex;
-}
-.drawer-collapsed .drawer-chevron {
-  transform: rotate(180deg);
-}
-
 .tab-panel {
   display: none;
   gap: 10px;
@@ -699,7 +639,7 @@ legend {
     grid-template-rows: 52px minmax(238px, 36svh) minmax(0, 1fr);
   }
   .game-header {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     gap: 8px;
     padding: 0 10px;
   }
@@ -722,18 +662,6 @@ legend {
     min-width: 30px;
     padding: 5px 5px;
     font-size: 9px;
-  }
-  .download-btn {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    padding: 0;
-    border-width: 3px;
-    box-shadow: none;
-    font-size: 0;
-  }
-  .download-btn span:last-child {
-    font-size: 17px;
   }
   .hero-stage {
     padding: 9px 10px;
@@ -797,7 +725,7 @@ legend {
     display: none;
   }
   .customizer-actions {
-    gap: 8px;
+    display: block;
   }
   .customizer-tabs {
     border-width: 3px;
@@ -808,12 +736,6 @@ legend {
     padding: 8px 4px;
     font-size: 10px;
     white-space: normal;
-  }
-  .drawer-toggle {
-    min-width: 44px;
-    min-height: 44px;
-    border-width: 3px;
-    box-shadow: none;
   }
   .tab-panel.is-active {
     grid-template-columns: 1fr;
