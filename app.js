@@ -237,39 +237,41 @@ function poseSvg(pose, index) {
   const rects = (parts, fill = color) => parts.map(([x, y, w, h, partFill = fill, opacity = 1]) => px(x, y, w, h, partFill, opacity)).join("");
   const shell = (parts, fill = color) => rects(parts, outline) + rects(parts.map(([x, y, w, h]) => [x + 3, y + 3, Math.max(1, w - 6), Math.max(1, h - 6)]), fill);
   const headParts = [
-    [37, 30, 54, 9], [31, 39, 66, 36], [34, 75, 60, 12],
-    [25, 47, 12, 27], [91, 47, 12, 27], [41, 24, 13, 14], [74, 24, 13, 14],
+    [26, 22, 13, 18], [65, 22, 13, 18],
+    [19, 36, 63, 12], [14, 48, 72, 25], [17, 73, 67, 12],
+    [22, 85, 14, 10], [65, 85, 14, 10],
   ];
   const bodyParts = [
-    [39, 76, 50, 9], [35, 85, 58, 28], [41, 113, 18, 9], [69, 113, 18, 9],
+    [70, 55, 25, 9], [82, 61, 22, 10], [78, 70, 32, 27],
+    [74, 88, 32, 18], [38, 76, 48, 23], [36, 94, 54, 12],
   ];
-  const earInner = `${px(44, 30, 7, 7, "#f4bd91")}${px(77, 30, 7, 7, "#f4bd91")}`;
-  const belly = `${px(45, 85, 38, 27, cream)}${px(49, 112, 10, 5, cream)}${px(69, 112, 10, 5, cream)}`;
+  const earInner = `${px(31, 29, 7, 10, "#f4bd91")}${px(68, 29, 7, 10, "#f4bd91")}`;
+  const muzzle = `${px(43, 61, 22, 16, cream)}${px(38, 65, 32, 10, cream)}`;
   const face = `
-    ${px(45, 55, 8, 10, eye)}${px(75, 55, 8, 10, eye)}
-    ${px(48, 56, 3, 3, shine)}${px(78, 56, 3, 3, shine)}
-    ${px(62, 66, 6, 4, blush)}${px(57, 75, 8, 3, eye)}${px(68, 75, 8, 3, eye)}
-    ${px(40, 69, 6, 4, "#f7a39a", .7)}${px(86, 69, 6, 4, "#f7a39a", .7)}`;
+    ${px(31, 52, 8, 10, eye)}${px(63, 52, 8, 10, eye)}
+    ${px(34, 53, 3, 3, shine)}${px(66, 53, 3, 3, shine)}
+    ${px(50, 61, 7, 4, eye)}${px(48, 66, 5, 5, eye)}${px(55, 66, 5, 5, eye)}
+    ${px(26, 65, 7, 4, "#f7a39a", .72)}${px(72, 65, 7, 4, "#f7a39a", .72)}`;
   const tabby = `
-    ${px(54, 40, 5, 18, dark)}${px(64, 38, 5, 20, dark)}${px(74, 40, 5, 16, dark)}
-    ${px(33, 56, 10, 4, dark)}${px(88, 56, 10, 4, dark)}
-    ${px(36, 90, 8, 4, dark)}${px(84, 91, 8, 4, dark)}`;
+    ${px(43, 36, 5, 15, dark)}${px(52, 34, 5, 17, dark)}${px(61, 36, 5, 14, dark)}
+    ${px(18, 56, 16, 4, dark)}${px(71, 56, 14, 4, dark)}
+    ${px(86, 67, 5, 19, dark)}${px(96, 71, 5, 22, dark)}${px(105, 77, 5, 17, dark)}
+    ${px(38, 83, 10, 4, dark)}`;
   const patches = `
-    ${px(34, 43, 18, 16, dark)}${px(80, 67, 15, 12, dark)}
-    ${px(44, 87, 12, 10, dark)}${px(73, 96, 14, 9, dark)}`;
+    ${px(21, 48, 18, 16, dark)}${px(62, 70, 15, 12, dark)}
+    ${px(88, 67, 17, 18, dark)}${px(43, 86, 12, 8, dark)}`;
   const pattern = state.pattern === "solid" ? "" : state.pattern === "patch" ? patches : tabby;
-  const furTufts = longFur ? `${px(29, 73, 6, 7, cream)}${px(94, 73, 6, 7, cream)}${px(38, 111, 6, 6, cream)}${px(84, 111, 6, 6, cream)}` : "";
+  const furTufts = longFur ? `${px(13, 76, 6, 7, cream)}${px(80, 78, 6, 7, cream)}${px(36, 102, 6, 6, cream)}${px(90, 102, 6, 6, cream)}` : "";
   const legs = longLegs
-    ? `${shell([[42, 105, 15, 22], [71, 105, 15, 22]])}${px(45, 121, 9, 3, cream)}${px(74, 121, 9, 3, cream)}`
-    : `${shell([[42, 109, 16, 16], [70, 109, 16, 16]])}${px(45, 120, 10, 3, cream)}${px(73, 120, 10, 3, cream)}`;
+    ? `${shell([[32, 96, 12, 24], [55, 97, 12, 24], [82, 96, 12, 24], [99, 93, 12, 23]])}${px(35, 114, 8, 3, cream)}${px(58, 115, 8, 3, cream)}${px(85, 114, 8, 3, cream)}${px(102, 112, 8, 3, cream)}`
+    : `${shell([[31, 100, 13, 18], [55, 101, 13, 18], [82, 100, 13, 18], [99, 96, 13, 18]])}${px(34, 114, 8, 3, cream)}${px(58, 115, 8, 3, cream)}${px(85, 114, 8, 3, cream)}${px(102, 110, 8, 3, cream)}`;
   const tail = tailLong
-    ? `${shell([[88, 84, 12, 14], [96, 74, 11, 15], [99, 61, 10, 15], [94, 52, 12, 11]])}${px(100, 67, 6, 4, dark)}${px(97, 82, 6, 4, dark)}`
-    : `${shell([[88, 87, 12, 13], [96, 82, 10, 11]])}${px(97, 87, 6, 3, dark)}`;
+    ? `${shell([[101, 53, 11, 13], [108, 41, 10, 15], [112, 28, 10, 15], [113, 16, 10, 15], [108, 10, 11, 12]])}${px(111, 31, 7, 4, dark)}${px(108, 47, 7, 4, dark)}${px(103, 61, 7, 4, dark)}`
+    : `${shell([[101, 62, 11, 12], [109, 57, 9, 10]])}${px(107, 63, 6, 3, dark)}`;
   const catFront = `
     ${tail}
-    ${shell(bodyParts)}${belly}${legs}
-    ${shell(headParts)}${earInner}${pattern}${furTufts}${face}
-    ${px(34, 124, 60, 3, "#2f3a35", .22)}`;
+    ${shell(bodyParts)}${legs}
+    ${shell(headParts)}${earInner}${muzzle}${pattern}${furTufts}${face}`;
 
   const bodies = {
     front: catFront,
