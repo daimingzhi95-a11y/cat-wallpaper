@@ -225,51 +225,65 @@ function patternMarkup(type, dark) {
 function poseSvg(pose, index) {
   const color = state.color;
   const dark = darken(color);
-  const outline = "#38443f";
-  const cream = "#f6ead7";
+  const outline = "#2f3a35";
+  const cream = "#fff1d7";
+  const blush = "#f18b86";
+  const eye = "#17211e";
+  const shine = "#fffaf0";
   const tailLong = state.tail === "long";
   const longLegs = state.legs === "long";
   const longFur = state.fur === "long";
-  const px = (x, y, w, h, fill = color) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
-  const block = (x, y, w, h, fill = color) => `${px(x - 4, y - 4, w + 8, h + 8, outline)}${px(x, y, w, h, fill)}`;
-  const face = (x, y) => `
-    ${px(x + 12, y + 18, 5, 5, outline)}${px(x + 29, y + 18, 5, 5, outline)}
-    ${px(x + 22, y + 27, 6, 4, "#e87373")}
-    ${px(x + 18, y + 34, 7, 3, outline)}${px(x + 29, y + 34, 7, 3, outline)}`;
-  const ears = (x, y) => `${block(x + 4, y, 10, 10)}${block(x + 32, y, 10, 10)}`;
-  const stripes = (x, y) => {
-    if (state.pattern === "solid") return "";
-    if (state.pattern === "patch") return `${px(x + 7, y + 10, 13, 8, dark)}${px(x + 33, y + 28, 10, 8, dark)}`;
-    return `${px(x + 10, y + 8, 5, 14, dark)}${px(x + 21, y + 6, 5, 16, dark)}${px(x + 32, y + 10, 5, 13, dark)}`;
-  };
-  const fluff = (x, y) => longFur ? `${px(x - 6, y + 12, 6, 6, cream)}${px(x + 44, y + 15, 6, 6, cream)}${px(x + 8, y + 44, 6, 6, cream)}` : "";
-  const legs = (x, y) => longLegs ? `${block(x + 6, y + 43, 8, 20)}${block(x + 31, y + 43, 8, 20)}` : `${block(x + 8, y + 48, 8, 13)}${block(x + 29, y + 48, 8, 13)}`;
-  const tail = (x, y, dir = 1) => {
-    if (dir < 0) {
-      return tailLong
-        ? `${block(x - 11, y + 31, 11, 11)}${block(x - 19, y + 20, 11, 11)}${block(x - 17, y + 9, 10, 10)}`
-        : `${block(x - 12, y + 34, 12, 12)}`;
-    }
-    return tailLong
-      ? `${block(x + 42, y + 31, 11, 11)}${block(x + 50, y + 20, 11, 11)}${block(x + 48, y + 9, 10, 10)}`
-      : `${block(x + 41, y + 34, 12, 12)}`;
-  };
-  const head = (x, y, showFace = true) => `${ears(x, y)}${block(x, y + 10, 48, 40)}${stripes(x, y)}${showFace ? face(x, y + 10) : px(x + 20, y + 23, 10, 8, dark)}`;
-  const body = (x, y, w = 50, h = 38) => `${block(x, y, w, h)}${px(x + 8, y + 6, Math.max(12, w - 19), Math.max(9, h - 18), cream)}`;
+  const px = (x, y, w, h, fill = color, opacity = 1) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${opacity < 1 ? ` opacity="${opacity}"` : ""}/>`;
+  const rects = (parts, fill = color) => parts.map(([x, y, w, h, partFill = fill, opacity = 1]) => px(x, y, w, h, partFill, opacity)).join("");
+  const shell = (parts, fill = color) => rects(parts, outline) + rects(parts.map(([x, y, w, h]) => [x + 3, y + 3, Math.max(1, w - 6), Math.max(1, h - 6)]), fill);
+  const headParts = [
+    [37, 30, 54, 9], [31, 39, 66, 36], [34, 75, 60, 12],
+    [25, 47, 12, 27], [91, 47, 12, 27], [41, 24, 13, 14], [74, 24, 13, 14],
+  ];
+  const bodyParts = [
+    [39, 76, 50, 9], [35, 85, 58, 28], [41, 113, 18, 9], [69, 113, 18, 9],
+  ];
+  const earInner = `${px(44, 30, 7, 7, "#f4bd91")}${px(77, 30, 7, 7, "#f4bd91")}`;
+  const belly = `${px(45, 85, 38, 27, cream)}${px(49, 112, 10, 5, cream)}${px(69, 112, 10, 5, cream)}`;
+  const face = `
+    ${px(45, 55, 8, 10, eye)}${px(75, 55, 8, 10, eye)}
+    ${px(48, 56, 3, 3, shine)}${px(78, 56, 3, 3, shine)}
+    ${px(62, 66, 6, 4, blush)}${px(57, 75, 8, 3, eye)}${px(68, 75, 8, 3, eye)}
+    ${px(40, 69, 6, 4, "#f7a39a", .7)}${px(86, 69, 6, 4, "#f7a39a", .7)}`;
+  const tabby = `
+    ${px(54, 40, 5, 18, dark)}${px(64, 38, 5, 20, dark)}${px(74, 40, 5, 16, dark)}
+    ${px(33, 56, 10, 4, dark)}${px(88, 56, 10, 4, dark)}
+    ${px(36, 90, 8, 4, dark)}${px(84, 91, 8, 4, dark)}`;
+  const patches = `
+    ${px(34, 43, 18, 16, dark)}${px(80, 67, 15, 12, dark)}
+    ${px(44, 87, 12, 10, dark)}${px(73, 96, 14, 9, dark)}`;
+  const pattern = state.pattern === "solid" ? "" : state.pattern === "patch" ? patches : tabby;
+  const furTufts = longFur ? `${px(29, 73, 6, 7, cream)}${px(94, 73, 6, 7, cream)}${px(38, 111, 6, 6, cream)}${px(84, 111, 6, 6, cream)}` : "";
+  const legs = longLegs
+    ? `${shell([[42, 105, 15, 22], [71, 105, 15, 22]])}${px(45, 121, 9, 3, cream)}${px(74, 121, 9, 3, cream)}`
+    : `${shell([[42, 109, 16, 16], [70, 109, 16, 16]])}${px(45, 120, 10, 3, cream)}${px(73, 120, 10, 3, cream)}`;
+  const tail = tailLong
+    ? `${shell([[88, 84, 12, 14], [96, 74, 11, 15], [99, 61, 10, 15], [94, 52, 12, 11]])}${px(100, 67, 6, 4, dark)}${px(97, 82, 6, 4, dark)}`
+    : `${shell([[88, 87, 12, 13], [96, 82, 10, 11]])}${px(97, 87, 6, 3, dark)}`;
+  const catFront = `
+    ${tail}
+    ${shell(bodyParts)}${belly}${legs}
+    ${shell(headParts)}${earInner}${pattern}${furTufts}${face}
+    ${px(34, 124, 60, 3, "#2f3a35", .22)}`;
 
   const bodies = {
-    front: `${body(18, 48, 52, 38)}${legs(21, 33)}${head(20, 18)}${tail(24, 48)}${longFur ? `${px(12, 48, 8, 8, cream)}${px(68, 53, 8, 8, cream)}` : ""}`,
-    sit: `${body(26, 43, 45, 35)}${legs(28, 37)}${head(25, 18)}${tail(26, 43)}`,
-    loaf: `${body(20, 53, 60, 26)}${head(27, 27)}${tail(28, 49)}`,
-    walk: `${body(17, 48, 63, 28)}${head(20, 25)}${legs(20, 35)}${tail(34, 44)}`,
-    curl: `${body(22, 49, 58, 31)}${head(24, 27)}${block(17, 64, 16, 12)}${tail(24, 43, -1)}`,
-    stretch: `${body(14, 51, 68, 25)}${head(20, 29)}${block(12, 72, 18, 10)}${block(67, 72, 18, 10)}${tail(36, 43)}`,
-    back: `${body(24, 43, 49, 38)}${legs(27, 36)}${head(25, 18, false)}${tail(27, 42)}`,
-    peek: `${body(22, 55, 56, 26)}${head(25, 33)}${block(20, 75, 18, 8)}${tail(30, 49)}`,
+    front: catFront,
+    sit: catFront,
+    loaf: catFront,
+    walk: catFront,
+    curl: catFront,
+    stretch: catFront,
+    back: catFront,
+    peek: catFront,
   };
 
-  return `<svg width="100" height="100" viewBox="0 0 100 100" role="img" aria-label="猫咪姿势 ${index + 1}" shape-rendering="crispEdges">
-    <rect width="100" height="100" fill="none"/>
+  return `<svg width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="猫咪姿势 ${index + 1}" shape-rendering="crispEdges">
+    <rect width="128" height="128" fill="none"/>
     ${bodies[pose]}
   </svg>`;
 }
