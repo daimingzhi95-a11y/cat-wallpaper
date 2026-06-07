@@ -14,7 +14,6 @@ const tabButtons = document.querySelectorAll("[data-tab]");
 const tabPanels = document.querySelectorAll("[data-panel]");
 const downloadButton = document.querySelector("#download-btn");
 const avatarButton = document.querySelector("#avatar-btn");
-const wallpaperButton = document.querySelector("#wallpaper-btn");
 const analysisStatus = document.querySelector("#analysis-status");
 const featureTags = document.querySelector("#feature-tags");
 const orderButton = document.querySelector("#order-btn");
@@ -44,37 +43,37 @@ const state = {
 
 const I18N = {
   ja: {
-    brand: "ねこ図鑑", workshop: "壁紙工房", download: "壁紙を保存", previewTitle: "あなただけのねこ図鑑",
-    customize: "ねこの見た目をカスタム", looks: "01 見た目", scene: "02 シーン", profile: "03 プロフィール", fur: "毛並み", shortFur: "短毛", longFur: "長毛",
+    brand: "ねこ図鑑", workshop: "头像工房", download: "头像を保存", previewTitle: "正面ピクセルねこ头像",
+    customize: "写真から作って、細部を調整", photoStep: "01 写真", looks: "02 見た目", scene: "02 シーン", profile: "03 仕上げ", fur: "毛並み", shortFur: "短毛", longFur: "長毛",
     tail: "しっぽ", longTail: "長い", shortTail: "短い", legs: "足の長さ", shortLegs: "短い", longLegs: "長い", pattern: "模様", stripe: "しま模様", solid: "単色", patch: "ぶち",
     mainColor: "メインカラー", plants: "植物の部屋", plantsHint: "ねこが好きなグリーン", bed: "あたたかいベッド", bedHint: "やわらかくて安心", tree: "キャットタワー",
-    treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "壁紙の中央に表示されます", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
-    uploadHint: "正面または半身写真がおすすめ", camera: "カメラで撮影", cameraHint: "その場で撮って生成", analysisTitle: "生成ステータス",
-    analysisIdle: "写真を入れると、特徴を見てピクセルねこを作ります。", analyzing: "特徴を見ています...", generated: "ピクセルねこが生まれました。原图は自動で削除しました。",
-    avatarDownload: "头像を保存", wallpaperDownload: "壁紙を保存", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
+    treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "头像ファイル名に使います", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
+    uploadHint: "正面写真がおすすめ", camera: "カメラで撮影", cameraHint: "撮った写真から生成", analysisTitle: "まず写真から特徴を読む",
+    analysisIdle: "写真は保存せず、色・模様・めがねなどの要素だけを使って初版のピクセルねこを作ります。", analyzing: "特徴を見ています...", generated: "初版のピクセルねこが生まれました。原图は自動で削除しました。",
+    avatarDownload: "头像を保存", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
     orderButton: "3Dプリントを相談", orderSize: "サイズ", orderContact: "連絡先", orderSubmit: "下書きを作成", orderReady: "注文メモを作りました。生成猫の設定だけを使います。",
     featureGlasses: "めがね", featureWarm: "暖色", featureCool: "寒色", featurePattern: "模様あり", collapse: "設定を閉じる", expand: "設定を開く",
   },
   zh: {
-    brand: "喵图鉴", workshop: "壁纸工坊", download: "保存壁纸", previewTitle: "你的专属猫咪图鉴",
-    customize: "定制猫咪外观", looks: "01 外观", scene: "02 场景", profile: "03 身份", fur: "毛发", shortFur: "短毛", longFur: "长毛",
+    brand: "喵图鉴", workshop: "头像工坊", download: "保存头像", previewTitle: "正面像素猫头像",
+    customize: "先放照片，再调整细节", photoStep: "01 照片", looks: "02 外观", scene: "02 场景", profile: "03 完成", fur: "毛发", shortFur: "短毛", longFur: "长毛",
     tail: "尾巴", longTail: "长尾", shortTail: "短尾", legs: "腿长", shortLegs: "短腿", longLegs: "长腿", pattern: "花纹", stripe: "虎斑", solid: "纯色", patch: "花斑",
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
-    catName: "猫咪名字", catNameHint: "会显示在壁纸中央", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面或半身照效果最好",
-    camera: "拍照生成", cameraHint: "现场拍一张并生成", analysisTitle: "生成状态", analysisIdle: "放入照片后，会观察特征并生成像素猫。",
-    analyzing: "正在观察特征...", generated: "像素猫诞生了。原图已自动删除。", avatarDownload: "保存头像", wallpaperDownload: "保存壁纸",
+    catName: "猫咪名字", catNameHint: "用于头像文件名", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面照片效果最好",
+    camera: "拍照生成", cameraHint: "从现场照片提取要素", analysisTitle: "先从照片提取要素", analysisIdle: "照片不会被做成像素画，只提取颜色、花纹、眼镜等要素生成第一版小猫。",
+    analyzing: "正在观察特征...", generated: "第一版像素猫生成好了。原图已自动删除。", avatarDownload: "保存头像",
     orderTitle: "3D 打印实体化", orderHint: "喜欢的话，可以把这只猫做成小摆件。", orderButton: "咨询 3D 打印", orderSize: "尺寸", orderContact: "联系方式",
     orderSubmit: "生成下单草稿", orderReady: "已生成下单草稿。只使用生成猫配置，不保存原图。", featureGlasses: "眼镜", featureWarm: "暖色", featureCool: "冷色",
     featurePattern: "有花纹", collapse: "收起设置", expand: "展开设置",
   },
   en: {
-    brand: "Cat Atlas", workshop: "Wallpaper Studio", download: "Save wallpaper", previewTitle: "Your personal cat atlas",
-    customize: "Customize your cat", looks: "01 Looks", scene: "02 Scene", profile: "03 Profile", fur: "Fur", shortFur: "Short", longFur: "Long",
+    brand: "Cat Atlas", workshop: "Avatar Studio", download: "Save avatar", previewTitle: "Front pixel cat avatar",
+    customize: "Start from a photo, then tune details", photoStep: "01 Photo", looks: "02 Looks", scene: "02 Scene", profile: "03 Finish", fur: "Fur", shortFur: "Short", longFur: "Long",
     tail: "Tail", longTail: "Long", shortTail: "Short", legs: "Legs", shortLegs: "Short", longLegs: "Long", pattern: "Pattern", stripe: "Tabby", solid: "Solid", patch: "Patch",
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
-    catName: "Cat name", catNameHint: "Shown in the center of your wallpaper", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front or half-body photos work best",
-    camera: "Take photo", cameraHint: "Snap and generate", analysisTitle: "Generation status", analysisIdle: "Add a photo and the site will turn visual cues into a pixel cat.",
-    analyzing: "Reading visual cues...", generated: "Your pixel cat is born. The original image was deleted automatically.", avatarDownload: "Save avatar", wallpaperDownload: "Save wallpaper",
+    catName: "Cat name", catNameHint: "Used for the avatar file name", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front photos work best",
+    camera: "Take photo", cameraHint: "Extract cues from the photo", analysisTitle: "Extract photo cues first", analysisIdle: "The photo is not pixelated directly. It only supplies color, pattern, glasses, and other cues for the first cat.",
+    analyzing: "Reading visual cues...", generated: "First pixel cat generated. The original image was deleted automatically.", avatarDownload: "Save avatar",
     orderTitle: "3D print figure", orderHint: "If you like it, turn this cat into a small figure.", orderButton: "Ask about 3D print", orderSize: "Size", orderContact: "Contact",
     orderSubmit: "Create order draft", orderReady: "Order draft created. It uses only the generated cat settings.", featureGlasses: "Glasses", featureWarm: "Warm tone", featureCool: "Cool tone",
     featurePattern: "Patterned", collapse: "Hide settings", expand: "Show settings",
@@ -204,7 +203,7 @@ function renderScene(animate = true) {
 }
 
 function selectedValue(name) {
-  return form.querySelector(`[name="${name}"]:checked`).value;
+  return form.querySelector(`[name="${name}"]:checked`)?.value || state[name];
 }
 
 function darken(hex, amount = 42) {
@@ -265,6 +264,7 @@ function poseSvg(pose, index) {
   const body = (x, y, w = 50, h = 38) => `${block(x, y, w, h)}${px(x + 8, y + 6, Math.max(12, w - 19), Math.max(9, h - 18), cream)}`;
 
   const bodies = {
+    front: `${body(24, 48, 52, 38)}${legs(27, 40)}${head(26, 18)}${tail(30, 48)}${longFur ? `${px(18, 48, 8, 8, cream)}${px(74, 53, 8, 8, cream)}` : ""}`,
     sit: `${body(26, 43, 45, 35)}${legs(28, 37)}${head(25, 18)}${tail(26, 43)}`,
     loaf: `${body(20, 53, 60, 26)}${head(27, 27)}${tail(28, 49)}`,
     walk: `${body(17, 48, 63, 28)}${head(20, 25)}${legs(20, 35)}${tail(34, 44)}`,
@@ -281,16 +281,17 @@ function poseSvg(pose, index) {
 }
 
 function renderPoses(animate = true) {
-  poseRing.innerHTML = POSES.map(
-    (pose, index) => `<div class="pose pose-${index}" style="--cat-color:${state.color}">${poseSvg(pose, index)}</div>`,
-  ).join("");
-  photoPlaceholder.innerHTML = poseSvg("sit", 0);
+  poseRing.innerHTML = "";
+  photoPlaceholder.innerHTML = poseSvg("front", 0);
+  photoPlaceholder.style.display = "grid";
+  photoPreview.style.display = "none";
+  photoPreview.removeAttribute("src");
 
   if (animate && window.gsap) {
     gsap.fromTo(
-      ".pose",
-      { scale: 0.86, autoAlpha: 0, y: 10 },
-      { scale: 1, autoAlpha: 1, y: 0, duration: 0.55, ease: "back.out(1.5)", stagger: 0.055, overwrite: true },
+      ".photo-frame",
+      { scale: 0.9, autoAlpha: 0.7 },
+      { scale: 1, autoAlpha: 1, duration: 0.45, ease: "back.out(1.5)", overwrite: true },
     );
   }
 }
@@ -301,10 +302,10 @@ function syncState() {
   state.legs = selectedValue("legs");
   state.pattern = selectedValue("pattern");
   state.color = selectedValue("color");
-  const nextBackground = selectedValue("background");
+  const nextBackground = selectedValue("background") || state.background;
   state.name = catName.value.trim() || "my cat";
   wallpaperName.textContent = state.name;
-  if (state.background !== nextBackground) {
+  if (nextBackground && state.background !== nextBackground) {
     state.background = nextBackground;
     renderScene();
   }
@@ -412,15 +413,10 @@ async function analyzeImage(file) {
 async function handlePhotoFile(file) {
   if (!file) return;
   if (state.photoUrl) URL.revokeObjectURL(state.photoUrl);
-  state.photoUrl = URL.createObjectURL(file);
-  photoPreview.src = state.photoUrl;
-  photoPreview.style.display = "block";
-  photoPlaceholder.style.display = "none";
   const features = await analyzeImage(file);
   if (features) {
     state.analysis = features;
     state.hasGlasses = features.hasGlasses;
-    photoPreview.src = features.previewDataUrl;
     setRadioValue("color", features.color);
     setRadioValue("pattern", features.pattern);
     setRadioValue("tail", features.tail);
@@ -429,7 +425,6 @@ async function handlePhotoFile(file) {
     featureTags.innerHTML = tagList(features).map((tag) => `<span>${tag}</span>`).join("");
     analysisStatus.textContent = I18N[state.language].generated;
   }
-  URL.revokeObjectURL(state.photoUrl);
   state.photoUrl = "";
   photoInput.value = "";
   if (cameraInput) cameraInput.value = "";
@@ -486,14 +481,15 @@ if (orderSubmit) {
 function fitWallpaper() {
   const maxWidth = wallpaperFrame.clientWidth * 0.94;
   const maxHeight = Math.max(150, wallpaperFrame.clientHeight - 30);
-  const aspect = 9 / 16;
-  const cap = 340;
+  const aspect = 1;
+  const cap = 390;
   wallpaper.style.width = `${Math.min(maxWidth, maxHeight * aspect, cap)}px`;
 }
 
 function applyMobileWallpaper() {
   state.ratio = "mobile";
-  wallpaper.classList.add("wallpaper-mobile");
+  wallpaper.classList.remove("wallpaper-mobile");
+  wallpaper.classList.add("avatar-preview");
   requestAnimationFrame(fitWallpaper);
   renderPoses();
 }
@@ -574,94 +570,42 @@ function loadImage(src) {
   });
 }
 
-function drawPixelatedImage(ctx, image, x, y, width, height, rotation = 0) {
-  const sample = document.createElement("canvas");
-  sample.width = 120;
-  sample.height = Math.round(120 * (height / width));
-  const sampleCtx = sample.getContext("2d");
-  const imageRatio = image.width / image.height;
-  const targetRatio = width / height;
-  let sx = 0;
-  let sy = 0;
-  let sw = image.width;
-  let sh = image.height;
-  if (imageRatio > targetRatio) {
-    sw = image.height * targetRatio;
-    sx = (image.width - sw) / 2;
-  } else {
-    sh = image.width / targetRatio;
-    sy = (image.height - sh) / 2;
-  }
-  sampleCtx.drawImage(image, sx, sy, sw, sh, 0, 0, sample.width, sample.height);
-
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate((rotation * Math.PI) / 180);
-  ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = "#171717";
-  ctx.fillRect(-width / 2 + 30, -height / 2 + 30, width, height);
-  ctx.fillStyle = "#fffdf7";
-  ctx.fillRect(-width / 2 - 28, -height / 2 - 28, width + 56, height + 56);
-  ctx.strokeStyle = "#171717";
-  ctx.lineWidth = 16;
-  ctx.strokeRect(-width / 2 - 28, -height / 2 - 28, width + 56, height + 56);
-  ctx.drawImage(sample, -width / 2, -height / 2, width, height);
-  ctx.restore();
-  ctx.imageSmoothingEnabled = true;
-}
-
-function drawSceneOnCanvas(ctx, svg, width, height) {
-  return new Promise((resolve) => {
-    const image = new Image();
-    image.onload = () => {
-      ctx.drawImage(image, 0, 0, width, height);
-      resolve();
-    };
-    image.onerror = resolve;
-    image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  });
-}
-
-async function downloadWallpaper() {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1080;
-  canvas.height = 1920;
-  const ctx = canvas.getContext("2d");
-  const posePoints = [
-    [210, 445, 250, -8],
-    [810, 430, 250, 8],
-    [214, 910, 250, -4],
-    [825, 910, 250, 7],
-    [214, 1360, 250, 5],
-    [825, 1360, 250, -7],
-  ];
-
+function drawAvatarBackdrop(ctx, size) {
   const theme = THEMES[state.background];
   ctx.fillStyle = theme.base;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  await drawSceneOnCanvas(ctx, comicSceneSvg(state.background, canvas.width, canvas.height), canvas.width, canvas.height);
-  ctx.fillStyle = theme.grain;
-  ctx.globalAlpha = 0.14;
-  for (let x = 10; x < canvas.width; x += 18) {
-    for (let y = 10; y < canvas.height; y += 18) ctx.fillRect(x, y, 2, 2);
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = "#171717";
+  ctx.globalAlpha = 0.12;
+  for (let x = 24; x < size; x += 26) {
+    for (let y = 24; y < size; y += 26) ctx.fillRect(x, y, 4, 4);
   }
   ctx.globalAlpha = 1;
 
-  await Promise.all(posePoints.map(([x, y, width, rotation], index) => drawSvgOnCanvas(ctx, poseSvg(POSES[index], index), x, y, width, rotation)));
+  const cards = [
+    [60, 84, 250, 250, "#ffe2ef", -7],
+    [708, 96, 250, 250, "#ffd95c", 7],
+    [60, 694, 250, 250, "#e1f6ff", 6],
+    [704, 692, 250, 250, "#ff9b35", -6],
+  ];
+  cards.forEach(([x, y, w, h, fill, rotate]) => {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate((rotate * Math.PI) / 180);
+    ctx.fillStyle = "#171717";
+    ctx.fillRect(-w / 2 + 12, -h / 2 + 12, w, h);
+    ctx.fillStyle = fill;
+    ctx.fillRect(-w / 2, -h / 2, w, h);
+    ctx.strokeStyle = "#171717";
+    ctx.lineWidth = 10;
+    ctx.strokeRect(-w / 2, -h / 2, w, h);
+    ctx.restore();
+  });
 
-  const centerX = canvas.width / 2;
-  const centerY = 890;
-  const photo = photoPreview.src ? await loadImage(photoPreview.src) : null;
-  if (photo) {
-    drawPixelatedImage(ctx, photo, centerX, centerY, 500, 650, -4);
-  } else {
-    await drawSvgOnCanvas(ctx, poseSvg("sit", 0), centerX, centerY, 560, -4);
-  }
-
-  const link = document.createElement("a");
-  link.download = `${state.name || "my-cat"}-wallpaper.png`;
-  link.href = canvas.toDataURL("image/png");
-  link.click();
+  ctx.fillStyle = "rgba(255, 253, 247, .9)";
+  ctx.fillRect(180, 178, 664, 664);
+  ctx.strokeStyle = "#171717";
+  ctx.lineWidth = 18;
+  ctx.strokeRect(180, 178, 664, 664);
 }
 
 async function downloadAvatar() {
@@ -669,29 +613,15 @@ async function downloadAvatar() {
   canvas.width = 1024;
   canvas.height = 1024;
   const ctx = canvas.getContext("2d");
-  const theme = THEMES[state.background];
-  ctx.fillStyle = theme.base;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  await drawSceneOnCanvas(ctx, comicSceneSvg(state.background, canvas.width, canvas.height), canvas.width, canvas.height);
-  ctx.fillStyle = "rgba(255, 253, 247, .86)";
-  ctx.fillRect(110, 110, 804, 804);
-  ctx.strokeStyle = "#171717";
-  ctx.lineWidth = 18;
-  ctx.strokeRect(110, 110, 804, 804);
-  const photo = photoPreview.src ? await loadImage(photoPreview.src) : null;
-  if (photo) {
-    drawPixelatedImage(ctx, photo, 512, 506, 540, 650, -3);
-  } else {
-    await drawSvgOnCanvas(ctx, poseSvg("sit", 0), 512, 516, 610, -3);
-  }
+  drawAvatarBackdrop(ctx, canvas.width);
+  await drawSvgOnCanvas(ctx, poseSvg("front", 0), 512, 526, 650, 0);
   const link = document.createElement("a");
   link.download = `${state.name || "pixel-cat"}-avatar.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
 }
 
-downloadButton.addEventListener("click", downloadWallpaper);
-if (wallpaperButton) wallpaperButton.addEventListener("click", downloadWallpaper);
+downloadButton.addEventListener("click", downloadAvatar);
 if (avatarButton) avatarButton.addEventListener("click", downloadAvatar);
 
 renderScene(false);
