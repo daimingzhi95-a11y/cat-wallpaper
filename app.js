@@ -264,7 +264,7 @@ function poseSvg(pose, index) {
   const body = (x, y, w = 50, h = 38) => `${block(x, y, w, h)}${px(x + 8, y + 6, Math.max(12, w - 19), Math.max(9, h - 18), cream)}`;
 
   const bodies = {
-    front: `${body(24, 48, 52, 38)}${legs(27, 40)}${head(26, 18)}${tail(30, 48)}${longFur ? `${px(18, 48, 8, 8, cream)}${px(74, 53, 8, 8, cream)}` : ""}`,
+    front: `${body(18, 48, 52, 38)}${legs(21, 36)}${head(20, 18)}${tail(24, 48)}${longFur ? `${px(12, 48, 8, 8, cream)}${px(68, 53, 8, 8, cream)}` : ""}`,
     sit: `${body(26, 43, 45, 35)}${legs(28, 37)}${head(25, 18)}${tail(26, 43)}`,
     loaf: `${body(20, 53, 60, 26)}${head(27, 27)}${tail(28, 49)}`,
     walk: `${body(17, 48, 63, 28)}${head(20, 25)}${legs(20, 35)}${tail(34, 44)}`,
