@@ -342,109 +342,145 @@ function poseSvg(pose, index) {
     expression: traits.personality.expression,
     accessory: traits.personality.accessory,
   };
-  const px = (x, y, w, h, fill = palette.base, opacity = 1) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${opacity < 1 ? ` opacity="${opacity}"` : ""}/>`;
-  const rects = (parts, fill = palette.base) => parts.map(([x, y, w, h, partFill = fill, opacity = 1]) => px(x, y, w, h, partFill, opacity)).join("");
-  const bodyExtra = options.body === "round" ? [[88, 62, 13, 8], [92, 94, 12, 8]] : options.body === "slim" ? [[74, 51, 18, 9], [83, 68, 24, 26]] : [];
-  const earInnerParts = {
-    triangle: [[32, 28, 5, 9], [68, 28, 5, 9]],
-    round: [[32, 29, 6, 7], [68, 29, 6, 7]],
-    fold: [[31, 32, 7, 5], [67, 32, 7, 5]],
+  const grid = 31;
+  const coat = new Map();
+  const detail = new Map();
+  const key = (x, y) => `${x},${y}`;
+  const inGrid = (x, y) => x >= 0 && x < grid && y >= 0 && y < grid;
+  const setDot = (map, x, y, fill) => {
+    const dx = Math.round(x);
+    const dy = Math.round(y);
+    if (inGrid(dx, dy)) map.set(key(dx, dy), { x: dx, y: dy, fill });
   };
-  const avatarParts = {
-    silhouette: {
-      base: [
-        [27, 18, 12, 17], [66, 18, 12, 17],
-        [23, 31, 58, 10], [16, 38, 72, 20], [12, 52, 82, 24], [16, 72, 76, 15],
-        [35, 72, 56, 28], [39, 94, 54, 12],
-        [74, 51, 26, 9], [87, 58, 24, 12], [83, 68, 33, 30], [77, 92, 36, 16],
-        [30, 96, 16, 24], [54, 98, 16, 24], [82, 96, 16, 23], [100, 91, 17, 23],
-        ...bodyExtra,
-      ],
-      tail: {
-        long: [[102, 52, 12, 14], [108, 40, 11, 15], [112, 27, 11, 16], [113, 14, 11, 15], [108, 8, 12, 12]],
-        short: [[102, 62, 13, 13], [110, 57, 10, 10]],
-      },
-    },
-    coat: {
-      base: [
-        [31, 25, 7, 15], [67, 25, 7, 15],
-        [25, 38, 54, 10], [19, 47, 68, 18], [17, 58, 75, 17], [21, 75, 68, 11],
-        [39, 78, 50, 20], [42, 96, 48, 8],
-        [75, 58, 23, 8], [87, 66, 22, 11], [85, 75, 28, 21], [79, 94, 31, 10],
-        [34, 102, 9, 17], [58, 103, 9, 17], [86, 102, 9, 16], [104, 97, 9, 16],
-        ...bodyExtra.map(([x, y, w, h]) => [x + 2, y + 2, Math.max(1, w - 4), Math.max(1, h - 4)]),
-      ],
-      tail: {
-        long: [[106, 55, 6, 10], [111, 43, 6, 12], [115, 30, 5, 13], [116, 17, 5, 12], [111, 12, 7, 8]],
-        short: [[106, 65, 7, 9], [112, 60, 6, 7]],
-      },
-    },
-    ears: () => rects(earInnerParts[options.ear] || earInnerParts.triangle, palette.innerEar),
-    muzzle: () => `${px(43, 61, 22, 16, palette.cream)}${px(38, 65, 32, 10, palette.cream)}`,
-    face: () => {
-      const eyes = {
-        smile: `${px(31, 52, 8, 10, palette.eye)}${px(63, 52, 8, 10, palette.eye)}${px(34, 53, 3, 3, palette.shine)}${px(66, 53, 3, 3, palette.shine)}`,
-        wink: `${px(31, 55, 9, 3, palette.eye)}${px(63, 52, 8, 10, palette.eye)}${px(66, 53, 3, 3, palette.shine)}`,
-        sleepy: `${px(31, 56, 9, 3, palette.eye)}${px(63, 56, 9, 3, palette.eye)}`,
-        surprised: `${px(31, 51, 9, 11, palette.eye)}${px(63, 51, 9, 11, palette.eye)}${px(34, 52, 3, 3, palette.shine)}${px(66, 52, 3, 3, palette.shine)}${px(52, 70, 5, 5, palette.eye)}`,
-        cool: `${px(29, 53, 13, 7, palette.eye)}${px(61, 53, 13, 7, palette.eye)}${px(42, 55, 19, 3, palette.eye)}`,
-      };
-      return `
-      ${eyes[options.expression] || eyes.smile}
-      ${px(50, 61, 7, 4, palette.eye)}${px(48, 66, 5, 5, palette.eye)}${px(55, 66, 5, 5, palette.eye)}
-      ${px(26, 65, 7, 4, "#f7a39a", .72)}${px(72, 65, 7, 4, "#f7a39a", .72)}`;
-    },
-    patterns: {
-      solid: () => "",
-      tabby: () => `
-        ${px(43, 36, 5, 15, palette.dark)}${px(52, 34, 5, 17, palette.dark)}${px(61, 36, 5, 14, palette.dark)}
-        ${px(18, 56, 16, 4, palette.dark)}${px(71, 56, 14, 4, palette.dark)}
-        ${px(86, 67, 5, 19, palette.dark)}${px(96, 71, 5, 22, palette.dark)}${px(105, 77, 5, 17, palette.dark)}
-        ${px(38, 83, 10, 4, palette.dark)}`,
-      patch: () => `
-        ${px(21, 48, 18, 16, palette.dark)}${px(62, 70, 15, 12, palette.dark)}
-        ${px(88, 67, 17, 18, palette.dark)}${px(43, 86, 12, 8, palette.dark)}`,
-      calico: () => `${px(21, 48, 18, 16, palette.dark)}${px(88, 67, 17, 18, "#f0c45b")}${px(43, 86, 12, 8, palette.dark)}`,
-      cow: () => `${px(21, 48, 18, 16, "#343434")}${px(88, 67, 17, 18, "#343434")}${px(43, 86, 12, 8, "#343434")}`,
-      smoke: () => `${px(19, 47, 68, 18, "#6d7275", .55)}${px(85, 75, 28, 21, "#6d7275", .55)}`,
-      random: () => `${px(21, 48, 10, 10, palette.dark)}${px(62, 70, 9, 9, "#f0c45b")}${px(88, 67, 12, 12, "#343434")}${px(43, 86, 8, 8, "#f18b86")}`,
-    },
-    fur: {
-      short: () => "",
-      long: () => `${px(13, 76, 6, 7, palette.cream)}${px(80, 78, 6, 7, palette.cream)}${px(36, 102, 6, 6, palette.cream)}${px(90, 102, 6, 6, palette.cream)}`,
-    },
-    paws: {
-      short: () => `${px(34, 113, 8, 4, palette.cream)}${px(58, 114, 8, 4, palette.cream)}${px(86, 113, 8, 4, palette.cream)}${px(104, 109, 8, 4, palette.cream)}`,
-      long: () => `${px(34, 113, 9, 4, palette.cream)}${px(58, 115, 9, 4, palette.cream)}${px(86, 113, 9, 4, palette.cream)}${px(104, 111, 9, 4, palette.cream)}`,
-    },
-    tailMarks: {
-      long: () => `${px(112, 31, 7, 4, palette.dark)}${px(109, 47, 7, 4, palette.dark)}${px(104, 61, 7, 4, palette.dark)}`,
-      short: () => `${px(107, 65, 6, 3, palette.dark)}`,
-    },
-    accessories: {
-      none: () => "",
-      glasses: () => `${px(29, 51, 13, 3, palette.eye)}${px(61, 51, 13, 3, palette.eye)}${px(42, 54, 19, 3, palette.eye)}`,
-      ribbon: () => `${px(76, 36, 6, 8, "#e95678")}${px(82, 34, 9, 12, "#e95678")}${px(91, 36, 6, 8, "#e95678")}`,
-      hat: () => `${px(43, 21, 33, 6, "#343434")}${px(50, 10, 18, 12, "#343434")}`,
-      flower: () => `${px(78, 38, 5, 5, "#ffcf3d")}${px(73, 38, 5, 5, "#f18b86")}${px(83, 38, 5, 5, "#f18b86")}${px(78, 33, 5, 5, "#f18b86")}${px(78, 43, 5, 5, "#f18b86")}`,
-    },
+  const setCoat = (x, y, fill = palette.base) => setDot(coat, x, y, fill);
+  const setDetail = (x, y, fill) => {
+    if (coat.has(key(Math.round(x), Math.round(y)))) setDot(detail, x, y, fill);
   };
-  const catFront = [
-    rects([...avatarParts.silhouette.base, ...avatarParts.silhouette.tail[options.tail]], palette.outline),
-    rects([...avatarParts.coat.base, ...avatarParts.coat.tail[options.tail]], palette.base),
-    avatarParts.tailMarks[options.tail](),
-    avatarParts.paws[options.legs](),
-    avatarParts.ears(),
-    avatarParts.muzzle(),
-    avatarParts.patterns[options.pattern](),
-    avatarParts.fur[options.fur](),
-    avatarParts.accessories[options.accessory](),
-    avatarParts.face(),
+  const disk = (map, cx, cy, r, fill) => {
+    for (let y = Math.floor(cy - r - 1); y <= Math.ceil(cy + r + 1); y++) {
+      for (let x = Math.floor(cx - r - 1); x <= Math.ceil(cx + r + 1); x++) {
+        if ((x - cx) ** 2 + (y - cy) ** 2 <= r ** 2) setDot(map, x, y, fill);
+      }
+    }
+  };
+  const ellipse = (map, cx, cy, rx, ry, fill) => {
+    for (let y = Math.floor(cy - ry - 1); y <= Math.ceil(cy + ry + 1); y++) {
+      for (let x = Math.floor(cx - rx - 1); x <= Math.ceil(cx + rx + 1); x++) {
+        if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1) setDot(map, x, y, fill);
+      }
+    }
+  };
+  const triangle = (map, points, fill) => {
+    const [a, b, c] = points;
+    const area = (p1, p2, p3) => Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
+    const total = area(a, b, c);
+    const xs = points.map((p) => p.x);
+    const ys = points.map((p) => p.y);
+    for (let y = Math.min(...ys) - 1; y <= Math.max(...ys) + 1; y++) {
+      for (let x = Math.min(...xs) - 1; x <= Math.max(...xs) + 1; x++) {
+        const dot = { x, y };
+        if (Math.abs(area(dot, b, c) + area(a, dot, c) + area(a, b, dot) - total) < 0.35) setDot(map, x, y, fill);
+      }
+    }
+  };
+  const line = (map, points, r, fill) => {
+    points.slice(1).forEach((point, index) => {
+      const prev = points[index];
+      const steps = Math.max(Math.abs(point.x - prev.x), Math.abs(point.y - prev.y)) * 4;
+      for (let step = 0; step <= steps; step++) {
+        const t = step / steps;
+        disk(map, prev.x + (point.x - prev.x) * t, prev.y + (point.y - prev.y) * t, r, fill);
+      }
+    });
+  };
+
+  if (options.ear === "round") {
+    disk(coat, 9, 6, 3.1, palette.base);
+    disk(coat, 20, 6, 3.1, palette.base);
+  } else if (options.ear === "fold") {
+    triangle(coat, [{ x: 6, y: 8 }, { x: 10, y: 3 }, { x: 12, y: 9 }], palette.base);
+    triangle(coat, [{ x: 17, y: 9 }, { x: 21, y: 3 }, { x: 23, y: 8 }], palette.base);
+  } else {
+    triangle(coat, [{ x: 6, y: 9 }, { x: 9, y: 2 }, { x: 13, y: 9 }], palette.base);
+    triangle(coat, [{ x: 17, y: 9 }, { x: 21, y: 2 }, { x: 24, y: 9 }], palette.base);
+  }
+
+  const headRx = options.body === "slim" ? 8.3 : 9.4;
+  const bodyRx = options.body === "round" ? 8.7 : options.body === "slim" ? 7.1 : 8.1;
+  ellipse(coat, 14.5, 12, headRx, 6.4, palette.base);
+  ellipse(coat, 17.2, 20.2, bodyRx, 6.5, palette.base);
+
+  const legTop = options.legs === "long" ? 23.7 : 24.7;
+  const legRy = options.legs === "long" ? 3.4 : 2.4;
+  ellipse(coat, 10.2, legTop, 2.1, legRy, palette.base);
+  ellipse(coat, 15.2, legTop + 0.6, 2.1, legRy, palette.base);
+  ellipse(coat, 22.8, legTop, 2.2, legRy, palette.base);
+
+  if (options.tail === "long") {
+    line(coat, [{ x: 23.5, y: 18 }, { x: 26.5, y: 14 }, { x: 27.8, y: 8 }, { x: 26.6, y: 3.5 }], 1.3, palette.base);
+  } else {
+    line(coat, [{ x: 23.5, y: 20 }, { x: 27.6, y: 18.5 }, { x: 28.2, y: 16.6 }], 1.25, palette.base);
+  }
+
+  const outline = new Map();
+  coat.forEach(({ x, y }) => {
+    for (let oy = -1; oy <= 1; oy++) {
+      for (let ox = -1; ox <= 1; ox++) {
+        const nx = x + ox;
+        const ny = y + oy;
+        if (inGrid(nx, ny) && !coat.has(key(nx, ny))) setDot(outline, nx, ny, palette.outline);
+      }
+    }
+  });
+
+  ellipse({ set: (_, dot) => setDetail(dot.x, dot.y, palette.cream) }, 14.5, 15, 4, 2.4, palette.cream);
+  [[9, 6], [20, 6], [10, 7], [19, 7]].forEach(([x, y]) => setDetail(x, y, palette.innerEar));
+  [[10, 26], [15, 27], [23, 26]].forEach(([x, y]) => setDetail(x, y, palette.cream));
+  [[10, 17], [21, 17]].forEach(([x, y]) => setDetail(x, y, palette.blush));
+
+  const stripeDots = {
+    tabby: [[12, 8], [14, 8], [16, 8], [12, 9], [14, 9], [16, 9], [7, 13], [8, 13], [22, 13], [23, 13], [20, 19], [21, 19], [22, 19], [21, 20], [22, 20], [25, 13], [26, 10], [26, 7]],
+    calico: [[7, 12], [8, 11], [8, 12], [9, 12], [19, 18], [20, 18], [20, 19], [21, 19], [22, 20]],
+    cow: [[7, 12], [8, 12], [8, 13], [19, 18], [20, 18], [21, 19], [15, 22], [16, 22]],
+    smoke: [[10, 11], [11, 11], [12, 11], [18, 19], [19, 19], [20, 19], [21, 20], [22, 20]],
+    random: [[8, 11], [13, 8], [19, 18], [22, 20], [16, 23], [25, 13]],
+  };
+  (stripeDots[options.pattern] || []).forEach(([x, y], dotIndex) => {
+    const fill = options.pattern === "calico" && dotIndex > 3 ? "#f0c45b" : options.pattern === "cow" ? "#343434" : palette.dark;
+    disk(detail, x, y, options.pattern === "random" ? 0.8 : 0.65, fill);
+  });
+  if (options.fur === "long") {
+    [[6, 16], [8, 18], [12, 25], [18, 26], [24, 24]].forEach(([x, y]) => setDetail(x, y, palette.cream));
+  }
+
+  const eyes = {
+    smile: [[10, 13], [19, 13]],
+    wink: [[10, 13], [19, 13], [18, 13]],
+    sleepy: [[10, 14], [11, 14], [19, 14], [20, 14]],
+    surprised: [[10, 13], [10, 14], [19, 13], [19, 14]],
+    cool: [[9, 13], [10, 13], [11, 13], [18, 13], [19, 13], [20, 13]],
+  };
+  (eyes[options.expression] || eyes.smile).forEach(([x, y]) => setDetail(x, y, palette.eye));
+  [[14, 15], [13, 16], [15, 16]].forEach(([x, y]) => setDetail(x, y, palette.eye));
+
+  const accessoryDots = {
+    none: [],
+    glasses: [[9, 12], [10, 12], [11, 12], [18, 12], [19, 12], [20, 12], [12, 13], [17, 13]],
+    ribbon: [[22, 8], [23, 7], [23, 8], [24, 8], [23, 9]],
+    hat: [[11, 5], [12, 5], [13, 5], [14, 5], [15, 5], [16, 5], [13, 4], [14, 4], [15, 4]],
+    flower: [[22, 9], [21, 9], [23, 9], [22, 8], [22, 10]],
+  };
+  (accessoryDots[options.accessory] || []).forEach(([x, y]) => setDot(detail, x, y, options.accessory === "flower" ? "#f18b86" : options.accessory === "hat" ? "#343434" : palette.eye));
+
+  const dot = ({ x, y, fill }, r = 0.43) => `<circle class="dot" cx="${x + 0.5}" cy="${y + 0.5}" r="${r}" fill="${fill}"/>`;
+  const dots = [
+    ...Array.from(outline.values()).map((item) => dot(item, 0.47)),
+    ...Array.from(coat.values()).map((item) => dot(item)),
+    ...Array.from(detail.values()).map((item) => dot(item, 0.43)),
   ].join("");
 
-  return `<svg width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="猫咪姿势 ${index + 1}" shape-rendering="crispEdges">
-    <rect width="128" height="128" fill="none"/>
-    ${catFront}
+  return `<svg width="128" height="128" viewBox="0 0 31 31" role="img" aria-label="点阵猫 ${index + 1}" class="dot-avatar">
+    ${dots}
   </svg>`;
 }
 
