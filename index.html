@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=20260608-avatar-parts" />
+    <link rel="stylesheet" href="./style.css?v=20260609-trait-json-v1" />
     <style>
       .game-header {
         grid-template-columns: auto 1fr !important;
@@ -135,6 +135,7 @@
             <div class="capture-grid">
               <label class="upload-box" for="cat-photo"><input id="cat-photo" type="file" accept="image/*" /><span class="upload-icon">↑</span><span><b data-i18n="upload">写真をアップロード</b><small data-i18n="uploadHint">正面写真がおすすめ</small></span></label>
               <label class="upload-box" for="cat-camera"><input id="cat-camera" type="file" accept="image/*" capture="user" /><span class="upload-icon">◎</span><span><b data-i18n="camera">カメラで撮影</b><small data-i18n="cameraHint">撮った写真から生成</small></span></label>
+              <button id="random-btn" class="upload-box random-box" type="button"><span class="upload-icon">?</span><span><b data-i18n="randomize">ランダム生成</b><small data-i18n="randomHint">ワンクリックで Trait JSON を作成</small></span></button>
             </div>
           </section>
 
@@ -161,7 +162,6 @@
           <section class="tab-panel" data-panel="profile">
             <label class="profile-field"><span><b data-i18n="catName">ねこの名前</b><small data-i18n="catNameHint">头像ファイル名に使います</small></span><input id="cat-name" type="text" value="Mochi" maxlength="18" placeholder="ねこの名前を入力" data-i18n-placeholder="catNamePlaceholder" /></label>
             <div class="download-grid">
-              <button id="random-btn" class="secondary-btn" type="button"><span data-i18n="randomize">ランダム生成</span></button>
               <button id="avatar-btn" class="secondary-btn" type="button"><span data-i18n="avatarDownload">头像を保存</span></button>
             </div>
             <div class="order-card">
@@ -181,6 +181,6 @@
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <script src="./app.js?v=20260608-avatar-parts"></script>
+    <script src="./app.js?v=20260609-trait-json-v1"></script>
   </body>
 </html>
