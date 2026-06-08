@@ -290,7 +290,7 @@ h2 { font-size: 21px; }
   shape-rendering: crispEdges;
 }
 .walk-frame {
-  animation: walk-step-a .56s steps(1, end) infinite;
+  animation: walk-step-a .72s steps(1, end) infinite;
 }
 .walk-frame-b {
   animation-name: walk-step-b;
