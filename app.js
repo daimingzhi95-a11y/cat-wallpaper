@@ -39,6 +39,7 @@ const state = {
   name: "Mochi",
   photoUrl: "",
   analysis: null,
+  traits: null,
 };
 
 const I18N = {
@@ -50,7 +51,7 @@ const I18N = {
     treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "头像ファイル名に使います", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
     uploadHint: "正面写真がおすすめ", camera: "カメラで撮影", cameraHint: "撮った写真から生成", analysisTitle: "まず写真から特徴を読む",
     analysisIdle: "写真は保存せず、色・模様などの要素だけを使って初版のピクセルねこを作ります。", analyzing: "特徴を見ています...", generated: "初版のピクセルねこが生まれました。原图は自動で削除しました。",
-    avatarDownload: "头像を保存", randomize: "ランダム生成", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
+    avatarDownload: "头像を保存", randomize: "ランダム生成", randomHint: "ワンクリックで Trait JSON を作成", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
     orderButton: "3Dプリントを相談", orderSize: "サイズ", orderContact: "連絡先", orderSubmit: "下書きを作成", orderReady: "注文メモを作りました。生成猫の設定だけを使います。",
     featureWarm: "暖色", featureCool: "寒色", featurePattern: "模様あり", collapse: "設定を閉じる", expand: "設定を開く",
   },
@@ -61,7 +62,7 @@ const I18N = {
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
     catName: "猫咪名字", catNameHint: "用于头像文件名", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面照片效果最好",
     camera: "拍照生成", cameraHint: "从现场照片提取要素", analysisTitle: "先从照片提取要素", analysisIdle: "照片不会被做成像素画，只提取颜色、花纹等要素生成第一版小猫。",
-    analyzing: "正在观察特征...", generated: "第一版像素猫生成好了。原图已自动删除。", avatarDownload: "保存头像", randomize: "随机生成",
+    analyzing: "正在观察特征...", generated: "第一版像素猫生成好了。原图已自动删除。", avatarDownload: "保存头像", randomize: "随机生成", randomHint: "一键生成 Trait JSON",
     orderTitle: "3D 打印实体化", orderHint: "喜欢的话，可以把这只猫做成小摆件。", orderButton: "咨询 3D 打印", orderSize: "尺寸", orderContact: "联系方式",
     orderSubmit: "生成下单草稿", orderReady: "已生成下单草稿。只使用生成猫配置，不保存原图。", featureWarm: "暖色", featureCool: "冷色",
     featurePattern: "有花纹", collapse: "收起设置", expand: "展开设置",
@@ -73,7 +74,7 @@ const I18N = {
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
     catName: "Cat name", catNameHint: "Used for the avatar file name", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front photos work best",
     camera: "Take photo", cameraHint: "Extract cues from the photo", analysisTitle: "Extract photo cues first", analysisIdle: "The photo is not pixelated directly. It only supplies color, pattern, and other cues for the first cat.",
-    analyzing: "Reading visual cues...", generated: "First pixel cat generated. The original image was deleted automatically.", avatarDownload: "Save avatar", randomize: "Randomize",
+    analyzing: "Reading visual cues...", generated: "First pixel cat generated. The original image was deleted automatically.", avatarDownload: "Save avatar", randomize: "Randomize", randomHint: "One click to create Trait JSON",
     orderTitle: "3D print figure", orderHint: "If you like it, turn this cat into a small figure.", orderButton: "Ask about 3D print", orderSize: "Size", orderContact: "Contact",
     orderSubmit: "Create order draft", orderReady: "Order draft created. It uses only the generated cat settings.", featureWarm: "Warm tone", featureCool: "Cool tone",
     featurePattern: "Patterned", collapse: "Hide settings", expand: "Show settings",
@@ -92,6 +93,100 @@ const PANEL_THEMES = {
   bed: ["#ffa0c7", "#ffc857", "#9ee1ff", "#ff9248", "#c7ec85", "#ffb066"],
   tree: ["#ff9fb0", "#d8ee66", "#83d9ff", "#ff9c33", "#a6dd72", "#ffc247"],
 };
+
+const TRAIT_OPTIONS = {
+  body: ["round", "normal", "slim"],
+  leg: ["short", "normal", "long"],
+  tail: ["short", "normal", "long"],
+  fur: ["short", "medium", "long"],
+  ear: ["round", "triangle", "fold"],
+  pattern: ["solid", "tabby", "calico", "cow", "smoke", "random"],
+  expression: ["smile", "wink", "sleepy", "surprised", "cool"],
+  accessory: ["none", "glasses", "ribbon", "hat", "flower"],
+  personality: ["lazy", "cheerful", "calm", "shy", "curious"],
+};
+
+function createTrait(overrides = {}) {
+  const appearance = overrides.appearance || {};
+  const colors = appearance.colors || {};
+  return {
+    structure: {
+      body: "round",
+      leg: "short",
+      tail: "long",
+      fur: "short",
+      ear: "triangle",
+      ...(overrides.structure || {}),
+    },
+    appearance: {
+      pattern: "tabby",
+      mainColor: "#e8a85d",
+      subColor: "#fff1d7",
+      accentColor: "#9b642e",
+      color1: colors.color1 || appearance.color1 || appearance.mainColor || "#e8a85d",
+      color2: colors.color2 || appearance.color2 || appearance.subColor || "#fff1d7",
+      color3: colors.color3 || appearance.color3 || appearance.accentColor || "#9b642e",
+      color4: colors.color4 || appearance.color4 || "#f18b86",
+      color5: colors.color5 || appearance.color5 || "#171717",
+      ...appearance,
+    },
+    personality: {
+      expression: "smile",
+      accessory: "none",
+      personality: "curious",
+      ...(overrides.personality || {}),
+    },
+  };
+}
+
+function legacyPatternToTrait(value) {
+  return { stripe: "tabby", patch: "cow", solid: "solid" }[value] || "tabby";
+}
+
+function traitPatternToLegacy(value) {
+  return { tabby: "stripe", calico: "patch", cow: "patch", smoke: "patch", random: "patch", solid: "solid" }[value] || "stripe";
+}
+
+function selectedTraitFromControls() {
+  return createTrait({
+    structure: {
+      body: state.traits?.structure?.body || "round",
+      leg: selectedValue("legs") || "short",
+      tail: selectedValue("tail") || "long",
+      fur: selectedValue("fur") || "short",
+      ear: state.traits?.structure?.ear || "triangle",
+    },
+    appearance: {
+      pattern: legacyPatternToTrait(selectedValue("pattern")),
+      mainColor: selectedValue("color") || "#e8a85d",
+      subColor: state.traits?.appearance?.subColor || "#fff1d7",
+      accentColor: darken(selectedValue("color") || "#e8a85d"),
+    },
+    personality: state.traits?.personality || {},
+  });
+}
+
+function syncStateFromTrait() {
+  const traits = state.traits || createTrait();
+  state.fur = traits.structure.fur === "long" ? "long" : "short";
+  state.tail = traits.structure.tail === "short" ? "short" : "long";
+  state.legs = traits.structure.leg === "long" ? "long" : "short";
+  state.pattern = traitPatternToLegacy(traits.appearance.pattern);
+  state.color = traits.appearance.mainColor;
+}
+
+function applyTrait(traits, { updateControls = true } = {}) {
+  state.traits = createTrait(traits);
+  syncStateFromTrait();
+  if (updateControls) {
+    setRadioValue("fur", state.fur);
+    setRadioValue("tail", state.tail);
+    setRadioValue("legs", state.legs);
+    setRadioValue("pattern", state.pattern);
+    setRadioValue("color", state.color);
+  }
+  renderPoses();
+}
 
 function comicTexture(id, color) {
   return `
@@ -224,8 +319,9 @@ function patternMarkup(type, dark) {
 }
 
 function poseSvg(pose, index) {
-  const color = state.color;
-  const dark = darken(color);
+  const traits = state.traits || createTrait();
+  const color = traits.appearance.mainColor;
+  const dark = traits.appearance.accentColor || darken(color);
   const palette = {
     base: color,
     dark,
@@ -237,13 +333,23 @@ function poseSvg(pose, index) {
     innerEar: "#f4bd91",
   };
   const options = {
-    fur: state.fur,
-    tail: state.tail,
-    legs: state.legs,
-    pattern: state.pattern,
+    body: traits.structure.body,
+    fur: traits.structure.fur === "long" ? "long" : "short",
+    tail: traits.structure.tail === "short" ? "short" : "long",
+    legs: traits.structure.leg === "long" ? "long" : "short",
+    ear: traits.structure.ear,
+    pattern: traits.appearance.pattern,
+    expression: traits.personality.expression,
+    accessory: traits.personality.accessory,
   };
   const px = (x, y, w, h, fill = palette.base, opacity = 1) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${opacity < 1 ? ` opacity="${opacity}"` : ""}/>`;
   const rects = (parts, fill = palette.base) => parts.map(([x, y, w, h, partFill = fill, opacity = 1]) => px(x, y, w, h, partFill, opacity)).join("");
+  const bodyExtra = options.body === "round" ? [[88, 62, 13, 8], [92, 94, 12, 8]] : options.body === "slim" ? [[74, 51, 18, 9], [83, 68, 24, 26]] : [];
+  const earInnerParts = {
+    triangle: [[32, 28, 5, 9], [68, 28, 5, 9]],
+    round: [[32, 29, 6, 7], [68, 29, 6, 7]],
+    fold: [[31, 32, 7, 5], [67, 32, 7, 5]],
+  };
   const avatarParts = {
     silhouette: {
       base: [
@@ -252,6 +358,7 @@ function poseSvg(pose, index) {
         [35, 72, 56, 28], [39, 94, 54, 12],
         [74, 51, 26, 9], [87, 58, 24, 12], [83, 68, 33, 30], [77, 92, 36, 16],
         [30, 96, 16, 24], [54, 98, 16, 24], [82, 96, 16, 23], [100, 91, 17, 23],
+        ...bodyExtra,
       ],
       tail: {
         long: [[102, 52, 12, 14], [108, 40, 11, 15], [112, 27, 11, 16], [113, 14, 11, 15], [108, 8, 12, 12]],
@@ -265,22 +372,31 @@ function poseSvg(pose, index) {
         [39, 78, 50, 20], [42, 96, 48, 8],
         [75, 58, 23, 8], [87, 66, 22, 11], [85, 75, 28, 21], [79, 94, 31, 10],
         [34, 102, 9, 17], [58, 103, 9, 17], [86, 102, 9, 16], [104, 97, 9, 16],
+        ...bodyExtra.map(([x, y, w, h]) => [x + 2, y + 2, Math.max(1, w - 4), Math.max(1, h - 4)]),
       ],
       tail: {
         long: [[106, 55, 6, 10], [111, 43, 6, 12], [115, 30, 5, 13], [116, 17, 5, 12], [111, 12, 7, 8]],
         short: [[106, 65, 7, 9], [112, 60, 6, 7]],
       },
     },
-    ears: () => `${px(32, 28, 5, 9, palette.innerEar)}${px(68, 28, 5, 9, palette.innerEar)}`,
+    ears: () => rects(earInnerParts[options.ear] || earInnerParts.triangle, palette.innerEar),
     muzzle: () => `${px(43, 61, 22, 16, palette.cream)}${px(38, 65, 32, 10, palette.cream)}`,
-    face: () => `
-      ${px(31, 52, 8, 10, palette.eye)}${px(63, 52, 8, 10, palette.eye)}
-      ${px(34, 53, 3, 3, palette.shine)}${px(66, 53, 3, 3, palette.shine)}
+    face: () => {
+      const eyes = {
+        smile: `${px(31, 52, 8, 10, palette.eye)}${px(63, 52, 8, 10, palette.eye)}${px(34, 53, 3, 3, palette.shine)}${px(66, 53, 3, 3, palette.shine)}`,
+        wink: `${px(31, 55, 9, 3, palette.eye)}${px(63, 52, 8, 10, palette.eye)}${px(66, 53, 3, 3, palette.shine)}`,
+        sleepy: `${px(31, 56, 9, 3, palette.eye)}${px(63, 56, 9, 3, palette.eye)}`,
+        surprised: `${px(31, 51, 9, 11, palette.eye)}${px(63, 51, 9, 11, palette.eye)}${px(34, 52, 3, 3, palette.shine)}${px(66, 52, 3, 3, palette.shine)}${px(52, 70, 5, 5, palette.eye)}`,
+        cool: `${px(29, 53, 13, 7, palette.eye)}${px(61, 53, 13, 7, palette.eye)}${px(42, 55, 19, 3, palette.eye)}`,
+      };
+      return `
+      ${eyes[options.expression] || eyes.smile}
       ${px(50, 61, 7, 4, palette.eye)}${px(48, 66, 5, 5, palette.eye)}${px(55, 66, 5, 5, palette.eye)}
-      ${px(26, 65, 7, 4, "#f7a39a", .72)}${px(72, 65, 7, 4, "#f7a39a", .72)}`,
+      ${px(26, 65, 7, 4, "#f7a39a", .72)}${px(72, 65, 7, 4, "#f7a39a", .72)}`;
+    },
     patterns: {
       solid: () => "",
-      stripe: () => `
+      tabby: () => `
         ${px(43, 36, 5, 15, palette.dark)}${px(52, 34, 5, 17, palette.dark)}${px(61, 36, 5, 14, palette.dark)}
         ${px(18, 56, 16, 4, palette.dark)}${px(71, 56, 14, 4, palette.dark)}
         ${px(86, 67, 5, 19, palette.dark)}${px(96, 71, 5, 22, palette.dark)}${px(105, 77, 5, 17, palette.dark)}
@@ -288,6 +404,10 @@ function poseSvg(pose, index) {
       patch: () => `
         ${px(21, 48, 18, 16, palette.dark)}${px(62, 70, 15, 12, palette.dark)}
         ${px(88, 67, 17, 18, palette.dark)}${px(43, 86, 12, 8, palette.dark)}`,
+      calico: () => `${px(21, 48, 18, 16, palette.dark)}${px(88, 67, 17, 18, "#f0c45b")}${px(43, 86, 12, 8, palette.dark)}`,
+      cow: () => `${px(21, 48, 18, 16, "#343434")}${px(88, 67, 17, 18, "#343434")}${px(43, 86, 12, 8, "#343434")}`,
+      smoke: () => `${px(19, 47, 68, 18, "#6d7275", .55)}${px(85, 75, 28, 21, "#6d7275", .55)}`,
+      random: () => `${px(21, 48, 10, 10, palette.dark)}${px(62, 70, 9, 9, "#f0c45b")}${px(88, 67, 12, 12, "#343434")}${px(43, 86, 8, 8, "#f18b86")}`,
     },
     fur: {
       short: () => "",
@@ -301,6 +421,13 @@ function poseSvg(pose, index) {
       long: () => `${px(112, 31, 7, 4, palette.dark)}${px(109, 47, 7, 4, palette.dark)}${px(104, 61, 7, 4, palette.dark)}`,
       short: () => `${px(107, 65, 6, 3, palette.dark)}`,
     },
+    accessories: {
+      none: () => "",
+      glasses: () => `${px(29, 51, 13, 3, palette.eye)}${px(61, 51, 13, 3, palette.eye)}${px(42, 54, 19, 3, palette.eye)}`,
+      ribbon: () => `${px(76, 36, 6, 8, "#e95678")}${px(82, 34, 9, 12, "#e95678")}${px(91, 36, 6, 8, "#e95678")}`,
+      hat: () => `${px(43, 21, 33, 6, "#343434")}${px(50, 10, 18, 12, "#343434")}`,
+      flower: () => `${px(78, 38, 5, 5, "#ffcf3d")}${px(73, 38, 5, 5, "#f18b86")}${px(83, 38, 5, 5, "#f18b86")}${px(78, 33, 5, 5, "#f18b86")}${px(78, 43, 5, 5, "#f18b86")}`,
+    },
   };
   const catFront = [
     rects([...avatarParts.silhouette.base, ...avatarParts.silhouette.tail[options.tail]], palette.outline),
@@ -311,6 +438,7 @@ function poseSvg(pose, index) {
     avatarParts.muzzle(),
     avatarParts.patterns[options.pattern](),
     avatarParts.fur[options.fur](),
+    avatarParts.accessories[options.accessory](),
     avatarParts.face(),
   ].join("");
 
@@ -337,11 +465,8 @@ function renderPoses(animate = true) {
 }
 
 function syncState() {
-  state.fur = selectedValue("fur");
-  state.tail = selectedValue("tail");
-  state.legs = selectedValue("legs");
-  state.pattern = selectedValue("pattern");
-  state.color = selectedValue("color");
+  state.traits = selectedTraitFromControls();
+  syncStateFromTrait();
   const nextBackground = selectedValue("background") || state.background;
   state.name = catName.value.trim() || "my cat";
   wallpaperName.textContent = state.name;
@@ -368,11 +493,37 @@ function randomChoice(values) {
 }
 
 function randomizeAvatar() {
-  ["fur", "tail", "legs", "pattern", "color"].forEach((name) => {
-    const values = Array.from(form.querySelectorAll(`[name="${name}"]`)).map((input) => input.value);
-    if (values.length) setRadioValue(name, randomChoice(values));
+  const mainColor = randomChoice(Array.from(form.querySelectorAll('input[name="color"]')).map((input) => input.value));
+  const trait = createTrait({
+    structure: {
+      body: randomChoice(TRAIT_OPTIONS.body),
+      leg: randomChoice(TRAIT_OPTIONS.leg),
+      tail: randomChoice(TRAIT_OPTIONS.tail),
+      fur: randomChoice(TRAIT_OPTIONS.fur),
+      ear: randomChoice(TRAIT_OPTIONS.ear),
+    },
+    appearance: {
+      pattern: randomChoice(TRAIT_OPTIONS.pattern),
+      mainColor,
+      subColor: randomChoice(["#fff1d7", "#f4ead7", "#ffe8d5", "#e8f2dd"]),
+      accentColor: darken(mainColor),
+      color1: mainColor,
+      color2: "#fff1d7",
+      color3: darken(mainColor),
+      color4: randomChoice(["#f18b86", "#ffd95c", "#33d0bd", "#8ec9ff"]),
+      color5: "#171717",
+    },
+    personality: {
+      expression: randomChoice(TRAIT_OPTIONS.expression),
+      accessory: randomChoice(TRAIT_OPTIONS.accessory),
+      personality: randomChoice(TRAIT_OPTIONS.personality),
+    },
   });
-  syncState();
+  applyTrait(trait);
+  featureTags.innerHTML = ["Trait JSON", trait.structure.body, trait.appearance.pattern, trait.personality.expression]
+    .map((tag) => `<span>${tag}</span>`)
+    .join("");
+  analysisStatus.textContent = I18N[state.language].generated;
   if (window.gsap) gsap.fromTo(".photo-frame", { rotate: -2, scale: 0.94 }, { rotate: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" });
 }
 
@@ -465,6 +616,31 @@ async function analyzeImage(file) {
   const warmTone = avgR + avgG * 0.25 > avgB + 40;
   const patterned = contrast / count > 82;
   const color = nearestColor(rgbToHex(avgR, avgG, avgB));
+  const trait = createTrait({
+    structure: {
+      body: warmTone ? "round" : "normal",
+      leg: "short",
+      tail: warmTone ? "long" : "short",
+      fur: patterned ? "medium" : "short",
+      ear: "triangle",
+    },
+    appearance: {
+      pattern: patterned ? "tabby" : "solid",
+      mainColor: color,
+      subColor: warmTone ? "#fff1d7" : "#eef1e8",
+      accentColor: darken(color),
+      color1: color,
+      color2: warmTone ? "#fff1d7" : "#eef1e8",
+      color3: darken(color),
+      color4: "#f18b86",
+      color5: "#171717",
+    },
+    personality: {
+      expression: patterned ? "cool" : "smile",
+      accessory: "none",
+      personality: warmTone ? "cheerful" : "calm",
+    },
+  });
   URL.revokeObjectURL(url);
 
   return {
@@ -474,6 +650,7 @@ async function analyzeImage(file) {
     previewDataUrl: canvas.toDataURL("image/png"),
     pattern: patterned ? "patch" : "solid",
     tail: warmTone ? "long" : "short",
+    trait,
   };
 }
 
@@ -483,11 +660,8 @@ async function handlePhotoFile(file) {
   const features = await analyzeImage(file);
   if (features) {
     state.analysis = features;
-    setRadioValue("color", features.color);
-    setRadioValue("pattern", features.pattern);
-    setRadioValue("tail", features.tail);
-    syncState();
-    featureTags.innerHTML = tagList(features).map((tag) => `<span>${tag}</span>`).join("");
+    applyTrait(features.trait);
+    featureTags.innerHTML = [...tagList(features), "Trait JSON"].map((tag) => `<span>${tag}</span>`).join("");
     analysisStatus.textContent = I18N[state.language].generated;
   }
   state.photoUrl = "";
@@ -507,11 +681,14 @@ if (cameraInput) {
 }
 
 function orderDraft() {
+  const trait = state.traits || selectedTraitFromControls();
   return {
     name: state.name,
     size: document.querySelector("#order-size")?.value || "5cm",
     contact: document.querySelector("#order-contact")?.value || "",
     note: document.querySelector("#order-note")?.value || "",
+    pipeline: "Photo/Camera/Random -> Trait JSON -> SVG -> PNG/Pixel Art/STL",
+    trait,
     catConfig: {
       color: state.color,
       fur: state.fur,
