@@ -14,6 +14,7 @@ const tabButtons = document.querySelectorAll("[data-tab]");
 const tabPanels = document.querySelectorAll("[data-panel]");
 const downloadButton = document.querySelector("#download-btn");
 const avatarButton = document.querySelector("#avatar-btn");
+const randomButton = document.querySelector("#random-btn");
 const analysisStatus = document.querySelector("#analysis-status");
 const featureTags = document.querySelector("#feature-tags");
 const orderButton = document.querySelector("#order-btn");
@@ -49,7 +50,7 @@ const I18N = {
     treeHint: "好奇心いっぱいのねこへ", catName: "ねこの名前", catNameHint: "头像ファイル名に使います", catNamePlaceholder: "ねこの名前を入力", upload: "写真をアップロード",
     uploadHint: "正面写真がおすすめ", camera: "カメラで撮影", cameraHint: "撮った写真から生成", analysisTitle: "まず写真から特徴を読む",
     analysisIdle: "写真は保存せず、色・模様などの要素だけを使って初版のピクセルねこを作ります。", analyzing: "特徴を見ています...", generated: "初版のピクセルねこが生まれました。原图は自動で削除しました。",
-    avatarDownload: "头像を保存", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
+    avatarDownload: "头像を保存", randomize: "ランダム生成", orderTitle: "3Dプリント实体化", orderHint: "気に入ったら、この猫を小さなフィギュアにできます。",
     orderButton: "3Dプリントを相談", orderSize: "サイズ", orderContact: "連絡先", orderSubmit: "下書きを作成", orderReady: "注文メモを作りました。生成猫の設定だけを使います。",
     featureWarm: "暖色", featureCool: "寒色", featurePattern: "模様あり", collapse: "設定を閉じる", expand: "設定を開く",
   },
@@ -60,7 +61,7 @@ const I18N = {
     mainColor: "主色", plants: "绿植房间", plantsHint: "猫咪喜欢的植物", bed: "温暖猫窝", bedHint: "柔软又安心", tree: "猫爬架乐园", treeHint: "适合好奇的小猫",
     catName: "猫咪名字", catNameHint: "用于头像文件名", catNamePlaceholder: "输入猫咪名字", upload: "上传照片", uploadHint: "正面照片效果最好",
     camera: "拍照生成", cameraHint: "从现场照片提取要素", analysisTitle: "先从照片提取要素", analysisIdle: "照片不会被做成像素画，只提取颜色、花纹等要素生成第一版小猫。",
-    analyzing: "正在观察特征...", generated: "第一版像素猫生成好了。原图已自动删除。", avatarDownload: "保存头像",
+    analyzing: "正在观察特征...", generated: "第一版像素猫生成好了。原图已自动删除。", avatarDownload: "保存头像", randomize: "随机生成",
     orderTitle: "3D 打印实体化", orderHint: "喜欢的话，可以把这只猫做成小摆件。", orderButton: "咨询 3D 打印", orderSize: "尺寸", orderContact: "联系方式",
     orderSubmit: "生成下单草稿", orderReady: "已生成下单草稿。只使用生成猫配置，不保存原图。", featureWarm: "暖色", featureCool: "冷色",
     featurePattern: "有花纹", collapse: "收起设置", expand: "展开设置",
@@ -72,7 +73,7 @@ const I18N = {
     mainColor: "Main color", plants: "Plant room", plantsHint: "Cat-friendly greenery", bed: "Cozy bed", bedHint: "Soft and peaceful", tree: "Cat tower", treeHint: "For curious cats",
     catName: "Cat name", catNameHint: "Used for the avatar file name", catNamePlaceholder: "Enter your cat's name", upload: "Upload photo", uploadHint: "Front photos work best",
     camera: "Take photo", cameraHint: "Extract cues from the photo", analysisTitle: "Extract photo cues first", analysisIdle: "The photo is not pixelated directly. It only supplies color, pattern, and other cues for the first cat.",
-    analyzing: "Reading visual cues...", generated: "First pixel cat generated. The original image was deleted automatically.", avatarDownload: "Save avatar",
+    analyzing: "Reading visual cues...", generated: "First pixel cat generated. The original image was deleted automatically.", avatarDownload: "Save avatar", randomize: "Randomize",
     orderTitle: "3D print figure", orderHint: "If you like it, turn this cat into a small figure.", orderButton: "Ask about 3D print", orderSize: "Size", orderContact: "Contact",
     orderSubmit: "Create order draft", orderReady: "Order draft created. It uses only the generated cat settings.", featureWarm: "Warm tone", featureCool: "Cool tone",
     featurePattern: "Patterned", collapse: "Hide settings", expand: "Show settings",
@@ -225,78 +226,97 @@ function patternMarkup(type, dark) {
 function poseSvg(pose, index) {
   const color = state.color;
   const dark = darken(color);
-  const outline = "#171717";
-  const cream = "#fff1d7";
-  const blush = "#f18b86";
-  const eye = "#17211e";
-  const shine = "#fffaf0";
-  const tailLong = state.tail === "long";
-  const longLegs = state.legs === "long";
-  const longFur = state.fur === "long";
-  const px = (x, y, w, h, fill = color, opacity = 1) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${opacity < 1 ? ` opacity="${opacity}"` : ""}/>`;
-  const rects = (parts, fill = color) => parts.map(([x, y, w, h, partFill = fill, opacity = 1]) => px(x, y, w, h, partFill, opacity)).join("");
-  const outlineParts = [
-    [27, 18, 12, 17], [66, 18, 12, 17],
-    [23, 31, 58, 10], [16, 38, 72, 20], [12, 52, 82, 24], [16, 72, 76, 15],
-    [35, 72, 56, 28], [39, 94, 54, 12],
-    [74, 51, 26, 9], [87, 58, 24, 12], [83, 68, 33, 30], [77, 92, 36, 16],
-    [30, 96, 16, 24], [54, 98, 16, 24], [82, 96, 16, 23], [100, 91, 17, 23],
-    ...(tailLong
-      ? [[102, 52, 12, 14], [108, 40, 11, 15], [112, 27, 11, 16], [113, 14, 11, 15], [108, 8, 12, 12]]
-      : [[102, 62, 13, 13], [110, 57, 10, 10]]),
-  ];
-  const fillParts = [
-    [31, 25, 7, 15], [67, 25, 7, 15],
-    [25, 38, 54, 10], [19, 47, 68, 18], [17, 58, 75, 17], [21, 75, 68, 11],
-    [39, 78, 50, 20], [42, 96, 48, 8],
-    [75, 58, 23, 8], [87, 66, 22, 11], [85, 75, 28, 21], [79, 94, 31, 10],
-    [34, 102, 9, 17], [58, 103, 9, 17], [86, 102, 9, 16], [104, 97, 9, 16],
-    ...(tailLong
-      ? [[106, 55, 6, 10], [111, 43, 6, 12], [115, 30, 5, 13], [116, 17, 5, 12], [111, 12, 7, 8]]
-      : [[106, 65, 7, 9], [112, 60, 6, 7]]),
-  ];
-  const earInner = `${px(32, 28, 5, 9, "#f4bd91")}${px(68, 28, 5, 9, "#f4bd91")}`;
-  const muzzle = `${px(43, 61, 22, 16, cream)}${px(38, 65, 32, 10, cream)}`;
-  const face = `
-    ${px(31, 52, 8, 10, eye)}${px(63, 52, 8, 10, eye)}
-    ${px(34, 53, 3, 3, shine)}${px(66, 53, 3, 3, shine)}
-    ${px(50, 61, 7, 4, eye)}${px(48, 66, 5, 5, eye)}${px(55, 66, 5, 5, eye)}
-    ${px(26, 65, 7, 4, "#f7a39a", .72)}${px(72, 65, 7, 4, "#f7a39a", .72)}`;
-  const tabby = `
-    ${px(43, 36, 5, 15, dark)}${px(52, 34, 5, 17, dark)}${px(61, 36, 5, 14, dark)}
-    ${px(18, 56, 16, 4, dark)}${px(71, 56, 14, 4, dark)}
-    ${px(86, 67, 5, 19, dark)}${px(96, 71, 5, 22, dark)}${px(105, 77, 5, 17, dark)}
-    ${px(38, 83, 10, 4, dark)}`;
-  const patches = `
-    ${px(21, 48, 18, 16, dark)}${px(62, 70, 15, 12, dark)}
-    ${px(88, 67, 17, 18, dark)}${px(43, 86, 12, 8, dark)}`;
-  const pattern = state.pattern === "solid" ? "" : state.pattern === "patch" ? patches : tabby;
-  const furTufts = longFur ? `${px(13, 76, 6, 7, cream)}${px(80, 78, 6, 7, cream)}${px(36, 102, 6, 6, cream)}${px(90, 102, 6, 6, cream)}` : "";
-  const legs = longLegs
-    ? `${px(34, 113, 9, 4, cream)}${px(58, 115, 9, 4, cream)}${px(86, 113, 9, 4, cream)}${px(104, 111, 9, 4, cream)}`
-    : `${px(34, 113, 8, 4, cream)}${px(58, 114, 8, 4, cream)}${px(86, 113, 8, 4, cream)}${px(104, 109, 8, 4, cream)}`;
-  const tail = tailLong
-    ? `${px(112, 31, 7, 4, dark)}${px(109, 47, 7, 4, dark)}${px(104, 61, 7, 4, dark)}`
-    : `${px(107, 65, 6, 3, dark)}`;
-  const catFront = `
-    ${rects(outlineParts, outline)}
-    ${rects(fillParts, color)}
-    ${tail}${legs}${earInner}${muzzle}${pattern}${furTufts}${face}`;
-
-  const bodies = {
-    front: catFront,
-    sit: catFront,
-    loaf: catFront,
-    walk: catFront,
-    curl: catFront,
-    stretch: catFront,
-    back: catFront,
-    peek: catFront,
+  const palette = {
+    base: color,
+    dark,
+    outline: "#171717",
+    cream: "#fff1d7",
+    blush: "#f18b86",
+    eye: "#17211e",
+    shine: "#fffaf0",
+    innerEar: "#f4bd91",
   };
+  const options = {
+    fur: state.fur,
+    tail: state.tail,
+    legs: state.legs,
+    pattern: state.pattern,
+  };
+  const px = (x, y, w, h, fill = palette.base, opacity = 1) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${opacity < 1 ? ` opacity="${opacity}"` : ""}/>`;
+  const rects = (parts, fill = palette.base) => parts.map(([x, y, w, h, partFill = fill, opacity = 1]) => px(x, y, w, h, partFill, opacity)).join("");
+  const avatarParts = {
+    silhouette: {
+      base: [
+        [27, 18, 12, 17], [66, 18, 12, 17],
+        [23, 31, 58, 10], [16, 38, 72, 20], [12, 52, 82, 24], [16, 72, 76, 15],
+        [35, 72, 56, 28], [39, 94, 54, 12],
+        [74, 51, 26, 9], [87, 58, 24, 12], [83, 68, 33, 30], [77, 92, 36, 16],
+        [30, 96, 16, 24], [54, 98, 16, 24], [82, 96, 16, 23], [100, 91, 17, 23],
+      ],
+      tail: {
+        long: [[102, 52, 12, 14], [108, 40, 11, 15], [112, 27, 11, 16], [113, 14, 11, 15], [108, 8, 12, 12]],
+        short: [[102, 62, 13, 13], [110, 57, 10, 10]],
+      },
+    },
+    coat: {
+      base: [
+        [31, 25, 7, 15], [67, 25, 7, 15],
+        [25, 38, 54, 10], [19, 47, 68, 18], [17, 58, 75, 17], [21, 75, 68, 11],
+        [39, 78, 50, 20], [42, 96, 48, 8],
+        [75, 58, 23, 8], [87, 66, 22, 11], [85, 75, 28, 21], [79, 94, 31, 10],
+        [34, 102, 9, 17], [58, 103, 9, 17], [86, 102, 9, 16], [104, 97, 9, 16],
+      ],
+      tail: {
+        long: [[106, 55, 6, 10], [111, 43, 6, 12], [115, 30, 5, 13], [116, 17, 5, 12], [111, 12, 7, 8]],
+        short: [[106, 65, 7, 9], [112, 60, 6, 7]],
+      },
+    },
+    ears: () => `${px(32, 28, 5, 9, palette.innerEar)}${px(68, 28, 5, 9, palette.innerEar)}`,
+    muzzle: () => `${px(43, 61, 22, 16, palette.cream)}${px(38, 65, 32, 10, palette.cream)}`,
+    face: () => `
+      ${px(31, 52, 8, 10, palette.eye)}${px(63, 52, 8, 10, palette.eye)}
+      ${px(34, 53, 3, 3, palette.shine)}${px(66, 53, 3, 3, palette.shine)}
+      ${px(50, 61, 7, 4, palette.eye)}${px(48, 66, 5, 5, palette.eye)}${px(55, 66, 5, 5, palette.eye)}
+      ${px(26, 65, 7, 4, "#f7a39a", .72)}${px(72, 65, 7, 4, "#f7a39a", .72)}`,
+    patterns: {
+      solid: () => "",
+      stripe: () => `
+        ${px(43, 36, 5, 15, palette.dark)}${px(52, 34, 5, 17, palette.dark)}${px(61, 36, 5, 14, palette.dark)}
+        ${px(18, 56, 16, 4, palette.dark)}${px(71, 56, 14, 4, palette.dark)}
+        ${px(86, 67, 5, 19, palette.dark)}${px(96, 71, 5, 22, palette.dark)}${px(105, 77, 5, 17, palette.dark)}
+        ${px(38, 83, 10, 4, palette.dark)}`,
+      patch: () => `
+        ${px(21, 48, 18, 16, palette.dark)}${px(62, 70, 15, 12, palette.dark)}
+        ${px(88, 67, 17, 18, palette.dark)}${px(43, 86, 12, 8, palette.dark)}`,
+    },
+    fur: {
+      short: () => "",
+      long: () => `${px(13, 76, 6, 7, palette.cream)}${px(80, 78, 6, 7, palette.cream)}${px(36, 102, 6, 6, palette.cream)}${px(90, 102, 6, 6, palette.cream)}`,
+    },
+    paws: {
+      short: () => `${px(34, 113, 8, 4, palette.cream)}${px(58, 114, 8, 4, palette.cream)}${px(86, 113, 8, 4, palette.cream)}${px(104, 109, 8, 4, palette.cream)}`,
+      long: () => `${px(34, 113, 9, 4, palette.cream)}${px(58, 115, 9, 4, palette.cream)}${px(86, 113, 9, 4, palette.cream)}${px(104, 111, 9, 4, palette.cream)}`,
+    },
+    tailMarks: {
+      long: () => `${px(112, 31, 7, 4, palette.dark)}${px(109, 47, 7, 4, palette.dark)}${px(104, 61, 7, 4, palette.dark)}`,
+      short: () => `${px(107, 65, 6, 3, palette.dark)}`,
+    },
+  };
+  const catFront = [
+    rects([...avatarParts.silhouette.base, ...avatarParts.silhouette.tail[options.tail]], palette.outline),
+    rects([...avatarParts.coat.base, ...avatarParts.coat.tail[options.tail]], palette.base),
+    avatarParts.tailMarks[options.tail](),
+    avatarParts.paws[options.legs](),
+    avatarParts.ears(),
+    avatarParts.muzzle(),
+    avatarParts.patterns[options.pattern](),
+    avatarParts.fur[options.fur](),
+    avatarParts.face(),
+  ].join("");
 
   return `<svg width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="猫咪姿势 ${index + 1}" shape-rendering="crispEdges">
     <rect width="128" height="128" fill="none"/>
-    ${bodies[pose]}
+    ${catFront}
   </svg>`;
 }
 
@@ -341,6 +361,19 @@ catName.addEventListener("input", () => {
 function setRadioValue(name, value) {
   const input = form.querySelector(`[name="${name}"][value="${value}"]`);
   if (input) input.checked = true;
+}
+
+function randomChoice(values) {
+  return values[Math.floor(Math.random() * values.length)];
+}
+
+function randomizeAvatar() {
+  ["fur", "tail", "legs", "pattern", "color"].forEach((name) => {
+    const values = Array.from(form.querySelectorAll(`[name="${name}"]`)).map((input) => input.value);
+    if (values.length) setRadioValue(name, randomChoice(values));
+  });
+  syncState();
+  if (window.gsap) gsap.fromTo(".photo-frame", { rotate: -2, scale: 0.94 }, { rotate: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" });
 }
 
 function nearestColor(hex) {
@@ -656,6 +689,7 @@ async function downloadAvatar() {
 
 if (downloadButton) downloadButton.addEventListener("click", downloadAvatar);
 if (avatarButton) avatarButton.addEventListener("click", downloadAvatar);
+if (randomButton) randomButton.addEventListener("click", randomizeAvatar);
 
 renderScene(false);
 setLanguage("ja");
