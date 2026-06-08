@@ -342,7 +342,8 @@ function poseSvg(pose, index) {
     expression: traits.personality.expression,
     accessory: traits.personality.accessory,
   };
-  const grid = 31;
+  const grid = 100;
+  const scale = grid / 31;
   const coat = new Map();
   const detail = new Map();
   const key = (x, y) => `${x},${y}`;
@@ -352,11 +353,14 @@ function poseSvg(pose, index) {
     const dy = Math.round(y);
     if (inGrid(dx, dy)) map.set(key(dx, dy), { x: dx, y: dy, fill });
   };
-  const setCoat = (x, y, fill = palette.base) => setDot(coat, x, y, fill);
+  const setCoat = (x, y, fill = palette.base) => setDot(coat, x * scale, y * scale, fill);
   const setDetail = (x, y, fill) => {
-    if (coat.has(key(Math.round(x), Math.round(y)))) setDot(detail, x, y, fill);
+    if (coat.has(key(Math.round(x * scale), Math.round(y * scale)))) setDot(detail, x * scale, y * scale, fill);
   };
   const disk = (map, cx, cy, r, fill) => {
+    cx *= scale;
+    cy *= scale;
+    r *= scale;
     for (let y = Math.floor(cy - r - 1); y <= Math.ceil(cy + r + 1); y++) {
       for (let x = Math.floor(cx - r - 1); x <= Math.ceil(cx + r + 1); x++) {
         if ((x - cx) ** 2 + (y - cy) ** 2 <= r ** 2) setDot(map, x, y, fill);
@@ -364,6 +368,10 @@ function poseSvg(pose, index) {
     }
   };
   const ellipse = (map, cx, cy, rx, ry, fill) => {
+    cx *= scale;
+    cy *= scale;
+    rx *= scale;
+    ry *= scale;
     for (let y = Math.floor(cy - ry - 1); y <= Math.ceil(cy + ry + 1); y++) {
       for (let x = Math.floor(cx - rx - 1); x <= Math.ceil(cx + rx + 1); x++) {
         if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1) setDot(map, x, y, fill);
@@ -371,6 +379,7 @@ function poseSvg(pose, index) {
     }
   };
   const triangle = (map, points, fill) => {
+    points = points.map((point) => ({ x: point.x * scale, y: point.y * scale }));
     const [a, b, c] = points;
     const area = (p1, p2, p3) => Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
     const total = area(a, b, c);
@@ -433,7 +442,7 @@ function poseSvg(pose, index) {
     }
   });
 
-  ellipse({ set: (_, dot) => setDetail(dot.x, dot.y, palette.cream) }, 14.5, 15, 4, 2.4, palette.cream);
+  ellipse(detail, 14.5, 15, 4, 2.4, palette.cream);
   [[9, 6], [20, 6], [10, 7], [19, 7]].forEach(([x, y]) => setDetail(x, y, palette.innerEar));
   [[10, 26], [15, 27], [23, 26]].forEach(([x, y]) => setDetail(x, y, palette.cream));
   [[10, 17], [21, 17]].forEach(([x, y]) => setDetail(x, y, palette.blush));
@@ -472,14 +481,14 @@ function poseSvg(pose, index) {
   };
   (accessoryDots[options.accessory] || []).forEach(([x, y]) => setDot(detail, x, y, options.accessory === "flower" ? "#f18b86" : options.accessory === "hat" ? "#343434" : palette.eye));
 
-  const dot = ({ x, y, fill }, r = 0.43) => `<circle class="dot" cx="${x + 0.5}" cy="${y + 0.5}" r="${r}" fill="${fill}"/>`;
+  const dot = ({ x, y, fill }) => `<rect class="pixel-dot" x="${x}" y="${y}" width="1" height="1" fill="${fill}"/>`;
   const dots = [
-    ...Array.from(outline.values()).map((item) => dot(item, 0.47)),
+    ...Array.from(outline.values()).map((item) => dot(item)),
     ...Array.from(coat.values()).map((item) => dot(item)),
-    ...Array.from(detail.values()).map((item) => dot(item, 0.43)),
+    ...Array.from(detail.values()).map((item) => dot(item)),
   ].join("");
 
-  return `<svg width="128" height="128" viewBox="0 0 31 31" role="img" aria-label="点阵猫 ${index + 1}" class="dot-avatar">
+  return `<svg width="128" height="128" viewBox="0 0 100 100" role="img" aria-label="100方块点阵猫 ${index + 1}" class="dot-avatar">
     ${dots}
   </svg>`;
 }
