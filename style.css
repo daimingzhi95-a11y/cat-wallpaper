@@ -528,6 +528,12 @@ legend {
 .upload-box {
   cursor: pointer;
 }
+.random-box {
+  width: 100%;
+  border-radius: 0;
+  color: inherit;
+  text-align: left;
+}
 .upload-box input {
   display: none;
 }
