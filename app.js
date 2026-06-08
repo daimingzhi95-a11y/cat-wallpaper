@@ -468,34 +468,57 @@ function poseSvg(pose, index) {
   (accessoryDots[options.accessory] || []).forEach(([x, y]) => setDot(baseDetail, x, y, options.accessory === "flower" ? "#f18b86" : options.accessory === "ribbon" ? "#e95678" : options.accessory === "hat" ? "#343434" : palette.eye));
 
   const dot = ({ x, y, fill }) => `<rect class="pixel-dot" x="${x}" y="${y}" width="1" height="1" fill="${fill}"/>`;
+  const nearMap = (map, x, y, radius = 1) => {
+    for (let oy = -radius; oy <= radius; oy++) {
+      for (let ox = -radius; ox <= radius; ox++) {
+        if (map.has(key(x + ox, y + oy))) return true;
+      }
+    }
+    return false;
+  };
   const drawLegs = (phase = 0) => {
     const coat = new Map();
     const detail = new Map();
-    const legTop = options.legs === "long" ? 39.7 : 41.3;
-    const legRy = options.legs === "long" ? 5.6 : 4.1;
+    const legTop = options.legs === "long" ? 40.4 : 41.6;
+    const legRy = options.legs === "long" ? 4.8 : 3.5;
     const legs = phase === 0
-      ? [[15.2, legTop + 0.8, 3.2, legRy, 13.7, 45.4], [22.4, legTop - 1.1, 3.2, legRy, 23.4, 44.1], [31.4, legTop + 0.9, 3.3, legRy, 30.1, 45.5], [38.4, legTop - 0.7, 3.3, legRy, 39.7, 44.3]]
-      : [[15.2, legTop - 1.1, 3.2, legRy, 14.2, 44.1], [22.4, legTop + 0.9, 3.2, legRy, 22.8, 45.5], [31.4, legTop - 0.8, 3.3, legRy, 31.8, 44.2], [38.4, legTop + 0.8, 3.3, legRy, 39.2, 45.4]];
+      ? [[16.2, legTop + 0.5, 2.6, legRy, 14.8, 45.2], [22.8, legTop - 0.7, 2.6, legRy, 24.4, 44.2], [31.1, legTop + 0.6, 2.7, legRy, 29.4, 45.2], [37.0, legTop - 0.5, 2.7, legRy, 38.5, 44.2]]
+      : [[16.2, legTop - 0.7, 2.6, legRy, 17.6, 44.2], [22.8, legTop + 0.6, 2.6, legRy, 21.2, 45.2], [31.1, legTop - 0.5, 2.7, legRy, 32.5, 44.2], [37.0, legTop + 0.6, 2.7, legRy, 35.5, 45.2]];
     legs.forEach(([cx, cy, rx, ry, footX, footY]) => {
       ellipse(coat, cx, cy, rx, ry, palette.base);
-      ellipse(coat, footX, footY, 3.2, 1.4, palette.base);
+      ellipse(coat, footX, footY, 2.7, 1.1, palette.base);
       setDetailOn(coat, detail, footX, footY, palette.cream);
     });
-    const outline = outlineFor(coat);
+    const mergedCoat = new Map([...baseCoat, ...coat]);
+    const mergedOutline = outlineFor(mergedCoat, baseCoat);
+    const outline = new Map();
+    mergedOutline.forEach((item, itemKey) => {
+      if (nearMap(coat, item.x, item.y, 2)) outline.set(itemKey, item);
+    });
     return [
       ...Array.from(outline.values()).map((item) => dot(item)),
       ...Array.from(coat.values()).map((item) => dot(item)),
       ...Array.from(detail.values()).map((item) => dot(item)),
     ].join("");
   };
-  const outlineFor = (coatMap) => {
+  const outlineFor = (coatMap, excludeNearMap = null) => {
     const outline = new Map();
     coatMap.forEach(({ x, y }) => {
       for (let oy = -1; oy <= 1; oy++) {
         for (let ox = -1; ox <= 1; ox++) {
           const nx = x + ox;
           const ny = y + oy;
-          if (inGrid(nx, ny) && !coatMap.has(key(nx, ny))) setDot(outline, nx, ny, palette.outline);
+          if (!inGrid(nx, ny) || coatMap.has(key(nx, ny))) continue;
+          if (excludeNearMap) {
+            let nearExcluded = false;
+            for (let ey = -1; ey <= 1; ey++) {
+              for (let ex = -1; ex <= 1; ex++) {
+                if (excludeNearMap.has(key(nx + ex, ny + ey))) nearExcluded = true;
+              }
+            }
+            if (nearExcluded) continue;
+          }
+          setDot(outline, nx, ny, palette.outline);
         }
       }
     });
