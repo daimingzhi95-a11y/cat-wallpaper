@@ -286,6 +286,9 @@ h2 { font-size: 21px; }
   transform: translateY(0);
   filter: none;
 }
+.dot-avatar {
+  shape-rendering: geometricPrecision;
+}
 .placeholder-ears {
   position: absolute;
   top: 19%;
