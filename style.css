@@ -289,6 +289,24 @@ h2 { font-size: 21px; }
 .dot-avatar {
   shape-rendering: crispEdges;
 }
+.walk-frame {
+  animation: walk-step-a .56s steps(1, end) infinite;
+}
+.walk-frame-b {
+  animation-name: walk-step-b;
+}
+@keyframes walk-step-a {
+  0%, 49.99% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes walk-step-b {
+  0%, 49.99% { opacity: 0; }
+  50%, 100% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .walk-frame { animation: none; }
+  .walk-frame-b { opacity: 0; }
+}
 .placeholder-ears {
   position: absolute;
   top: 19%;
