@@ -410,16 +410,21 @@ function poseSvg(pose, index) {
   ellipse(coat, 25, 20, headRx, 11.2, palette.base);
   ellipse(coat, 28, 34, bodyRx, 10.6, palette.base);
 
-  const legTop = options.legs === "long" ? 40.5 : 42.2;
-  const legRy = options.legs === "long" ? 5.8 : 4.2;
-  ellipse(coat, 17, legTop, 4, legRy, palette.base);
-  ellipse(coat, 25, legTop + 0.8, 4, legRy, palette.base);
-  ellipse(coat, 36, legTop, 4.2, legRy, palette.base);
+  const legTop = options.legs === "long" ? 39.7 : 41.3;
+  const legRy = options.legs === "long" ? 5.6 : 4.1;
+  ellipse(coat, 15.2, legTop + 0.6, 3.2, legRy, palette.base);
+  ellipse(coat, 22.4, legTop - 0.9, 3.2, legRy, palette.base);
+  ellipse(coat, 31.4, legTop + 0.8, 3.3, legRy, palette.base);
+  ellipse(coat, 38.4, legTop - 0.6, 3.3, legRy, palette.base);
+  ellipse(coat, 13.7, 45.4, 3.2, 1.4, palette.base);
+  ellipse(coat, 23.4, 44.1, 3.2, 1.4, palette.base);
+  ellipse(coat, 30.1, 45.5, 3.2, 1.4, palette.base);
+  ellipse(coat, 39.7, 44.3, 3.2, 1.4, palette.base);
 
   if (options.tail === "long") {
-    line(coat, [{ x: 38, y: 32 }, { x: 43, y: 25 }, { x: 45, y: 15 }, { x: 42, y: 7 }], 2.3, palette.base);
+    line(coat, [{ x: 38, y: 32 }, { x: 43, y: 28 }, { x: 45, y: 22 }, { x: 43, y: 16 }], 2.15, palette.base);
   } else {
-    line(coat, [{ x: 38, y: 34 }, { x: 45, y: 32 }, { x: 46, y: 28 }], 2.2, palette.base);
+    line(coat, [{ x: 38, y: 34 }, { x: 45, y: 32 }, { x: 46, y: 29 }], 2, palette.base);
   }
 
   const outline = new Map();
@@ -435,11 +440,11 @@ function poseSvg(pose, index) {
 
   ellipse(detail, 25, 25, 7.2, 4.5, palette.cream);
   [[16, 11], [17, 12], [18, 13], [33, 11], [32, 12], [31, 13]].forEach(([x, y]) => setDetail(x, y, palette.innerEar));
-  [[17, 45], [25, 46], [36, 45]].forEach(([x, y]) => setDetail(x, y, palette.cream));
+  [[14, 45], [23, 44], [30, 45], [40, 44]].forEach(([x, y]) => setDetail(x, y, palette.cream));
   [[12, 27], [13, 27], [37, 27], [38, 27]].forEach(([x, y]) => setDetail(x, y, palette.blush));
 
   const stripeDots = {
-    tabby: [[21, 13], [24, 12], [27, 13], [21, 14], [24, 14], [27, 14], [12, 21], [13, 21], [38, 21], [39, 21], [32, 32], [33, 32], [34, 33], [34, 34], [41, 23], [42, 18], [42, 13]],
+    tabby: [[21, 13], [24, 12], [27, 13], [21, 14], [24, 14], [27, 14], [12, 21], [13, 21], [38, 21], [39, 21], [32, 32], [33, 32], [34, 33], [34, 34], [42, 28], [44, 23], [43, 18]],
     calico: [[13, 20], [14, 19], [15, 20], [16, 21], [31, 32], [32, 32], [33, 33], [34, 34], [35, 35]],
     cow: [[13, 20], [14, 20], [15, 21], [31, 32], [32, 32], [33, 33], [25, 38], [26, 38]],
     smoke: [[19, 18], [20, 18], [21, 18], [31, 32], [32, 32], [33, 32], [34, 33], [35, 33]],
@@ -453,14 +458,27 @@ function poseSvg(pose, index) {
     [[9, 29], [12, 33], [19, 43], [29, 44], [38, 42]].forEach(([x, y]) => setDetail(x, y, palette.cream));
   }
 
-  const eyes = {
-    smile: [[18, 22], [19, 22], [31, 22], [32, 22]],
-    wink: [[18, 22], [19, 22], [31, 22], [32, 22], [30, 23], [33, 23]],
-    sleepy: [[17, 23], [18, 23], [19, 23], [31, 23], [32, 23], [33, 23]],
-    surprised: [[18, 22], [18, 23], [19, 22], [31, 22], [31, 23], [32, 22]],
-    cool: [[16, 21], [17, 21], [18, 21], [19, 21], [30, 21], [31, 21], [32, 21], [33, 21], [20, 22], [29, 22]],
+  const mangaEye = (cx, cy, wink = false) => {
+    if (wink) {
+      [[cx - 2, cy], [cx - 1, cy], [cx, cy + 1], [cx + 1, cy], [cx + 2, cy]].forEach(([x, y]) => setDetail(x, y, palette.eye));
+      return;
+    }
+    disk(detail, cx, cy, 2.25, palette.eye);
+    [[cx - 1, cy - 1], [cx, cy - 2]].forEach(([x, y]) => setDetail(x, y, palette.shine));
+    setDetail(cx + 1, cy + 1, "#2d3b38");
   };
-  (eyes[options.expression] || eyes.smile).forEach(([x, y]) => setDetail(x, y, palette.eye));
+  if (options.expression === "wink") {
+    mangaEye(18, 22, true);
+    mangaEye(32, 22, false);
+  } else if (options.expression === "sleepy") {
+    [[16, 23], [17, 23], [18, 23], [19, 23], [20, 23], [30, 23], [31, 23], [32, 23], [33, 23], [34, 23]].forEach(([x, y]) => setDetail(x, y, palette.eye));
+  } else if (options.expression === "cool") {
+    [[15, 21], [16, 21], [17, 21], [18, 21], [19, 21], [20, 21], [21, 22], [29, 22], [30, 21], [31, 21], [32, 21], [33, 21], [34, 21], [35, 21]].forEach(([x, y]) => setDetail(x, y, palette.eye));
+  } else {
+    mangaEye(18, 22, false);
+    mangaEye(32, 22, false);
+    if (options.expression === "surprised") [[18, 25], [32, 25]].forEach(([x, y]) => setDetail(x, y, palette.eye));
+  }
   [[25, 25], [24, 27], [26, 27], [23, 28], [27, 28]].forEach(([x, y]) => setDetail(x, y, palette.eye));
 
   const accessoryDots = {
