@@ -81,7 +81,7 @@
         border: 3px solid var(--ink);
         overflow: hidden;
       }
-      svg {
+      svg, canvas {
         width: min(100%, 310px);
         height: auto;
         image-rendering: pixelated;
@@ -146,7 +146,7 @@
       <section class="grid">
         <article class="card replica">
           <h2>1. 参考画像の点陣復刻</h2>
-          <p>31x25 の図案として、画像中の A21/G13/G6/F14/G10/H7 を SVG の各マスに復刻。</p>
+          <p>新しい参考画像を 64x64 の色マトリクスとして解析し、canvas の fillRect だけで完全再描画。</p>
           <div class="stage" id="replica-stage"></div>
           <div class="legend" id="legend"></div>
         </article>
@@ -181,42 +181,73 @@
         C: "#efe4c8",
         G: "#8f8f80",
       };
-      const LABELS = {
-        A: "A21",
-        O: "G13",
-        Y: "G6",
-        R: "F14",
-        M: "G10",
-        K: "H7",
-      };
-      const replicaRowsRaw = [
-        "...............................",
-        "........OO.......OO............",
-        ".......OAAO.....OAAO...........",
-        "......OARAO....OARAO...........",
-        ".....OARRAAOOOOAARRAO..........",
-        ".....OAAAAAAAAAAAAAAO..........",
-        ".....OAAAAAAAAAAAAAAO..........",
-        "....OAAAAAAAAAAAAAAAAO.........",
-        "....OAAAAAAAAAAAAAAAAO.........",
-        "...OAAAAKAAAAAKAAAAAAO.........",
-        ".OOOOARRMAAMAAMAAAAAAOOOO......",
-        "...OAARRAAMAMAARRAAAOO.....OO..",
-        "...OAAAAAAAAAAAARRAAAO....OAAO.",
-        ".OOOOAAAAAAAAAAAAAAAOOOO..OAAO.",
-        "....OAAAAAAAAAAAAAAAO.....OYYO.",
-        ".....OAAAAAAAAAAAAAAO....OAAAO.",
-        "......OAAAAAAAAAAAAAAO...OAAAO.",
-        "......OAAAAAAAAAAAYYYOO..OYYO..",
-        "......OAAOAAAAAAAAYYYYOOOAAAO..",
-        "......OAAOAAAAOAAAAYYYYOOAAAAO..",
-        ".....OAAOAAAAOAAAAAYYYOAAAAO...",
-        ".....OAAOAAAOAAAAAYYYYOAAAO....",
-        ".....OAAOAAAOAAAAAAAAOOOOO.....",
-        "......OOOOOOOOOOOOOOOOO........",
-        "...............................",
-      ];
-      const replicaRows = replicaRowsRaw.map((row) => row.padEnd(31, ".").slice(0, 31));
+      const REPLICA_GRID_SIZE = 64;
+const REPLICA_PIXEL_HEX_ROWS = [
+  "0cf7fc0cf6fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0af6fc0af6fc0bf6fc0bf6fc0bf6fc0bf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0bf6fc0bf6fc0bf6fc0cf6fc0bf6fc0bf6fc0bf6fc0cf6fc0bf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0bf6fc0bf6fc0cf6fc0cf6fc0cf6fc0bf6fc0bf6fc0bf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0bf6fc0cf6fc0cf6fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0cf6fc0bf6fc0bf6fc0bf6fc0af6fc",
+  "0bf6fc0bf6fc0bf6fc0bf5fc0bf5fc0bf6fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0af5fc0bf6fc0bf5fc0bf5fc0cf6fc0cf6fc0cf6fc0bf6fc0cf6fc0cf6fc0bf6fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf6fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0cf6fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0bf5fc0bf5fc0cf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf6fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf6fc0cf6fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc",
+  "0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf6fc0bf6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc",
+  "0bf6fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0af5fc0bf5fc0af5fc0af5fc0af5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc0bf6fc0bf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0bf5fc0cf5fc0bf5fc0bf6fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf6fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0bf5fc0bf5fc0bf6fc0bf5fc0bf6fc0bf5fc0bf5fc0bf5fc0bf6fc0bf5fc0bf6fc0bf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0df5fc0cf6fc0cf5fc0cf5fc0cf6fc0bf5fc0bf5fc0cf5fc0bf6fc0bf6fc0bf5fc0bf6fc0bf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf6fc",
+  "0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0bf5fc0bf5fc0bf6fc0bf6fc0bf6fc18e8e944b7a344b7a344b7a343b8a50cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0df5fc0cf5fc0cf5fc0cf6fc0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc0bf5fc0cf5fc24d9d345b7a344b7a345b7a333cbc00cf6fc0cf6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc",
+  "0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0bf5fc0bf6fc0cf6fc0cf6fc16e7e84dab93ab5c1aba7939b97637a3561838c4b70cf4fa0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc23deda67916bb16524bd7b3bb26c2c82794a2ad4cd0cf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf6fc0cf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0af5fc0af5fc0bf5fc0bf6fc0cf6fc37c3b4a75b1ac38a4bfdf0aff7e5a4b97736a6541333c9bd0ef3f90cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc1fe0dd6a8f69af6523d6ab6cfdf0afe4c484b36e2e76865c0df6fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf6fc0bf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0af5fc0af5fc0bf5fc15ebed4aaa92b57133fdf0adfdefaefdefaefceeadb77434a8571630cbc010f1f60cf5fc0cf5fc0bf5fc0cf6fc0bf5fc0cf6fc0cf6fc0cf5fc0bf5fc0bf6fc0bf5fc1ae2e16b8d66ae6423d6ab6cfdf0aefdf0aefdf0aee4c281807c4d23dcd60cf6fc0bf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf6fc0bf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fc0af5fc0bf5fc0bf5fc0bf6fc3ac1b2a85a1abd8143fdeeacfde4abfde5abfdf0aefdf0aeb06929a7571632c9bf10f1f60cf6fc0cf6fc0cf6fc0cf6fc0bf6fc0bf6fc0bf6fc0cf6fc0cf6fc17e8e86b8e68ab5e1ed3a767fdefaefdeaacfde4abfde8ace6c787b164238576460cf6fc0bf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf6fc0bf6fc",
+  "0cf6fc0bf6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc3bc2b2bd7e3dfdefadfde1aafc9b95fca096fde8aafdf0adfdefadaf6425aa571531c6bd17e5e517e5e517e5e517e5e517e5e517e5e517e5e517e5e418e5e4678d67a75a1ad5aa6afdefadfdecadfcc49ffc9c95fcb99cfdf0aee3c2808376460bf6fc0bf6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf6fc",
+  "0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0af5fc0bf6fc3bc2b2bd7e3efdefadfde0a8fc9a94fc9993fc9b93fdeeacfdefacfdefadb16524a85713a85713a95815a75614a95813a85713aa5814a95815a95814a65613a75614d3a567fdefadfdeeadfdc7a1fc9b94fc9c95fcb99dfdeeade3c2818477460cf6fc0bf6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0bf5fc0cf6fc0bf6fc",
+  "0cf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0af5fc0bf5fc0bf6fc3cc2b2be7f3efddda8fc9a93fc9993fc9993fc9a93fd9a93fdedadfdefadfdefadfbc547fbbc31fce595fdf0aefac953fabc33fbd774fdefaefbd063fabb30fcd874fdefaefdefaefdc6a1fc9b93fc9a93fc9c96fc9c95fcb69de3c1808477470df6fc0cf6fc0cf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0bf6fb",
+  "0bf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0af5fc0bf5fc0bf6fc37c2b49f5a1dbe7f3efddda7fc9993fc9a94fc9f95fde9abfde9acfdefaefdefaefdefaefbc447faba32fde596fdf0aefbca55faba2ffcd775fdf0aefbd064fab931fcd977fdefaefdf0aefdecadfde9abfcc6a1fd9c96fc9c95fdb59ce3c180a85817817c4f0df6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fb0cf5fc0cf6fc",
+  "0bf6fc0bf5fc0bf5fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc39bfafa75614bd7f3efddda8fc9992fca093fde6abfdefaefdefaefdefaefdefaefdefaefbc547fbba30fde494fdefaefbc954faba2ffcd774fdf0aefcd163fbbb31fcd875fdefaefdefaefdefaefdefaefdebabfdc7a0fc9c95fdb59ce3c180aa56148776460cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf6fc39c0afb97837f1dc9afddda7fda595fde1a8fdefadfdefaefdefaefdefaefdefaefdefaefde89afde697fdeda9fdefaefbca54fbbb30fcd775fdefaefdeaa0fde696fdeba4fdefaefdefaefdefaefdefaefdefaefdeaadfdc7a0fdb59cf8e7a4deb6758976450cf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0cf6fc0cf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0bf6fc38c0afbd7c36fde292fdecabfde1a8fdefadfdefadfdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefde89afce593fdeaa2fdefaefdefaefdefaefdefaefdefaffdefaffdefaefdefaffdefaffdefaefde8abfde3a9fdeaa2e6bb6d8775440cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc2ecdc3807646bd7e3bfdeba3fdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdedaae6c37b9e6023619c7c0bf6fc0cf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf6fc0bf5fc0cf5fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc41b8a6b67232e3c382fdefaefdefaffdefaffdefaffdefaffdefaefdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaffdefaefdefaefdefaffdefaefdefaffdefaffdf0aff4e09fd1a05f8c723d0bf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fb0cf5fc0bf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc43b9a6c18544fdefadfdefaefdefaffdefaffdefaffdefaffdefaefdefaffdefaffdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaffdefaffdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaefdefaffdefaffdefaffdefaeebcf8f8b713d0cf6fc0bf6fc0bf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc0cf6fc0df6fc0cf5fc0cf5fc0cf6fc0bf6fc",
+  "0bf6fc0bf6fc0cf5fc0cf5fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc0bf6fc29d2c9778358c18544fdefadfdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaffdefaefdefaffdefaffdefaffdefaffdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaefdefaffdefaffdefaffdefaeebcf8f9b622652ac940cf6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf6fc",
+  "0bf6fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc47b19bb06928dcb675fdefadfdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaefdefaefdefaffdf0affdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaef3de9ec68d4b8e6d390cf6fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0cf6fc0cf6fc0bf5fc0bf6fc",
+  "0cf6fc0cf6fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc46b19bbf8141fdf0adfdefadfdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefadfdefadfdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaefdefaffdefaefdefaefdefaefdefadfdefadfdefaefdefaefdefaffdefaffdefaefdefaefdefaefdefaefdefadecd2918d6d390bf6fc0bf5fc0bf5fc0cf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf6fc",
+  "0cf6fc0bf6fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc46b19bbe7c34fcde81fce38efdefaefdefaefdefaefdefaefdefaefdefaefdefaea79e72a69b70ede0a3fdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaecec38fa69c70c7bb87fdefadfdefaefdefaffdefaffdefaefdefaffdefaefdeba3fcde80ebc46d8f6d390cf6fc0cf6fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fb0cf6fc",
+  "0bf6fc0bf6fc0cf5fc0bf5fc0cf5fc0bf5fc0bf5fc0af5fc0bf5fc0bf5fc1ce0de5d9675bd721afbbb31fbc953fdefadfdefaffdefaefdefaefdefaefdefae9c946b231f1b656361645d43faedacfdefaefdefaffdefaffdefaefdefaffdefaffdefaffdefb0dacf983e382753504d575346bab07ffdefaefdefaefdefaffdefaefdefaefdefaefce18dfbbb31eaa72996662e30cdc30cf6fc0bf5fc0bf5fc0bf5fb0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf6fc0cf5fc0cf6fc0bf6fc",
+  "0bf6fc0bf5fc0cf5fc0cf5fc0bf5fb0bf5fc0af5fc0af5fc0af5fc0bf5fc4ea88faa5f1ccf923dfbc951fbd369fdefadfdefaefdefaefdefaefdefaefdefad4c463325211e7b79770b0602f8ebaafdefaefdefaefdefaffdefaefdefaffdefaffdefaffdefb0bcb2840c070464615e383432837b5afdefaefdefaffdefaffdefaefdefaefdefaefde697fbca53efba4abb742e8b6e3b0bf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fb0bf5fc0bf5fb0cf5fb0bf6fc",
+  "0cf6fc0bf6fc0cf5fc0cf5fc0bf5fc0bf5fc0af5fc0bf5fc0bf5fc0bf6fc4fa98fbc7a34fde091fdefadfdefadfdefadfdefaefdefaefdefaefdefaefdefae4d46330b06020b06030a0602f8ebabfdefaefdefaffdf0affdf0affdf0affdefaffdf0b0fdefb0bbb1830c07040c07040c0704827b5afdefaefdefaffdefaffdefaffdefaffdefaefdefaefdefadfdeba6eabf6e8c6e3b0bf6fc0bf6fc0cf5fc0bf5fb0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fb0cf5fc0cf5fc0cf5fb0bf6fc",
+  "0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc0bf6fc4fa98fbd792ffcd97efde695fce99cfdefaefdefaefdf0affdefaefdefaefdefad4c46330b06020b06020a0602f8ebaafdefaefdefaff8dc99ed9f50ed9e4ef9e1a0fdefaffdefafbbb1820c07030c07040c0703827b5afdefaefdf0aefdefaefdefaefdefaefdefaefdeda9fde696fde38feabc638b6e3b0cf6fc0bf5fc0bf5fc0cf6fc0bf6fc0bf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0df6fc0cf6fc",
+  "0bf6fc0bf5fc0bf5fc0bf6fc0bf5fc0bf5fc0bf5fb0bf5fc0cf5fc0bf5fc50aa90bc721bfbbb32faba33fbc954fdefadfde5aafda898fda999fde3aafdf0ae4b45320b06020b06020b0602f8ebaafdefadfdefadc97c3fb74803b84903ce884bfdefaefdefafbbb1820c07040c07030c0703837b59fdf0aefdcba3fda897fdc19ffdefaefdefaefce28ffaba32fbbb32e9a52a8c6f3b0bf6fc0bf6fc0bf5fb0af5fb0bf5fb0bf6fb0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0df6fc0cf6fc",
+  "0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fb0bf5fc0bf6fc4faa8fbb711bfab930fbbb32fbc953fde1a9fca697fc9c95fc9b95fca698fde5aad3c894241f14211c11a39a70fceeaefdefadfdefacf5dc9bca7530ca7733f7e2a2fdefadfdefaeeee1a46b6449221c125d563de1d59bfdc9a2fca296fc9b94fca096fdc1a0fdefadfde38ffbbb32fab930e8a5288c6e3b0af6fc28d3caa25a1aa55a19a35819629b7b0bf6fc0cf6fc0cf6fc0cf5fc0cf5fc0df5fc0df6fc0df6fc",
+  "0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf6fc0bf6fc4faa90a45515bd8141fdefabfdefacfddda8fd9b94fc9c95fd9b95fd9c94fde2a9fdefaefdefaefdefaefdefaefdefaef6dc9be2984bfdefabe5a153e6a65afdefabe09447f8e09efdefaefdefaffdefaefdefaefdefadfcc3a0fc9b94fd9c95fc9d95fdb89dfdefadfdefaefdefadecd291a955138b703c25d7d2a45919ba7735fbedaae3c281a75b1a56a3880df6fc0df6fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0cf6fc0cf5fc0bf5fc0bf5fc0bf5fb0bf5fc0bf5fc0cf5fc0cf6fc12ecef48ac94bc7a35fde293fdefadfdedacfddaa5fc9c94fd9d95fdd9a6fdedadfdefaefdefaffdefaffdefaffdefaffbeaaae59f55d36713e7a65de4a156d46613e5a159fcebaafdefaefdefaffdefaffdefaefdefadfde9abfcc09ffc9d95fdb69cfde8abfdefaefdefaefdefadecc982926a3519e5e525d6d0b77232fdefaffdf0aefdefaefdf0aea0662b41bdac0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc",
+  "0cf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf6fc0cf6fc3db9a6a65917c88b41fde192fdefaefdedacfde3aafde3a9fdedadfdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaefdf0affdf0affdf0affdf0aefdf0aefdefaefdefaffdefaffdefaffdefaefdefaefdefaefde9abfde3a9fde8acfdefaefdefaefdedaaeecc82b3672292703a1fdedb99773ff2dd9cfdefaefdf0aefdefadfdefacd3a36048b49f0cf6fc0cf6fc0cf5fc0cf5fc0df6fc0df6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fb0bf6fc0bf6fc0cf6fc0cf6fc10eef147af99a95d1bc78d44fde395fdf0adfdf0aefdefaefdefaefdefaffdefb0fdefb0fdefaffdefaffdefaffdefaffdefaffdf0affdf0affdf0affdefaffdefaffdefaefdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefadfdefadecd18eb46b2591693119e3e31fdad6b16927fdefaefdefaefce595faba31fbbb31d68f23a35d1d5ba1820df6fc0cf5fc0df5fc0df6fc0df6fc",
+  "0bf6fc0bf6fc0bf5fc0cf5fc0bf5fc0cf6fc0cf5fc0bf5fc0bf6fc0bf6fc0cf6fc0cf6fc17e7e84fa58aa75f1dca934afde395fdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaefdf0affdf0affdefaffdf0affdf0affdefaffdefaefdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefadfdeca6eac77eb6743296642b2bd6cf0cf5fc1fdad7ae6624fde69cfdefaefce595faba30fabb32f8b830cf8821619c7b0cf6fc0cf6fc0df6fc0df6fc0df6fc",
+  "0bf6fc0bf6fc0bf5fc0cf5fc0cf6fc0cf6fc0cf6fc0bf6fc0bf5fc0bf5fc0bf5fc0cf6fc0bf6fc15e9ea52a58ca65e1cc58d44fde294fdefadfdefaefdefaffdefaffdefaffdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaefdeaa3ebc475b5702b8d68332cd2cb0df6fc0cf6fc0af5fb898350fddf8ffdefaefdefaefce390fbbc33faba32d48d23609b7a0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf5fc0bf5fc0cf6fc0cf6fc0cf6fc0cf5fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fc0bf6fc25d5ce797b4cad6826e0b467fde79dfdefadfdefaefdefaffdefaffdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdf0affdefaffdefaffdefaffdefaffdefaffdefaefdefaefdefaefdeca7f2d489c98e43995f2259a0830df6fc0df6fc0bf6fc888350fcde8efdefaefdefaefdefaefce492faba31d38d23609b7b0cf6fc0cf5fc0bf5fc0cf6fc0cf6fc",
+  "0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0cf6fc0cf5fc0bf5fc0bf5fb0cf5fc0bf5fc34c3b3ad6a25e0b365fde79dfdefaefdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdf0affdefaffdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdf0b0fdefaffdefaffdefaefdefaefdedaaf1d38aca8f449660274ab29c0cf6fc0cf6fc878251fde193fdefaefdefadfdefadfdefacfdeda7d4a663619b7a0cf6fc0cf5fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0cf6fc0cf6fc0cf5fc0bf5fc0bf5fc0bf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc33c7bb896631b87c39fde79ffdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaffdf0affdf0affdefaffdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefb0fdefaffdefaffdefaffdefaffdefaffdedaaf3d58cc68d448c68332ecec52cd2ca997942fdefaefde99ffbc447fbcc5bfdf0affdf0aed3a767609b7a0cf6fc0cf5fc0cf5fc0df6fc0df6fc",
+  "0cf6fc0cf6fc0cf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc0cf5fb38bcabaa6829ddbb7bfdefaefdefaffdefaffdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdeeacf4d991c18b4d72835b52a289d09d56fdefaefce89bfaba30fbbd36fbcb5afdeba6d49f54609a790cf6fc0bf5fc0cf5fc0df6fc0df6fc",
+  "0cf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf6fc0cf6fc0bf5fc0bf5fc0bf5fb0cf5fc37bdae965317b67e41fdefadfdefaefdefaefaebaafdefaefdefaffdefaffdefaefdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaefbecabfceeacfdefaefdf0affdf0afdebd7e9e571a9a591ce5c27dfdefaefce89bfbbb31faba31fac142ecc87cb26623629c7a0cf5fc0bf5fc0cf6fc0df6fc0cf6fc",
+  "0cf6fc0bf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc38bcaca96b2dfdefadfdefadfdefaefcefaea1581bfdf0affdefaffdefaffdefaefdefaefdefaffdefaffdefaefdefaffdefaefdefaefdefaefdefaffdefaffdefb0fdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaeb6783aebd090fdefaefdefaefdefaffdf0b0cda061bb8042f6e4a3fdf0aefdeda9fcd977fbba31fbbd36e7ab3b7c7d5125d8d20cf5fc0cf5fc0cf5fc0cf5fc0cf6fc",
+  "0cf6fc0bf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf6fc37bbaba96b2dfdefacfdefadfdeda9fce79da05719fdf0aefdefaefdefaffdefaffdefaefdefaefdefaefdefaefdefaffdefaffdefaefdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdf0aeb6783aeaca83fdeaa4fdefaefdefaefdeba5ce9a54c7852dfbca51fdeeaafdefaffdeba4fcd56ef3be4fc77e1f6a936f0cf6fc0bf5fc0cf5fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf5fc0cf5fc0cf5fc0cf6fc0cf6fc0cf6fc0bf5fc0bf5fc0cf5fc0df6fc38bcaba25f22e1bf77fde497fbe091d8a85cc18740fdf0aefdefaefdefaffdefaffdefaffdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaefdefaffdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaefdefaed09f59d29f54f3d183fde294fde294f0cd7fbc7d37c7811ffabc32fbd062fdefaefdeeacf5d78bcc914896672e2ecfc60cf5fc0cf5fc0df5fc0df5fc0df6fc0cf6fc",
+  "0bf6fc0bf6fc0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0bf5fc0bf5fb0bf5fc0cf6fc20d8d46b8058aa6b28daad5fd9ab5dab6825fbd986fdefadfdefaefdefaffdefaefdefaefdefaefdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefddf8fbe833dcc974ddcae61ddaf60c68d45a96425daa141fabb33fbbd37fde49af8de92ce93489d602449b29c0cf6fc0cf5fc0cf5fc0cf5fc0df6fc0df6fc0cf6fc",
+  "0cf6fc0bf6fc0cf5fc0cf6fc0cf5fc0cf6fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc26d2cb539e82549e8286632ccc994ffddb87fdefadfdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaefcdf8fe3b96a9f5717bd813abd823bbd8440d2a96cfde08afbbe3afbbc35f9d27cd0984d9c602253a88d0cf5fc0bf5fc0bf5fc0cf5fc0cf6fc0df6fc0df6fc0cf6fc",
+  "0bf6fc0bf6fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fb0bf5fc0bf5fc0bf6fc0bf5fc747748a56220e8c070fdeca7fdefaefdefaffdefaffdefaffdefaefdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaffdefaffdefaffdefaefdefaefdefaefdeeacfde08ead6d29a66220fcd986fcda87fdde8ffde49afde297fccc60f8c554d29a4da05b1e52a78d0bf5fb0bf5fb0bf5fc0cf5fc0bf5fc0cf5fc0cf6fc0df6fc0cf6fc",
+  "0bf6fc0bf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fb0cf5fc0cf5fc0bf5fc0bf6fc0bf6fc0ef0f4777345cc9a4ff7d483fdeeabfdefaffdefaffdefaffdefaffdefaffdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaefdefaffdefaffdefaefdefaefdefaefdefaefdeeabfde090e6bc6c9d5616f8d482fcda87fdda88fddb89fddb89fdda88dcac60cf984ea1591a54a78c0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf6fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0bf5fc0bf6fc0bf6fc4aa89190571cd09e52f8d783fdefacfdefaefdefaefdefaffdefaffdefaefdefaefdefaefdefaefdefaefdefaffdefaefdefaefdefaefdefaefdefaffdefaefdefaffdefaefdeeacfde496e5b967a661209c5313fcdb87fddb88fddb88eac274ca944ccb944cab64236d8c6655a5890cf6fc0bf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf6fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0bf6fc0bf6fc0bf5fc519e8293561ad19f53fcd984fde79dfdeba6fdefaefdefaefdefadfdefadfdefadfdefadfdefaefdefadfdefadfdefaefdefaefdefaefdefaefdefadfdeba7fde8a0fdd984e7bd6bab68246e82595f9372b57732b47632b57632ad69276e866047b19c46b19c1ae4e40bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fb0cf5fc0cf6fc0cf6fc0cf6fc",
+  "0bf6fc0bf6fc0cf6fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf6fc0bf5fc0bf5fc0bf5fc53987b9c5918d7a85afcd984fcd985fde89efde8a0fde9a0fde89ffde8a0fde89ffde9a0fde89ffde89ffde89ffde89ffde89ffde89ffde79efdd983fdda83e6bc6bb3773077794c1fddda10eef221d8d421d8d421d8d421d8d416e9ea0bf6fc0bf6fc0af6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf6fc0cf6fc",
+  "0bf6fc0bf5fc0cf5fc0df6fc0cf6fc0cf5fc0cf5fc0bf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf6fc0bf6fc41ab96a36527e9d191fdeaa4fde192fde091fdda86fdda85d5a85ccf9f53cf9f53cf9f53cf9e52cf9f53cf9e52ce9d51eac16ffdd984fdde8efddf90fde89ff2dc99c1935473815614ebee0bf6fc0bf6fc0cf6fc0cf6fc0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0bf6fc",
+  "0bf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf6fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf6fc0bf6fc717346e4c47efdefadfdefadfdefadfdefadfcdc89e9c06ea162206286645797785697785797785797785797797c6b39c18c44f9d480fdeba6fdefaefdefaefdefaefdeba5aa6e2c1be0df0bf6fc0bf5fc0cf6fc0cf6fc0cf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0bf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc0bf6fc5f835fc59654fde79cfde79cfde79dfde79ce0b769a4662466845d1ce2e10bf6fc0bf6fc0bf5fc0bf6fc0bf5fc3ab9a781612dcf9e52f6db8dfde69bfde79bfde79be3c37b976f341ae3e40bf6fc0bf6fc0cf6fc0cf6fc0cf5fc0bf5fc0cf5fc0cf6fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0bf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf5fc0cf5fc0cf5fc0cf6fc0cf6fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf6fc0bf6fc0ef0f48e6026bf8a41c08b42bf8b42c08b419c5b1b6f7d531ddedc0bf6fc0bf6fc0bf5fc0bf5fb0bf5fc0bf5fc0bf5fc48aa938f591eb9813ac08c42c08c43c08c42a76d2a45b09b0cf6fc0cf6fc0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0bf6fc0bf5fc0bf5fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0bf5fb0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0bf6fc0bf6fc0bf5fc0cf5fc0cf5fc0cf6fc0bf5fc0bf6fc0bf6fc0bf6fc0bf5fc0bf5fc0bf6fc0bf6fc29cec550a1854ea1864fa1864da08550a2851ae1e00bf5fc0bf5fc0cf6fc0cf5fb0cf5fc0cf5fc0cf5fc0bf5fc0af5fc46ac954fa1864ea1864fa18650a18649aa920cf5fc0cf6fc0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0cf6fc0df6fc0cf5fc0cf6fc0cf6fc0cf6fc0cf5fc0cf5fc0cf6fc0cf5fc0cf6fc0cf6fc",
+  "0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0bf6fc0bf6fc0bf6fc0cf6fc0cf6fc0cf5fc0cf5fc0cf6fc0bf6fc0bf6fc0bf5fc0bf5fc0bf6fc0bf6fc0bf6fc0bf5fc0bf6fc0bf6fc0bf6fc0bf5fc0bf6fc0bf5fc0cf6fc0df6fc0cf6fc0cf5fc0cf5fc0cf5fc0bf5fc0bf6fc0bf6fc0af5fc0af5fc0af6fc0bf6fc0bf6fc0bf6fc0bf6fc0cf6fc0cf6fc0cf6fc0cf5fc0bf6fc0bf6fc0cf5fc0bf5fc0bf5fc0bf6fc0cf6fc0cf6fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0bf6fc",
+  "0cf6fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf6fc0bf6fc0bf5fc0bf6fc0bf5fc0bf6fc0bf6fc0cf5fc0cf6fc0bf5fc0bf5fc0bf5fc0bf6fc0bf5fc0bf5fc0bf6fc0bf6fc0bf5fc0cf5fc0cf5fc0cf5fb0cf5fc0cf6fc0cf6fc0cf5fc0cf6fc0cf5fc0cf6fc0bf5fc0bf6fc0bf6fc0bf5fb0bf6fc0bf5fc0bf6fc0cf6fc0cf6fc0cf6fc0cf5fc0cf6fc0cf6fc0bf5fc0bf6fc0cf5fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0cf6fc0bf5fc0bf5fc0cf5fc0cf6fc",
+  "0cf6fc0bf6fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0bf5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf6fc0cf6fc0bf5fc0bf6fc0bf5fc0bf5fc0cf6fc0cf6fc",
+  "0cf6fc0bf6fc0bf5fc0bf5fc0bf6fc0bf5fc0bf5fc0bf5fc0bf5fc0bf5fc0bf6fc0bf5fc0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0af5fc0bf5fc0cf5fc0cf5fc0cf5fc0cf6fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0cf6fc0bf5fc0cf5fc0cf5fc0cf6fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0cf6fc0cf6fc0cf6fc0df6fc0df6fc0cf6fc0cf5fc0cf6fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0cf5fc0bf5fc0cf5fc0cf5fc0bf5fc0bf5fc0bf5fc0bf6fc0cf6fc0cf6fc",
+  "0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf6fc0bf5fc0bf5fc0af5fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0af5fc0af5fc0bf6fc0bf6fc0cf6fc0cf6fc0bf6fc0bf6fc0cf6fc0cf5fc0bf6fc0bf6fc0bf6fc0bf5fc0bf5fc0bf6fc0bf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0bf6fc0bf5fc0bf6fc0cf5fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0cf6fc0bf6fc0bf6fc0bf6fc0bf5fc0bf5fc0bf5fc0bf6fc0bf6fc0bf6fc0bf6fc0bf6fc0bf5fc0bf5fc0bf6fc0cf6fc0bf6fc",
+  "0af6fc0af5fc0af5fc0af5fc0bf6fc0af5fc0af5fc0af5fc09f5fc0af5fc0af5fc0af5fc0af6fc0af6fc0af6fc0bf6fc0af5fc0af5fc0bf6fc0bf6fc0bf6fc0bf5fc0af5fc0af5fc0bf6fc0bf5fc0bf5fc0bf6fc0bf6fc0bf5fc0af5fc0af5fc0af5fc0af5fc0bf6fc0af5fc0bf6fc0bf6fc0bf6fc0bf6fc0bf5fc0af6fc0af6fc0bf5fc0bf5fc0bf6fc0bf6fc0af5fc0af5fc0bf5fc0bf5fc0af5fc0af5fc0af5fc0af5fc0af5fc0af6fc0af6fc0af5fc0af5fc0af5fc0af6fc0af6fc0af6fc"
+];
 
       const dot = (x, y, fill, size = 1, attrs = "") =>
         `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${fill}" ${attrs}/>`;
@@ -228,18 +259,21 @@
         </svg>`;
       }
 
-      function drawReplica() {
-        const cells = [];
-        replicaRows.forEach((row, y) => {
-          [...row].forEach((code, x) => {
-            if (code === ".") return;
-            cells.push(dot(x + 1, y + 1, COLORS[code], 1, `data-code="${LABELS[code] || code}"`));
-          });
+      function drawReplicaCanvas() {
+        const canvas = document.createElement("canvas");
+        const cell = 10;
+        canvas.width = REPLICA_GRID_SIZE * cell;
+        canvas.height = REPLICA_GRID_SIZE * cell;
+        canvas.setAttribute("aria-label", "64x64 canvas replica from uploaded pixel image");
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
+        REPLICA_PIXEL_HEX_ROWS.forEach((row, y) => {
+          for (let x = 0; x < REPLICA_GRID_SIZE; x++) {
+            ctx.fillStyle = `#${row.slice(x * 6, x * 6 + 6)}`;
+            ctx.fillRect(x * cell, y * cell, cell, cell);
+          }
         });
-        const grid = [];
-        for (let x = 1; x <= 31; x++) grid.push(`<path d="M${x} 1V26" stroke="#d7d7d7" stroke-width=".05"/>`);
-        for (let y = 1; y <= 25; y++) grid.push(`<path d="M1 ${y}H32" stroke="#d7d7d7" stroke-width=".05"/>`);
-        return svgWrap(33, 27, `${grid.join("")}${cells.join("")}`, "reference bead grid replica");
+        return canvas;
       }
 
       function key(x, y) { return `${Math.round(x)},${Math.round(y)}`; }
@@ -392,7 +426,7 @@
         return svgWrap(50, 50, frames.map((body, i) => `<g class="frame frame-${"abcd"[i]}">${body}</g>`).join(""), label);
       }
 
-      document.querySelector("#replica-stage").innerHTML = drawReplica();
+      document.querySelector("#replica-stage").replaceChildren(drawReplicaCanvas());
       document.querySelector("#standing-stage").innerHTML = staticSvg(makeCat({ mode: "front-stand" }), "standing front cat");
       document.querySelector("#walk-stage").innerHTML = walkingSvg({ mode: "side-walk" }, "walking cat");
       document.querySelector("#variant-stage").innerHTML = walkingSvg({
@@ -406,9 +440,11 @@
         pattern: [[14, 21], [15, 21], [16, 22], [36, 26], [37, 27], [38, 28], [39, 29], [43, 15], [44, 18], [44, 21]],
       }, "walking cat variant");
 
-      document.querySelector("#legend").innerHTML = Object.entries(LABELS)
-        .map(([code, label]) => `<span class="chip"><span class="swatch" style="background:${COLORS[code]}"></span>${label}</span>`)
-        .join("");
+      document.querySelector("#legend").innerHTML = [
+        ["Canvas", "64x64"],
+        ["Cells", String(REPLICA_GRID_SIZE * REPLICA_GRID_SIZE)],
+        ["Draw", "fillRect"]
+      ].map(([label, value]) => `<span class="chip">${label}: ${value}</span>`).join("");
     </script>
   </body>
 </html>
