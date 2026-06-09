@@ -479,14 +479,20 @@ function poseSvg(pose, index) {
   const drawLegs = (phase = 0) => {
     const coat = new Map();
     const detail = new Map();
-    const legTop = options.legs === "long" ? 40.4 : 41.6;
-    const legRy = options.legs === "long" ? 4.8 : 3.5;
-    const legs = phase === 0
-      ? [[16.2, legTop + 0.5, 2.6, legRy, 14.8, 45.2], [22.8, legTop - 0.7, 2.6, legRy, 24.4, 44.2], [31.1, legTop + 0.6, 2.7, legRy, 29.4, 45.2], [37.0, legTop - 0.5, 2.7, legRy, 38.5, 44.2]]
-      : [[16.2, legTop - 0.7, 2.6, legRy, 17.6, 44.2], [22.8, legTop + 0.6, 2.6, legRy, 21.2, 45.2], [31.1, legTop - 0.5, 2.7, legRy, 32.5, 44.2], [37.0, legTop + 0.6, 2.7, legRy, 35.5, 45.2]];
+    const step = phase === 1 ? 1 : phase === 2 ? -1 : 0;
+    const lift = phase === 0 ? 0 : 0.7;
+    const legTop = options.legs === "long" ? 41.5 : 42.2;
+    const legRy = options.legs === "long" ? 2.8 : 2.25;
+    const pawRy = options.legs === "long" ? 1.35 : 1.2;
+    const legs = [
+      [16.7, legTop + step * 0.25, 2.15, legRy, 15.7, 45.0 + Math.max(step, 0) * 0.9 - lift * 0.15],
+      [22.2, legTop - step * 0.15, 2.05, legRy, 23.0, 44.6 - Math.max(step, 0) * 0.75],
+      [30.7, legTop - step * 0.2, 2.1, legRy, 29.7, 44.6 - Math.max(-step, 0) * 0.75],
+      [36.5, legTop + step * 0.25, 2.15, legRy, 37.3, 45.0 + Math.max(-step, 0) * 0.9 - lift * 0.15],
+    ];
     legs.forEach(([cx, cy, rx, ry, footX, footY]) => {
       ellipse(coat, cx, cy, rx, ry, palette.base);
-      ellipse(coat, footX, footY, 2.7, 1.1, palette.base);
+      ellipse(coat, footX, footY, 2.35, pawRy, palette.base);
       setDetailOn(coat, detail, footX, footY, palette.cream);
     });
     const mergedCoat = new Map([...baseCoat, ...coat]);
@@ -535,6 +541,8 @@ function poseSvg(pose, index) {
     <g class="cat-body">${baseDots}</g>
     <g class="walk-frame walk-frame-a">${drawLegs(0)}</g>
     <g class="walk-frame walk-frame-b">${drawLegs(1)}</g>
+    <g class="walk-frame walk-frame-c">${drawLegs(0)}</g>
+    <g class="walk-frame walk-frame-d">${drawLegs(2)}</g>
   </svg>`;
 }
 
