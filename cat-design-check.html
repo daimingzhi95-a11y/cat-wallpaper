@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ピクタウン Cat Design Check</title>
+    <style>
+      :root {
+        --ink: #161616;
+        --paper: #fffaf0;
+        --panel: #fffef8;
+        --mint: #31c9b8;
+        --shadow: rgba(22, 22, 22, .22);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 1px 1px, rgba(22, 22, 22, .08) 1px, transparent 1.6px) 0 0 / 22px 22px,
+          linear-gradient(135deg, #fffaf0, #f8fbf2);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Noto Sans SC", sans-serif;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px clamp(16px, 4vw, 40px);
+        background: rgba(255, 250, 240, .92);
+        backdrop-filter: blur(10px);
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(22px, 4vw, 40px);
+        letter-spacing: .03em;
+      }
+      .note {
+        max-width: 760px;
+        margin: 0;
+        color: #6a5a4b;
+        font-weight: 800;
+        line-height: 1.55;
+      }
+      main {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        padding: 20px clamp(14px, 3vw, 34px) 48px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+      }
+      .card {
+        min-width: 0;
+        padding: 18px;
+        background: var(--panel);
+        border: 4px solid var(--ink);
+        box-shadow: 8px 8px 0 var(--shadow);
+      }
+      .card h2 {
+        margin: 0 0 6px;
+        font-size: 20px;
+      }
+      .card p {
+        margin: 0 0 14px;
+        color: #6a5a4b;
+        font-weight: 750;
+        line-height: 1.45;
+      }
+      .stage {
+        display: grid;
+        place-items: center;
+        min-height: 310px;
+        padding: 18px;
+        background: linear-gradient(135deg, #ffeaf4, #e6f7ff 56%, #fff7bf);
+        border: 3px solid var(--ink);
+        overflow: hidden;
+      }
+      svg {
+        width: min(100%, 310px);
+        height: auto;
+        image-rendering: pixelated;
+        shape-rendering: crispEdges;
+      }
+      .replica svg { width: min(100%, 380px); }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 8px;
+        border: 2px solid var(--ink);
+        background: #fff;
+        font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .swatch {
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--ink);
+      }
+      .frame {
+        opacity: 0;
+        animation: frame-a 1s steps(1, end) infinite;
+      }
+      .frame-b { animation-name: frame-b; }
+      .frame-c { animation-name: frame-c; }
+      .frame-d { animation-name: frame-d; }
+      @keyframes frame-a {
+        0%, 24.99% { opacity: 1; }
+        25%, 100% { opacity: 0; }
+      }
+      @keyframes frame-b {
+        0%, 24.99%, 50%, 100% { opacity: 0; }
+        25%, 49.99% { opacity: 1; }
+      }
+      @keyframes frame-c {
+        0%, 49.99%, 75%, 100% { opacity: 0; }
+        50%, 74.99% { opacity: 1; }
+      }
+      @keyframes frame-d {
+        0%, 74.99% { opacity: 0; }
+        75%, 100% { opacity: 1; }
+      }
+      @media (max-width: 820px) {
+        .grid { grid-template-columns: 1fr; }
+        header { align-items: flex-start; flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Cat Design Check</h1>
+      <p class="note">4つの点陣猫を同じルールで確認するページ。3と4は各フレームを完整な猫として描くので、脚の色が黒边の外に出ない。</p>
+    </header>
+    <main>
+      <section class="grid">
+        <article class="card replica">
+          <h2>1. 参考画像の点陣復刻</h2>
+          <p>31x25 の図案として、画像中の A21/G13/G6/F14/G10/H7 を SVG の各マスに復刻。</p>
+          <div class="stage" id="replica-stage"></div>
+          <div class="legend" id="legend"></div>
+        </article>
+        <article class="card">
+          <h2>2. 座り猫から立ち猫へ</h2>
+          <p>参考図の正面顔としっぽ感を残し、体を立ち姿に変更した静止版。</p>
+          <div class="stage" id="standing-stage"></div>
+        </article>
+        <article class="card">
+          <h2>3. 立ち猫から歩き猫へ</h2>
+          <p>4フレーム歩行。脚は毎フレーム全体輪郭を再計算し、内部色が黒边から漏れない。</p>
+          <div class="stage" id="walk-stage"></div>
+        </article>
+        <article class="card">
+          <h2>4. 毛色・模様・尾・脚の別バージョン</h2>
+          <p>3の構造を使い、毛色、脚長、尾の長さ、花纹を変えた比較用。</p>
+          <div class="stage" id="variant-stage"></div>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const COLORS = {
+        ".": "transparent",
+        A: "#f7d98d",
+        O: "#a5663f",
+        Y: "#eca321",
+        R: "#f48fa8",
+        M: "#d88932",
+        K: "#111111",
+        W: "#fff2d6",
+        C: "#efe4c8",
+        G: "#8f8f80",
+      };
+      const LABELS = {
+        A: "A21",
+        O: "G13",
+        Y: "G6",
+        R: "F14",
+        M: "G10",
+        K: "H7",
+      };
+      const replicaRowsRaw = [
+        ".........OO........OO...........",
+        "........OAAO......OAAO..........",
+        ".......OARAO....OARAO...........",
+        "......OARRAAOOOOAARRAO..........",
+        "......OAAAAAAAAAAAAAAO..........",
+        "......OAAAAAAAAAAAAAAO..........",
+        ".....OAAAAAAAAAAAAAAAAO.........",
+        ".....OAAAAAAAAAAAAAAAAO.........",
+        "....OAAAAKAAAAAAKAAAAO.........",
+        "..OOOOARRMAAMAMAAMAAOOOO.......",
+        "...OAAARRMAAMAMAARRAAO...OO....",
+        "...OAAAAAAMAMAARRRAAAO..OAAO...",
+        "..OOOOAAAAAAAAAAAAAAOOOOOAYO...",
+        ".....OAAAAAAAAAAAAAAAAO..OAYO...",
+        "......OAAAAAAAAAAAAAAO..OAAAO...",
+        ".......OAAAAAAAAAAAAAAO.OAYO....",
+        ".......OAAAAAAAAAAAYYYOOAYO.....",
+        ".......OAAAOAAAAAAAYYYOOAAYO....",
+        ".......OAAAOAAAAOAAAYYYOAAAOO...",
+        ".......OAAAOAAAOOAAAYYYOAAAAO...",
+        ".......OAAAOAAAOAAAAYYYAAAO.....",
+        "......OAAAOAAAOAAAAAAAAOOO......",
+        "......OOOOOOOOOOOOOOOOOO........",
+        "...............................",
+        "...............................",
+      ];
+      const replicaRows = replicaRowsRaw.map((row) => row.padEnd(31, ".").slice(0, 31));
+
+      const dot = (x, y, fill, size = 1, attrs = "") =>
+        `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${fill}" ${attrs}/>`;
+
+      function svgWrap(width, height, body, label, scale = 1) {
+        return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${label}">
+          <rect x="0" y="0" width="${width}" height="${height}" fill="rgba(255,255,255,.55)"/>
+          ${body}
+        </svg>`;
+      }
+
+      function drawReplica() {
+        const cells = [];
+        replicaRows.forEach((row, y) => {
+          [...row].forEach((code, x) => {
+            if (code === ".") return;
+            cells.push(dot(x + 1, y + 1, COLORS[code], 1, `data-code="${LABELS[code] || code}"`));
+          });
+        });
+        const grid = [];
+        for (let x = 1; x <= 31; x++) grid.push(`<path d="M${x} 1V26" stroke="#d7d7d7" stroke-width=".05"/>`);
+        for (let y = 1; y <= 25; y++) grid.push(`<path d="M1 ${y}H32" stroke="#d7d7d7" stroke-width=".05"/>`);
+        return svgWrap(33, 27, `${grid.join("")}${cells.join("")}`, "reference bead grid replica");
+      }
+
+      function key(x, y) { return `${Math.round(x)},${Math.round(y)}`; }
+      function makeMap() { return new Map(); }
+      function put(map, x, y, fill) {
+        const px = Math.round(x);
+        const py = Math.round(y);
+        if (px >= 0 && px < 50 && py >= 0 && py < 50) map.set(key(px, py), { x: px, y: py, fill });
+      }
+      function disk(map, cx, cy, r, fill) {
+        for (let y = Math.floor(cy - r - 1); y <= Math.ceil(cy + r + 1); y++) {
+          for (let x = Math.floor(cx - r - 1); x <= Math.ceil(cx + r + 1); x++) {
+            if ((x - cx) ** 2 + (y - cy) ** 2 <= r ** 2) put(map, x, y, fill);
+          }
+        }
+      }
+      function ellipse(map, cx, cy, rx, ry, fill) {
+        for (let y = Math.floor(cy - ry - 1); y <= Math.ceil(cy + ry + 1); y++) {
+          for (let x = Math.floor(cx - rx - 1); x <= Math.ceil(cx + rx + 1); x++) {
+            if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1) put(map, x, y, fill);
+          }
+        }
+      }
+      function triangle(map, points, fill) {
+        const area = (a, b, c) => Math.abs((a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2);
+        const total = area(points[0], points[1], points[2]);
+        const xs = points.map((p) => p.x);
+        const ys = points.map((p) => p.y);
+        for (let y = Math.min(...ys) - 1; y <= Math.max(...ys) + 1; y++) {
+          for (let x = Math.min(...xs) - 1; x <= Math.max(...xs) + 1; x++) {
+            const p = { x, y };
+            if (Math.abs(area(p, points[1], points[2]) + area(points[0], p, points[2]) + area(points[0], points[1], p) - total) < .35) put(map, x, y, fill);
+          }
+        }
+      }
+      function line(map, points, r, fill) {
+        points.slice(1).forEach((point, index) => {
+          const prev = points[index];
+          const steps = Math.max(Math.abs(point.x - prev.x), Math.abs(point.y - prev.y)) * 4;
+          for (let i = 0; i <= steps; i++) {
+            const t = i / steps;
+            disk(map, prev.x + (point.x - prev.x) * t, prev.y + (point.y - prev.y) * t, r, fill);
+          }
+        });
+      }
+      function outlineFor(coat, ink = "#171717") {
+        const out = new Map();
+        coat.forEach(({ x, y }) => {
+          for (let oy = -1; oy <= 1; oy++) {
+            for (let ox = -1; ox <= 1; ox++) {
+              const px = x + ox;
+              const py = y + oy;
+              if (px < 0 || px >= 50 || py < 0 || py >= 50 || coat.has(key(px, py))) continue;
+              put(out, px, py, ink);
+            }
+          }
+        });
+        return out;
+      }
+      function drawMap(coat, detail = new Map()) {
+        const outline = outlineFor(coat);
+        return [...outline.values(), ...coat.values(), ...detail.values()]
+          .map((p) => dot(p.x, p.y, p.fill))
+          .join("");
+      }
+
+      function makeCat(opts = {}, step = 0) {
+        const coat = makeMap();
+        const detail = makeMap();
+        const main = opts.main || COLORS.A;
+        const belly = opts.belly || COLORS.W;
+        const stripe = opts.stripe || COLORS.Y;
+        const cheek = opts.cheek || COLORS.R;
+        const eye = COLORS.K;
+        const tail = opts.tail || "normal";
+        const leg = opts.leg || "normal";
+        const bodyOffset = opts.pose === "stand" ? 0 : 0;
+
+        if (opts.mode === "side-walk") {
+          ellipse(coat, 30, 28.8 + bodyOffset, 15.4, 7.5, main);
+          ellipse(coat, 15.6, 25.6, 9.1, 8.2, main);
+          ellipse(detail, 25, 33.2, 11.6, 3.2, belly);
+          triangle(coat, [{ x: 8, y: 22 }, { x: 11, y: 16 }, { x: 16, y: 22 }], main);
+          triangle(coat, [{ x: 15, y: 22 }, { x: 20, y: 16 }, { x: 23, y: 22 }], main);
+          [[11, 19], [12, 20], [19, 19], [20, 20]].forEach(([x, y]) => put(detail, x, y, cheek));
+          if (tail === "long") line(coat, [{ x: 42, y: 28 }, { x: 46, y: 23 }, { x: 46, y: 15 }, { x: 43, y: 10 }], 2.1, main);
+          else line(coat, [{ x: 42, y: 29 }, { x: 46, y: 26 }, { x: 46, y: 21 }], 1.9, main);
+          const legEndY = leg === "long" ? 43.2 : 41.7;
+          const hipY = 35.0;
+          const s = step === 1 ? 1 : step === 2 ? -1 : 0;
+          [
+            { hip: 16.5, foot: 15.1 + s * 2.0, far: true },
+            { hip: 20.0, foot: 18.9 - s * 1.8, far: false },
+            { hip: 33.0, foot: 32.0 - s * 2.0, far: true },
+            { hip: 37.0, foot: 38.4 + s * 1.7, far: false },
+          ].forEach(({ hip, foot, far }) => {
+            const fill = far ? opts.farLeg || "#d1904a" : main;
+            line(coat, [{ x: hip, y: hipY }, { x: (hip + foot) / 2, y: s ? 37.2 : 38.1 }, { x: foot, y: legEndY }], far ? 1.15 : 1.3, fill);
+            ellipse(coat, foot + (foot < hip ? -.55 : .55), legEndY + .5, far ? 1.75 : 2.05, 1.05, fill);
+          });
+        } else {
+          ellipse(coat, 24, 29, 11.5, 13.8, main);
+          ellipse(coat, 24, 24, 10.3, 8.3, main);
+          triangle(coat, [{ x: 14, y: 22 }, { x: 17, y: 14 }, { x: 22, y: 22 }], main);
+          triangle(coat, [{ x: 26, y: 22 }, { x: 31, y: 14 }, { x: 34, y: 22 }], main);
+          ellipse(detail, 24, 34, 7.4, 7.2, belly);
+          [[18, 17], [19, 18], [30, 17], [29, 18]].forEach(([x, y]) => put(detail, x, y, cheek));
+          line(coat, [{ x: 33, y: 33 }, { x: 40, y: 28 }, { x: 42, y: 20 }], 1.9, main);
+          ellipse(coat, 17, 39, 2.8, 5.2, main);
+          ellipse(coat, 29, 39, 2.8, 5.2, main);
+          ellipse(coat, 16.5, 44, 3.2, 1.4, main);
+          ellipse(coat, 29.5, 44, 3.2, 1.4, main);
+        }
+        [[20, 26], [20, 27], [29, 26], [29, 27], [24, 29], [23, 30], [25, 30], [22, 31], [26, 31]].forEach(([x, y]) => put(detail, x, y, eye));
+        [[19, 30], [20, 30], [29, 30], [30, 30]].forEach(([x, y]) => put(detail, x, y, cheek));
+        [[14, 28], [13, 28], [34, 28], [35, 28], [14, 31], [34, 31]].forEach(([x, y]) => put(detail, x, y, eye));
+        (opts.pattern || [[31, 23], [33, 23], [35, 24], [37, 28], [38, 29], [39, 30], [42, 21], [43, 24]]).forEach(([x, y]) => disk(detail, x, y, 1, stripe));
+        return drawMap(coat, detail);
+      }
+
+      function staticSvg(body, label) {
+        return svgWrap(50, 50, body, label);
+      }
+      function walkingSvg(opts, label) {
+        const frames = [
+          makeCat(opts, 0),
+          makeCat(opts, 1),
+          makeCat(opts, 0),
+          makeCat(opts, 2),
+        ];
+        return svgWrap(50, 50, frames.map((body, i) => `<g class="frame frame-${"abcd"[i]}">${body}</g>`).join(""), label);
+      }
+
+      document.querySelector("#replica-stage").innerHTML = drawReplica();
+      document.querySelector("#standing-stage").innerHTML = staticSvg(makeCat({ pose: "stand" }), "standing front cat");
+      document.querySelector("#walk-stage").innerHTML = walkingSvg({ mode: "side-walk" }, "walking cat");
+      document.querySelector("#variant-stage").innerHTML = walkingSvg({
+        mode: "side-walk",
+        main: "#f7f1df",
+        belly: "#fffaf0",
+        stripe: "#6f6f65",
+        farLeg: "#c9c2af",
+        tail: "long",
+        leg: "long",
+        pattern: [[14, 21], [15, 21], [16, 22], [36, 26], [37, 27], [38, 28], [39, 29], [43, 15], [44, 18], [44, 21]],
+      }, "walking cat variant");
+
+      document.querySelector("#legend").innerHTML = Object.entries(LABELS)
+        .map(([code, label]) => `<span class="chip"><span class="swatch" style="background:${COLORS[code]}"></span>${label}</span>`)
+        .join("");
+    </script>
+  </body>
+</html>
