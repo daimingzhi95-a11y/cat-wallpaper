@@ -394,76 +394,66 @@ function poseSvg(pose, index) {
     });
   };
 
-  if (options.ear === "round") {
-    disk(baseCoat, 17, 10, 5, palette.base);
-    disk(baseCoat, 33, 10, 5, palette.base);
-  } else if (options.ear === "fold") {
-    triangle(baseCoat, [{ x: 11, y: 16 }, { x: 17, y: 5 }, { x: 22, y: 16 }], palette.base);
-    triangle(baseCoat, [{ x: 28, y: 16 }, { x: 33, y: 5 }, { x: 39, y: 16 }], palette.base);
-  } else {
-    triangle(baseCoat, [{ x: 10, y: 17 }, { x: 16, y: 3 }, { x: 24, y: 17 }], palette.base);
-    triangle(baseCoat, [{ x: 26, y: 17 }, { x: 34, y: 3 }, { x: 40, y: 17 }], palette.base);
-  }
+  const bodyRx = options.body === "round" ? 16.2 : options.body === "slim" ? 13.7 : 15.2;
+  const bodyRy = options.body === "round" ? 8.1 : 7.1;
+  ellipse(baseCoat, 30, 28.8, bodyRx, bodyRy, palette.base);
+  ellipse(baseCoat, 13, 26, 7.4, 6.3, palette.base);
+  ellipse(baseCoat, 8.3, 28.8, 3.5, 2.3, palette.base);
 
-  const headRx = options.body === "slim" ? 15.2 : 16.8;
-  const bodyRx = options.body === "round" ? 15.8 : options.body === "slim" ? 12.8 : 14.2;
-  ellipse(baseCoat, 25, 20, headRx, 11.2, palette.base);
-  ellipse(baseCoat, 28, 34, bodyRx, 10.6, palette.base);
+  if (options.ear === "round") {
+    disk(baseCoat, 11.5, 19.8, 2.5, palette.base);
+    disk(baseCoat, 16.2, 20.2, 2.5, palette.base);
+  } else if (options.ear === "fold") {
+    triangle(baseCoat, [{ x: 9, y: 22 }, { x: 11, y: 18 }, { x: 15, y: 22 }], palette.base);
+    triangle(baseCoat, [{ x: 14, y: 22 }, { x: 17, y: 18 }, { x: 20, y: 22 }], palette.base);
+  } else {
+    triangle(baseCoat, [{ x: 8, y: 23 }, { x: 10, y: 17 }, { x: 15, y: 22 }], palette.base);
+    triangle(baseCoat, [{ x: 14, y: 22 }, { x: 17, y: 17 }, { x: 21, y: 23 }], palette.base);
+  }
 
   if (options.tail === "long") {
-    line(baseCoat, [{ x: 38, y: 32 }, { x: 43, y: 28 }, { x: 45, y: 22 }, { x: 43, y: 16 }], 2.15, palette.base);
+    line(baseCoat, [{ x: 42, y: 27 }, { x: 45, y: 22 }, { x: 45, y: 16 }, { x: 42, y: 12 }], 2.15, palette.base);
   } else {
-    line(baseCoat, [{ x: 38, y: 34 }, { x: 45, y: 32 }, { x: 46, y: 29 }], 2, palette.base);
+    line(baseCoat, [{ x: 42, y: 29 }, { x: 46, y: 27 }, { x: 47, y: 24 }], 1.9, palette.base);
   }
 
-  ellipse(baseDetail, 25, 25, 7.2, 4.5, palette.cream);
-  [[16, 11], [17, 12], [18, 13], [33, 11], [32, 12], [31, 13]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.innerEar));
-  [[12, 27], [13, 27], [37, 27], [38, 27]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.blush));
+  ellipse(baseDetail, 25, 33.2, 11.5, 3.3, options.pattern === "smoke" ? "#cfc8b6" : palette.cream);
+  [[10, 21], [11, 20], [17, 20], [18, 21]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.innerEar));
+  [[8, 31], [9, 31], [13, 30]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.cream));
+  [[14, 29], [15, 29]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.blush));
 
   const stripeDots = {
-    tabby: [[21, 13], [24, 12], [27, 13], [21, 14], [24, 14], [27, 14], [12, 21], [13, 21], [38, 21], [39, 21], [32, 32], [33, 32], [34, 33], [34, 34], [42, 28], [44, 23], [43, 18]],
-    calico: [[13, 20], [14, 19], [15, 20], [16, 21], [31, 32], [32, 32], [33, 33], [34, 34], [35, 35]],
-    cow: [[13, 20], [14, 20], [15, 21], [31, 32], [32, 32], [33, 33], [25, 38], [26, 38]],
-    smoke: [[19, 18], [20, 18], [21, 18], [31, 32], [32, 32], [33, 32], [34, 33], [35, 33]],
-    random: [[15, 20], [23, 13], [32, 32], [35, 35], [26, 39], [41, 22]],
+    tabby: [[25, 22], [28, 22], [31, 22], [25, 23], [28, 23], [31, 23], [36, 27], [37, 28], [37, 29], [39, 31], [40, 32], [44, 19], [44, 22], [43, 25]],
+    calico: [[21, 25], [22, 24], [23, 25], [35, 30], [36, 31], [37, 31]],
+    cow: [[20, 25], [21, 25], [22, 26], [35, 29], [36, 30], [37, 30]],
+    smoke: [[24, 24], [25, 24], [26, 24], [36, 31], [37, 31], [38, 31]],
+    random: [[21, 25], [28, 22], [36, 30], [40, 26]],
   };
   (stripeDots[options.pattern] || []).forEach(([x, y], dotIndex) => {
-    const fill = options.pattern === "calico" && dotIndex > 3 ? "#f0c45b" : options.pattern === "cow" ? "#343434" : palette.dark;
+    const fill = options.pattern === "calico" && dotIndex > 2 ? "#f0c45b" : options.pattern === "cow" ? "#343434" : palette.dark;
     disk(baseDetail, x, y, options.pattern === "random" ? 1.25 : 1.05, fill);
   });
   if (options.fur === "long") {
-    [[9, 29], [12, 33], [19, 43], [29, 44], [38, 42]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.cream));
+    [[7, 30], [18, 36], [25, 38], [34, 37], [40, 34]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.cream));
   }
 
-  const mangaEye = (cx, cy, wink = false) => {
-    if (wink) {
-      [[cx - 2, cy], [cx - 1, cy], [cx, cy + 1], [cx + 1, cy], [cx + 2, cy]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.eye));
+  const drawSideEye = () => {
+    if (options.expression === "sleepy" || options.expression === "cool") {
+      [[10, 25], [11, 25], [12, 25]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.eye));
       return;
     }
-    disk(baseDetail, cx, cy, 2.25, palette.eye);
-    [[cx - 1, cy - 1], [cx, cy - 2]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.shine));
-    setDetailOn(baseCoat, baseDetail, cx + 1, cy + 1, "#2d3b38");
+    disk(baseDetail, 11.5, 24.5, 1.8, palette.eye);
+    [[11, 23], [12, 24]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.shine));
   };
-  if (options.expression === "wink") {
-    mangaEye(18, 22, true);
-    mangaEye(32, 22, false);
-  } else if (options.expression === "sleepy") {
-    [[16, 23], [17, 23], [18, 23], [19, 23], [20, 23], [30, 23], [31, 23], [32, 23], [33, 23], [34, 23]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.eye));
-  } else if (options.expression === "cool") {
-    [[15, 21], [16, 21], [17, 21], [18, 21], [19, 21], [20, 21], [21, 22], [29, 22], [30, 21], [31, 21], [32, 21], [33, 21], [34, 21], [35, 21]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.eye));
-  } else {
-    mangaEye(18, 22, false);
-    mangaEye(32, 22, false);
-    if (options.expression === "surprised") [[18, 25], [32, 25]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.eye));
-  }
-  [[25, 25], [24, 27], [26, 27], [23, 28], [27, 28]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.eye));
+  drawSideEye();
+  [[6, 28], [8, 30], [9, 31]].forEach(([x, y]) => setDetailOn(baseCoat, baseDetail, x, y, palette.eye));
 
   const accessoryDots = {
     none: [],
-    glasses: [[15, 20], [16, 20], [17, 20], [18, 20], [19, 20], [20, 20], [30, 20], [31, 20], [32, 20], [33, 20], [34, 20], [35, 20], [21, 21], [29, 21]],
-    ribbon: [[36, 14], [37, 13], [38, 14], [39, 13], [39, 14], [40, 14], [38, 15], [39, 15]],
-    hat: [[18, 8], [19, 8], [20, 8], [21, 8], [22, 8], [23, 8], [24, 8], [25, 8], [26, 8], [27, 8], [23, 5], [24, 5], [25, 5], [26, 5], [23, 6], [24, 6], [25, 6], [26, 6], [22, 7], [27, 7]],
-    flower: [[37, 15], [36, 15], [38, 15], [37, 14], [37, 16], [36, 14], [38, 16]],
+    glasses: [],
+    ribbon: [[17, 21], [18, 20], [19, 21], [20, 20], [20, 21], [21, 21], [19, 22], [20, 22]],
+    hat: [[10, 18], [11, 18], [12, 18], [13, 18], [14, 18], [15, 18], [12, 15], [13, 15], [14, 15], [12, 16], [13, 16], [14, 16], [11, 17], [15, 17]],
+    flower: [[18, 22], [17, 22], [19, 22], [18, 21], [18, 23], [17, 21], [19, 23]],
   };
   (accessoryDots[options.accessory] || []).forEach(([x, y]) => setDot(baseDetail, x, y, options.accessory === "flower" ? "#f18b86" : options.accessory === "ribbon" ? "#e95678" : options.accessory === "hat" ? "#343434" : palette.eye));
 
@@ -480,20 +470,23 @@ function poseSvg(pose, index) {
     const coat = new Map();
     const detail = new Map();
     const step = phase === 1 ? 1 : phase === 2 ? -1 : 0;
-    const lift = phase === 0 ? 0 : 0.7;
-    const legTop = options.legs === "long" ? 41.5 : 42.2;
-    const legRy = options.legs === "long" ? 2.8 : 2.25;
-    const pawRy = options.legs === "long" ? 1.35 : 1.2;
+    const legEndY = options.legs === "long" ? 42.4 : 41.6;
+    const hipY = 35.0;
+    const shade = darken(palette.base, 24);
+    const legFill = (far) => (far ? shade : palette.base);
     const legs = [
-      [16.7, legTop + step * 0.25, 2.15, legRy, 15.7, 45.0 + Math.max(step, 0) * 0.9 - lift * 0.15],
-      [22.2, legTop - step * 0.15, 2.05, legRy, 23.0, 44.6 - Math.max(step, 0) * 0.75],
-      [30.7, legTop - step * 0.2, 2.1, legRy, 29.7, 44.6 - Math.max(-step, 0) * 0.75],
-      [36.5, legTop + step * 0.25, 2.15, legRy, 37.3, 45.0 + Math.max(-step, 0) * 0.9 - lift * 0.15],
+      { hip: 16.5, foot: 15.2 + step * 2.0, far: true },
+      { hip: 20.0, foot: 18.9 - step * 1.8, far: false },
+      { hip: 33.0, foot: 32.0 - step * 2.0, far: true },
+      { hip: 37.0, foot: 38.4 + step * 1.7, far: false },
     ];
-    legs.forEach(([cx, cy, rx, ry, footX, footY]) => {
-      ellipse(coat, cx, cy, rx, ry, palette.base);
-      ellipse(coat, footX, footY, 2.35, pawRy, palette.base);
-      setDetailOn(coat, detail, footX, footY, palette.cream);
+    legs.forEach(({ hip, foot, far }) => {
+      const fill = legFill(far);
+      const kneeX = (hip + foot) / 2;
+      const kneeY = step === 0 ? 38.1 : 37.3;
+      line(coat, [{ x: hip, y: hipY }, { x: kneeX, y: kneeY }, { x: foot, y: legEndY }], far ? 1.15 : 1.3, fill);
+      ellipse(coat, foot + (foot < hip ? -0.55 : 0.55), legEndY + 0.5, far ? 1.75 : 2.05, 1.05, fill);
+      setDetailOn(coat, detail, foot, legEndY + 0.5, far ? shade : palette.cream);
     });
     const mergedCoat = new Map([...baseCoat, ...coat]);
     const mergedOutline = outlineFor(mergedCoat, baseCoat);
